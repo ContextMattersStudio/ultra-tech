@@ -10,18 +10,18 @@
     <style>
         /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
         :root {
-            --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
-            --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
-            --color-new-background: #212529; /* Fondo Oscuro */
-            --color-card-background: #2B3035; /* Fondo más claro para la tabla/tarjetas */
-            --color-white: #FFFFFF; /* Blanco Puro */
+            --color-primary: #E9ECEF; 
+            --color-secondary: #D0AE50; 
+            --color-new-background: #212529; 
+            --color-card-background: #2B3035; 
+            --color-white: #FFFFFF; 
             --color-whatsapp: #25d366; 
             --color-whatsapp-hover: #128c7e; 
             
-            /* Colores de Estado (Ahora con OFFERS) */
-            --color-hot: #FF4500; /* Fuego */
-            --color-new: #1E90FF; /* Cohete */
-            --color-offers: #D0AE50; /* Dorado de Acento para Ofertas */
+            /* Colores de Estado */
+            --color-hot: #FF4500; 
+            --color-new: #1E90FF; 
+            --color-offers: #D0AE50; 
         }
 
         /* Estilos Generales */
@@ -59,9 +59,10 @@
             border-radius: 2px;
         }
 
-        /* --- NUEVO: Barra de Leyenda --- */
+        /* --- Barra de Leyenda --- */
         #legend-bar {
-            width: 90%;
+            /* Se ajusta al mismo ancho que la tabla y tabs */
+            width: 90%; 
             max-width: 900px;
             margin-bottom: 20px;
             padding: 15px;
@@ -83,17 +84,17 @@
         .legend-icon {
             font-size: 1.1em;
         }
-        /* --- FIN Leyenda --- */
+        /* --- Fin Leyenda --- */
 
 
-        /* Estilos de Pestañas (Tabs) */
+        /* Estilos de Pestañas (Tabs) y Tablas */
         #tabs-container {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 10px;
             width: 90%;
-            max-width: 900px;
+            max-width: 900px; /* Ancho consistente */
             margin-bottom: 30px;
             padding: 5px;
             background-color: var(--color-card-background);
@@ -130,10 +131,9 @@
             font-weight: bold; 
         }
         
-        /* Estilos de Tabla */
         table { 
             width: 90%; 
-            max-width: 900px;
+            max-width: 900px; /* Ancho consistente */
             margin: 20px auto; 
             border-collapse: collapse; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -209,7 +209,7 @@
             transform: scale(1.08);
         }
 
-        /* Estilos para los íconos de Status (Ajustados con nueva variable) */
+        /* Estilos para los íconos de Status */
         .status-icon {
             margin-left: 8px;
             font-size: 1em;
@@ -223,7 +223,7 @@
             transform: rotate(-45deg);
         }
         .status-offers {
-            color: var(--color-offers); /* Aplicar el color dorado de acento */
+            color: var(--color-offers);
         }
         td:first-child {
             display: flex;
@@ -262,7 +262,7 @@
         document.addEventListener('DOMContentLoaded', initApp);
 
         let configData = []; 
-        let legendData = []; // NUEVA variable para la leyenda
+        let legendData = []; 
         let currentActiveTab = null;
 
         async function initApp() {
@@ -277,7 +277,7 @@
                 if (!legendResponse.ok) throw new Error(`Error ${legendResponse.status}: No se pudo cargar el archivo de configuración de leyenda (leyenda_config.json).`);
                 legendData = await legendResponse.json();
                 
-                // Generar la leyenda
+                // Generar la leyenda (Lógica modificada)
                 buildLegend(legendData);
 
                 const activeTabs = configData.filter(tab => tab.status === 'on');
@@ -299,7 +299,7 @@
         }
 
         /**
-         * Genera la barra de leyenda usando el archivo leyenda_config.json.
+         * Genera la barra de leyenda SIN usar el emoji del label para evitar duplicidad.
          */
         function buildLegend(data) {
             const container = document.getElementById('legend-bar');
@@ -309,16 +309,19 @@
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('legend-item');
                 
+                // Extrae solo el texto de la etiqueta (quitando el emoji si lo hubiera)
+                const textLabel = item.label.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '').trim();
+
                 // Usar la variable de color CSS y el ícono
                 itemDiv.innerHTML = `
                     <i class="fa-solid ${item.icon} legend-icon" style="color: var(${item.color_var});"></i>
-                    <span>${item.label}</span>
+                    <span>${textLabel}</span>
                 `;
                 container.appendChild(itemDiv);
             });
         }
 
-        // --- Funciones buildTabs, updateActiveTab, y loadExcelData (Manejando el nuevo STATUS) ---
+        // --- Resto de las funciones (sin cambios en la lógica base) ---
 
         function buildTabs(tabs) {
             const container = document.getElementById('tabs-container');
@@ -399,11 +402,10 @@
                 tableHTML += '<thead><tr><th>Producto</th><th>Precio Transferencia</th><th>Precio USDT</th><th>Comprar</th></tr></thead>';
                 tableHTML += '<tbody>';
 
-                // Mapeo simple de estados a CSS, basado en leyenda_config.json
                 const STATUS_MAP = {
                     'HOT': { icon: 'fa-fire', class: 'status-hot' },
                     'NEW': { icon: 'fa-rocket', class: 'status-new' },
-                    'OFFERS': { icon: 'fa-tags', class: 'status-offers' } // NUEVO ESTADO
+                    'OFFERS': { icon: 'fa-tags', class: 'status-offers' }
                 };
 
 
@@ -413,7 +415,6 @@
                     const precioUSDT = String(row['Precio USDT'] || '—');
                     const status = String(row['STATUS'] || '').toUpperCase().trim();
                     
-                    // Lógica para generar el ícono
                     let statusIconHtml = '';
                     const statusConfig = STATUS_MAP[status];
                     
