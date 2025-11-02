@@ -9,11 +9,11 @@
     <style>
         /* Paleta de Colores ULTRA TECH - MISMA QUE INDEX.HTML */
         :root {
-            --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
-            --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
-            --color-new-background: #212529; /* Nuevo Fondo Oscuro */
-            --color-card-background: #2B3035; /* Fondo más claro para la tabla/tarjetas */
-            --color-white: #FFFFFF; /* Blanco Puro */
+            --color-primary: #E9ECEF; 
+            --color-secondary: #D0AE50; 
+            --color-new-background: #212529; 
+            --color-card-background: #2B3035; 
+            --color-white: #FFFFFF; 
             --color-whatsapp: #25d366; 
             --color-whatsapp-hover: #128c7e; 
         }
@@ -46,12 +46,29 @@
         }
         .main-title .underline {
             display: block;
-            width: 180px; /* Un poco más ancho para el título más largo */
+            width: 180px; 
             height: 3px;
             background-color: var(--color-secondary); 
             margin: 5px auto 0 auto;
             border-radius: 2px;
         }
+        
+        /* Botón de Volver */
+        .back-button {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #495057; /* Gris oscuro para el botón */
+            color: var(--color-primary);
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+        .back-button:hover {
+            background-color: #6C757D;
+        }
+
 
         /* Contenedor de Pasos */
         .purchase-steps-container {
@@ -61,6 +78,7 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center; /* Centrar el botón de volver */
         }
 
         /* Estilos de Pasos */
@@ -68,11 +86,13 @@
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 1px solid #404B55;
+            text-align: left; /* Volver a alinear el contenido del paso a la izquierda */
         }
         .step:last-child {
             border-bottom: none;
             margin-bottom: 0;
             padding-bottom: 0;
+            text-align: center; /* Centrar el botón final de WhatsApp */
         }
         .step h2 {
             font-size: 20px;
@@ -92,8 +112,8 @@
             width: 100%;
             max-width: 300px;
             cursor: pointer;
-            appearance: none; /* Oculta la flecha por defecto en algunos navegadores */
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23E9ECEF%22%20d%3D%22M287%2069.4l-14.9-14.9c-2.3-2.3-4.9-3.4-7.6-3.4-2.7%200-5.3%201.1-7.7%203.4L146.2%20170.8%2029.8%2054.4c-4.7-4.7-12.2-4.7-16.9%200l-14.9%2014.9c-4.7%204.7-4.7%2012.2%200%2016.9l133.5%20133.5c2.3%202.3%204.9%203.4%207.6%203.4s5.3-1.1%207.7-3.4l133.5-133.5c4.7-4.6%204.7-12.2%200-16.9z%22%2F%3E%3C%2Fsvg%3E'); /* Flecha personalizada */
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23E9ECEF%22%20d%3D%22M287%2069.4l-14.9-14.9c-2.3-2.3-4.9-3.4-7.6-3.4-2.7%200-5.3%201.1-7.7%203.4L146.2%20170.8%2029.8%2054.4c-4.7-4.7-12.2-4.7-16.9%200l-14.9%2014.9c-4.7%204.7-4.7%2012.2%200%2016.9l133.5%20133.5c2.3%202.3%204.9%203.4%207.6%203.4s5.3-1.1%207.7-3.4l133.5-133.5c4.7-4.6%204.7-12.2%200-16.9z%22%2F%3E%3C%2Fsvg%3E'); 
             background-repeat: no-repeat;
             background-position: right 10px top 50%;
             background-size: 12px;
@@ -149,6 +169,10 @@
 
     <div class="purchase-steps-container">
 
+        <a href="index.html" class="back-button">
+            <i class="fa-solid fa-arrow-left"></i> Volver a la Lista de Productos
+        </a>
+        
         <div class="product-details" id="product-display"></div>
         
         <div class="step">
@@ -202,8 +226,9 @@
                 PAYMENT_METHODS_DATA = await response.json();
                 
                 populatePaymentDropdown();
-                // 3. Cargar la información inicial (Transferencia por defecto)
-                handlePaymentMethodChange('TRANSFERENCIA'); 
+                // 3. Cargar la información inicial (Transferencia por defecto o la primera opción disponible)
+                const firstMethod = Object.keys(PAYMENT_METHODS_DATA)[0];
+                handlePaymentMethodChange(firstMethod); 
 
                 // 4. Configurar listener para el dropdown
                 document.getElementById('payment-method-select').addEventListener('change', (e) => {
@@ -222,12 +247,10 @@
          */
         function populatePaymentDropdown() {
             const select = document.getElementById('payment-method-select');
-            
-            // Vaciar y añadir las opciones
             select.innerHTML = '';
             for (const key in PAYMENT_METHODS_DATA) {
                 const option = document.createElement('option');
-                option.value = key; // TRANSFERENCIA o USDT
+                option.value = key; 
                 option.textContent = PAYMENT_METHODS_DATA[key].title;
                 select.appendChild(option);
             }
