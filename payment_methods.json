@@ -1,0 +1,20 @@
+{
+  "TRANSFERENCIA": {
+    "title": "Transferencia Bancaria (USD)",
+    "description": "Deberás enviar Dólares a esta cuenta bancaria. Envíanos el comprobante por WhatsApp con el botón de abajo para confirmar tu compra.",
+    "account": {
+      "nombre": "ULTRA TECH S.A.",
+      "cbu": "0123456789012345678901",
+      "alias": "ULTRA.TECH.USD",
+      "banco": "Banco Digital Global"
+    }
+  },
+  "USDT": {
+    "title": "Pago con USDT (Tether)",
+    "description": "Deberás enviar la cantidad exacta de USDT (dólares digitales) a la siguiente dirección de billetera. Envíanos el comprobante por WhatsApp con el botón de abajo.",
+    "account": {
+      "address": "0x5A8B7D2C4E3F5A6B7C8D9E0F1A2B3C4D5E6F7A8B",
+      "network": "TRC20 (Tron)"
+    }
+  }
+}
