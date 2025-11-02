@@ -69,9 +69,34 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
+        /* --- Barra de Leyenda --- */
+        #legend-bar {
+            /* POSICIÓN: ARRIBA */
+            width: 100%; 
+            margin: 0; 
+            padding: 15px; 
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 25px;
+            font-size: 14px;
+            /* LÍNEA DIVISORIA AHORA ESTÁ AQUÍ (abajo de la leyenda) */
+            border-bottom: 1px solid #3B4249; 
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-primary);
+        }
+        .legend-icon {
+            font-size: 1.1em;
+        }
+        /* --- Fin Leyenda --- */
+
         /* Estilos de Pestañas (Tabs) */
         #tabs-container {
-            /* POSICIÓN: ARRIBA */
+            /* POSICIÓN: ABAJO */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -80,8 +105,8 @@
             margin: 0; 
             padding: 10px 5px; 
             flex-wrap: wrap; 
-            /* Línea divisoria entre Tabs y Leyenda */
-            border-bottom: 1px solid #3B4249; 
+            /* SIN borde, usa el de la leyenda */
+            border-bottom: none; 
         }
         .tab-button {
             padding: 12px 25px;
@@ -105,30 +130,6 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
         }
         
-        /* --- Barra de Leyenda --- */
-        #legend-bar {
-            /* POSICIÓN: ABAJO */
-            width: 100%; 
-            margin: 0; 
-            padding: 15px; 
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 25px;
-            font-size: 14px;
-        }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--color-primary);
-        }
-        .legend-icon {
-            font-size: 1.1em;
-        }
-        /* --- Fin Leyenda --- */
-
-
         #loading-message { 
             text-align: center; 
             color: var(--color-primary); 
@@ -245,10 +246,10 @@
     </div>
 
     <div id="header-controls">
-        <div id="tabs-container">
+        <div id="legend-bar">
             </div>
 
-        <div id="legend-bar">
+        <div id="tabs-container">
             </div>
     </div>
     
