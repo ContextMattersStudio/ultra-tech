@@ -10,11 +10,11 @@
     <style>
         /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
         :root {
-            --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
-            --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
-            --color-new-background: #212529; /* Fondo Oscuro */
-            --color-card-background: #2B3035; /* Fondo de la tarjeta (Tabs/Leyenda/Tabla) */
-            --color-white: #FFFFFF; /* Blanco Puro */
+            --color-primary: #E9ECEF; 
+            --color-secondary: #D0AE50; 
+            --color-new-background: #212529; 
+            --color-card-background: #2B3035; 
+            --color-white: #FFFFFF; 
             --color-whatsapp: #25d366; 
             --color-whatsapp-hover: #128c7e; 
             
@@ -34,9 +34,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow-x: hidden; 
         }
 
-        /* Título Principal */
+        /* [Resto de estilos de Título, Leyenda y Tabs sin cambios] */
         .main-title {
             text-align: center;
             margin-bottom: 30px;
@@ -59,7 +60,6 @@
             border-radius: 2px;
         }
 
-        /* --- Barra de Leyenda (AHORA COMPONENTE INDIVIDUAL) --- */
         #legend-bar {
             width: 90%;
             max-width: 900px;
@@ -85,9 +85,7 @@
         .legend-icon {
             font-size: 1.1em;
         }
-        /* --- Fin Leyenda --- */
-
-        /* Estilos de Pestañas (Tabs) (AHORA COMPONENTE INDIVIDUAL) */
+        
         #tabs-container {
             width: 90%;
             max-width: 900px;
@@ -117,9 +115,6 @@
             transition: all 0.3s ease;
             white-space: nowrap;
         }
-        .tab-button:hover {
-            background-color: #3B4249;
-        }
         .tab-button.active {
             background-color: var(--color-secondary); 
             color: var(--color-primary);
@@ -133,47 +128,80 @@
             font-weight: bold; 
         }
         
-        /* Estilos de Tabla */
-        table { 
-            width: 90%; 
+        /* --- Contenedor de Scroll de Tabla --- */
+        #table-wrapper {
+            width: 90%;
             max-width: 900px;
-            margin: 20px auto; 
-            border-collapse: collapse; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            margin: 20px auto;
+            overflow-x: auto; 
             border-radius: 10px;
-            overflow: hidden; 
-            background-color: var(--color-card-background);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
+
+        /* Estilos de Tabla */
         th, td { 
             border: 1px solid #3B4249;
             padding: 18px 20px;
-            text-align: left; 
+            /* Eliminamos white-space: nowrap; de TD para permitir saltos de línea en el texto */
         }
+        
+        /* Regla modificada: THs centrados por defecto */
         th { 
+            text-align: center; 
             background-color: var(--color-secondary); 
             color: var(--color-primary); 
             font-weight: 700; 
             text-transform: uppercase;
             font-size: 15px;
-            white-space: nowrap;
+            white-space: nowrap; /* Mantener encabezados en una línea */
         }
+        
+        table { 
+            width: 100%; 
+            min-width: 600px; 
+            border-collapse: collapse; 
+            overflow: hidden; 
+            background-color: var(--color-card-background);
+        }
+        
+        /* Regla modificada: Columna Producto (TH y TD) alineada a la izquierda */
+        th:first-child, td:first-child { 
+            text-align: left;
+            padding-right: 15px;
+            /* Eliminación del borde redundante. El borde ya lo maneja la regla genérica 'th, td' */
+            border: 1px solid #3B4249; 
+        }
+        
+        /* CORRECCIÓN: Evitar doble borde y permitir alineación interna de producto */
+        td:first-child { 
+             /* Se mantiene display:flex para alinear texto e ícono, pero con el ajuste de borde ya no hay problema */
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Regla modificada: Columna Producto (TD) alineada a la izquierda */
+        td:first-child > * {
+            display: inline;
+        }
+        
+        td:last-child {
+            text-align: center;
+        }
+        
         tr:nth-child(even) { background-color: var(--color-card-background); } 
         tr:nth-child(odd) { background-color: #30373D; } 
         tr:hover { background-color: #404B55; }
         
         .buy-button {
-            display: inline-block;
             padding: 8px 15px;
             background-color: var(--color-secondary);
             color: var(--color-primary);
-            border: none;
             border-radius: 4px;
             font-size: 14px;
             font-weight: 600;
-            cursor: pointer;
             text-decoration: none;
             transition: background-color 0.2s ease, transform 0.1s ease;
-            white-space: nowrap;
+            display: inline-block;
         }
         .buy-button:hover {
             background-color: #B89C40;
@@ -183,8 +211,8 @@
             position: fixed;
             width: 70px;
             height: 70px;
-            bottom: 30px; 
-            right: 30px; 
+            bottom: 20px; 
+            right: 20px; 
             background-color: var(--color-whatsapp); 
             color: var(--color-white);
             border-radius: 50%;
@@ -199,38 +227,42 @@
             text-decoration: none;
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
-        .whatsapp-float .fa-whatsapp {
-            font-size: 28px;
-            margin-bottom: 2px;
-        }
-        .whatsapp-float span {
-            display: block;
-            line-height: 1.1;
-        }
-        .whatsapp-float:hover {
-            background-color: var(--color-whatsapp-hover);
-            transform: scale(1.08);
-        }
+        .whatsapp-float .fa-whatsapp { font-size: 28px; margin-bottom: 2px; }
+        .whatsapp-float span { display: block; line-height: 1.1; }
+        .whatsapp-float:hover { background-color: var(--color-whatsapp-hover); transform: scale(1.08); }
+        .status-icon { margin-left: 8px; font-size: 1em; display: inline-block; }
+        .status-hot { color: var(--color-hot); }
+        .status-new { color: var(--color-new); transform: rotate(-30deg); }
+        .status-offers { color: var(--color-offers); }
+        
+        
+        /* ========================================================= */
+        /* === REGION DE ESTILOS RESPONSIVE (SOLO PARA MÓVILES) === */
+        /* ========================================================= */
 
-        /* Estilos para los íconos de Status */
-        .status-icon {
-            margin-left: 8px;
-            font-size: 1em;
-            display: inline-block;
-        }
-        .status-hot {
-            color: var(--color-hot); 
-        }
-        .status-new {
-            color: var(--color-new);
-            transform: rotate(-30deg);
-        }
-        .status-offers {
-            color: var(--color-offers);
-        }
-        td:first-child {
-            display: flex;
-            align-items: center;
+        @media (max-width: 768px) {
+            
+            /* Reducir el ancho de la columna de producto (TH y TD) */
+            th:first-child, td:first-child {
+                width: 70%; /* Ocupa el 70% del ancho disponible para la columna Producto */
+                min-width: 150px; /* Asegura un ancho mínimo para que sea funcional */
+                max-width: 250px;
+            }
+            
+            /* Permitir que el texto de los productos baje hasta 3 líneas */
+            td:first-child {
+                display: -webkit-box; /* Habilita el modo caja flexible */
+                -webkit-line-clamp: 3; /* Limita a 3 líneas */
+                -webkit-box-orient: vertical; /* Necesario para la limitación de líneas */
+                overflow: hidden; /* Oculta el texto restante */
+                text-overflow: ellipsis; /* Añade puntos suspensivos */
+                white-space: normal !important; /* Anula el nowrap global de los TD, permitiendo saltos de línea */
+            }
+            
+            /* Ajuste de padding en móvil */
+            th, td {
+                padding: 12px 10px;
+            }
         }
     </style>
 </head>
@@ -251,8 +283,11 @@
     
     <div id="loading-message">Cargando datos, por favor espere...</div>
     
-    <div id="excel-data">
-        </div>
+    <div id="table-wrapper">
+        <div id="excel-data">
+            </div>
+    </div>
+
 
     <a 
         href="https://wa.me/5492281409457?text=Hola,%20vi%20la%20lista%20de%20productos%20y%20quiero%20hacer%20una%20consulta." 
@@ -290,7 +325,6 @@
 
                 buildTabs(activeTabs);
                 
-                // Carga inicial: Pestaña "TODO" si está definida, o la primera activa.
                 const todoButton = document.querySelector('.tab-button[data-file-name="TODO"]');
                 
                 if (todoButton) {
@@ -329,19 +363,16 @@
             const container = document.getElementById('tabs-container');
             container.innerHTML = ''; 
 
-            // 1. Añadir el botón "TODO"
             const todoButton = document.createElement('button');
             todoButton.classList.add('tab-button');
             todoButton.textContent = "TODO";
-            todoButton.dataset.fileName = "TODO"; // Usamos un nombre de archivo especial para distinguirlo
+            todoButton.dataset.fileName = "TODO";
 
             todoButton.addEventListener('click', () => {
                 loadAllExcelData(tabs);
             });
             container.appendChild(todoButton);
 
-
-            // 2. Añadir las pestañas individuales
             tabs.forEach(tab => {
                 const button = document.createElement('button');
                 button.classList.add('tab-button');
@@ -369,79 +400,10 @@
             });
         }
 
-        /**
-         * NUEVA FUNCIÓN: Combina y muestra datos de todos los excels activos.
-         */
-        async function loadAllExcelData(activeTabs) {
-            const dataContainer = document.getElementById('excel-data');
-            const loadingMessage = document.getElementById('loading-message');
-            const TAB_NAME = "TODO";
-
-            loadingMessage.textContent = `Cargando todos los productos...`;
-            loadingMessage.style.display = 'block';
-            dataContainer.innerHTML = '';
-            updateActiveTab(TAB_NAME);
-
-            let allFilteredData = [];
-
-            try {
-                // Descargar y procesar cada archivo Excel activo
-                const fetchPromises = activeTabs.map(async (tab) => {
-                    const fullFileName = tab.file_full_name;
-                    
-                    try {
-                        const response = await fetch(fullFileName);
-                        if (!response.ok) {
-                            console.warn(`[TODO] No se pudo cargar ${fullFileName} (Error ${response.status}). Se omitirá.`);
-                            return []; // Devolver un array vacío si falla la carga
-                        }
-
-                        const arrayBuffer = await response.arrayBuffer();
-                        const data = new Uint8Array(arrayBuffer);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const json = XLSX.utils.sheet_to_json(worksheet);
-
-                        // Aplicar el mismo filtro de filas vacías
-                        return json.filter(row => {
-                            const pt = row['Precio Transferencia'];
-                            const pu = row['Precio USDT'];
-                            return (pt !== undefined && String(pt).trim() !== '') || (pu !== undefined && String(pu).trim() !== '');
-                        });
-                        
-                    } catch (e) {
-                        console.error(`Error al procesar ${fullFileName}:`, e);
-                        return [];
-                    }
-                });
-
-                // Esperar a que todos los archivos se procesen
-                const results = await Promise.all(fetchPromises);
-                allFilteredData = results.flat(); // Combina todos los arrays de datos en uno solo
-
-                if (allFilteredData.length === 0) {
-                    dataContainer.innerHTML = `<p style="color: var(--color-secondary); text-align: center;">No se encontraron productos en ninguna categoría activa.</p>`;
-                    return;
-                }
-
-                // Renderizar la tabla combinada
-                renderTable(allFilteredData, dataContainer);
-
-
-            } catch (error) {
-                console.error("Error al cargar la lista TODO:", error);
-                dataContainer.innerHTML = `<p style="color: red; text-align: center;">Error al cargar la lista TODO: ${error.message}</p>`;
-            } finally {
-                loadingMessage.style.display = 'none';
-            }
-        }
-
-        /**
-         * Función para renderizar una tabla (Usada tanto por tabs individuales como por TODO)
-         */
         function renderTable(filteredData, dataContainer) {
             let tableHTML = '<table>';
-            tableHTML += '<thead><tr><th>Producto</th><th>Precio Transferencia</th><th>Precio USDT</th><th>Comprar</th></tr></thead>';
+            // Encabezados con salto de línea
+            tableHTML += '<thead><tr><th>Producto</th><th>Precio<br>Transferencia</th><th>Precio<br>USDT</th><th>Comprar</th></tr></thead>';
             tableHTML += '<tbody>';
 
             const STATUS_MAP = {
@@ -494,9 +456,67 @@
         }
 
 
-        /**
-         * Carga de datos de una sola pestaña (Modificada para usar renderTable)
-         */
+        async function loadAllExcelData(activeTabs) {
+            const dataContainer = document.getElementById('excel-data');
+            const loadingMessage = document.getElementById('loading-message');
+            const TAB_NAME = "TODO";
+
+            loadingMessage.textContent = `Cargando todos los productos...`;
+            loadingMessage.style.display = 'block';
+            dataContainer.innerHTML = '';
+            updateActiveTab(TAB_NAME);
+
+            let allFilteredData = [];
+
+            try {
+                const fetchPromises = activeTabs.map(async (tab) => {
+                    const fullFileName = tab.file_full_name;
+                    
+                    try {
+                        const response = await fetch(fullFileName);
+                        if (!response.ok) {
+                            console.warn(`[TODO] No se pudo cargar ${fullFileName} (Error ${response.status}). Se omitirá.`);
+                            return [];
+                        }
+
+                        const arrayBuffer = await response.arrayBuffer();
+                        const data = new Uint8Array(arrayBuffer);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const json = XLSX.utils.sheet_to_json(worksheet);
+
+                        return json.filter(row => {
+                            const pt = row['Precio Transferencia'];
+                            const pu = row['Precio USDT'];
+                            return (pt !== undefined && String(pt).trim() !== '') || (pu !== undefined && String(pu).trim() !== '');
+                        });
+                        
+                    } catch (e) {
+                        console.error(`Error al procesar ${fullFileName}:`, e);
+                        return [];
+                    }
+                });
+
+                const results = await Promise.all(fetchPromises);
+                allFilteredData = results.flat();
+
+                if (allFilteredData.length === 0) {
+                    dataContainer.innerHTML = `<p style="color: var(--color-secondary); text-align: center;">No se encontraron productos en ninguna categoría activa.</p>`;
+                    return;
+                }
+
+                renderTable(allFilteredData, dataContainer);
+
+
+            } catch (error) {
+                console.error("Error al cargar la lista TODO:", error);
+                dataContainer.innerHTML = `<p style="color: red; text-align: center;">Error al cargar la lista TODO: ${error.message}</p>`;
+            } finally {
+                loadingMessage.style.display = 'none';
+            }
+        }
+
+
         async function loadExcelData(fullFileName, tabName) {
             const dataContainer = document.getElementById('excel-data');
             const loadingMessage = document.getElementById('loading-message');
@@ -541,7 +561,6 @@
                     return;
                 }
 
-                // Usar la nueva función de renderizado
                 renderTable(filteredData, dataContainer);
 
             } catch (error) {
