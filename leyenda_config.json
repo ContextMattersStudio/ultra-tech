@@ -1,0 +1,20 @@
+[
+  {
+    "status_key": "HOT",
+    "icon": "fa-fire",
+    "color_var": "--color-hot",
+    "label": "🔥 Más Vendidos"
+  },
+  {
+    "status_key": "OFFERS",
+    "icon": "fa-tags",
+    "color_var": "--color-offers",
+    "label": "🏷️ Ofertas Especiales"
+  },
+  {
+    "status_key": "NEW",
+    "icon": "fa-rocket",
+    "color_var": "--color-new",
+    "label": "🚀 Recién Llegados"
+  }
+]
