@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos y Precios</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+        /* Estilos Generales */
+        body { font-family: sans-serif; margin: 20px; padding-bottom: 80px; }
+        h1 { color: #333; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px 15px; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #007bff; 
+            color: white; 
+            font-weight: bold; 
+        }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f1f1f1; }
+        
+        /* Estilos del Botón Flotante de WhatsApp */
+        .whatsapp-float {
+            position: fixed;
+            width: 70px; /* Un poco más grande para el texto */
+            height: 70px;
+            bottom: 30px; 
+            right: 30px; 
+            background-color: #25d366; 
+            color: #FFF;
+            border-radius: 50%; /* Redondo */
+            text-align: center;
+            font-size: 14px; /* Tamaño de fuente para el texto */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            z-index: 1000; /* Asegura que esté al frente */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .whatsapp-float .fa-whatsapp {
+            font-size: 28px;
+            margin-bottom: 2px;
+        }
+        
+        .whatsapp-float span {
+            display: block;
+            line-height: 1.1;
+        }
+
+        .whatsapp-float:hover {
+            background-color: #128c7e;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Cargar Lista de Productos y Precios</h1>
+
+    <p>Selecciona un archivo Excel (.xlsx/.xls) con las columnas: **Producto**, **Precio Transferencia**, **Precio USDT**.</p>
+    <input type="file" id="excel-file" accept=".xlsx, .xls">
+
+    <div id="excel-data">
+        </div>
+
+    <a 
+        href="https://wa.me/5492281409457?text=Hola,%20vi%20la%20lista%20de%20productos%20y%20me%20interesa%20consultar%20/%20comprar." 
+        class="whatsapp-float" 
+        target="_blank"
+    >
+        <i class="fa-brands fa-whatsapp"></i>
+        <span>
