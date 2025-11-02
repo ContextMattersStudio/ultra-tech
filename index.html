@@ -30,30 +30,26 @@
             align-items: center; /* Centra el contenido principal */
         }
 
-        /* Estilos del Logo */
-        .logo-container {
+        /* Estilos del Título Principal */
+        .main-title {
             text-align: center;
             margin-bottom: 30px;
+            padding: 0 20px;
             width: 100%;
         }
-        .logo-container img {
-            max-width: 180px; /* Ajusta el tamaño del logo */
-            height: auto;
-            margin-bottom: 10px;
-        }
-        .logo-container h1 {
+        .main-title h1 {
             color: var(--color-primary);
             font-size: 36px;
             margin: 0;
             padding: 0;
-            border-bottom: none; /* Eliminar la línea de abajo */
+            border-bottom: none;
         }
-        .logo-container .underline {
+        .main-title .underline {
             display: block;
-            width: 120px; /* Ancho de la línea del logo */
+            width: 120px;
             height: 3px;
             background-color: var(--color-secondary);
-            margin: 5px auto 0 auto; /* Centrar y espaciar */
+            margin: 5px auto 0 auto;
             border-radius: 2px;
         }
 
@@ -67,28 +63,28 @@
         /* Estilos de Tabla */
         table { 
             width: 90%; 
-            max-width: 900px; /* Ancho máximo de la tabla */
+            max-width: 900px;
             margin: 20px auto; 
             border-collapse: collapse; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); /* Sombra más pronunciada */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             border-radius: 10px;
             overflow: hidden; 
         }
         th, td { 
             border: 1px solid #e0e0e0; 
-            padding: 18px 20px; /* Más padding para legibilidad */
+            padding: 18px 20px;
             text-align: left; 
         }
         th { 
-            background-color: var(--color-primary); /* Encabezado oscuro */
+            background-color: var(--color-primary);
             color: var(--color-white); 
             font-weight: 600; 
             text-transform: uppercase;
             font-size: 15px;
         }
-        tr:nth-child(even) { background-color: var(--color-background); } /* Filas pares con color de fondo */
-        tr:nth-child(odd) { background-color: var(--color-white); } /* Filas impares blancas */
-        tr:hover { background-color: #e6e6e6; } /* Hover más suave */
+        tr:nth-child(even) { background-color: var(--color-background); }
+        tr:nth-child(odd) { background-color: var(--color-white); }
+        tr:hover { background-color: #e6e6e6; }
         
         /* Estilos del Botón Flotante de WhatsApp */
         .whatsapp-float {
@@ -102,7 +98,7 @@
             border-radius: 50%;
             text-align: center;
             font-size: 14px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Sombra más profunda */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
             z-index: 1000;
             display: flex;
             flex-direction: column;
@@ -121,14 +117,13 @@
         }
         .whatsapp-float:hover {
             background-color: var(--color-whatsapp-hover);
-            transform: scale(1.08); /* Efecto de crecimiento al pasar el mouse */
+            transform: scale(1.08);
         }
     </style>
 </head>
 <body>
 
-    <div class="logo-container">
-        <img src="ultra-tech-logo.png" alt="Ultra Tech Logo">
+    <div class="main-title">
         <h1>ULTRA TECH</h1>
         <span class="underline"></span>
     </div>
@@ -136,7 +131,7 @@
     <div id="loading-message">Cargando datos del archivo Excel, por favor espere...</div>
     
     <div id="excel-data">
-        </div>
+    </div>
 
     <a 
         href="https://wa.me/5492281409457?text=Hola,%20vi%20la%20lista%20de%20productos%20y%20me%20interesa%20consultar%20/%20comprar." 
@@ -150,7 +145,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', loadExcelAutomatically);
 
-        const EXCEL_FILE_NAME = 'CELULARES_ULTRA_STORE.xlsx'; // Asegúrate que la extensión sea minúscula
+        const EXCEL_FILE_NAME = 'CELULARES_ULTRA_STORE.xlsx';
 
         async function loadExcelAutomatically() {
             const dataContainer = document.getElementById('excel-data');
