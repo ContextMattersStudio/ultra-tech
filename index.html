@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     
     <style>
-        /* Paleta de Colores ULTRA TECH (Modificada para Tema Oscuro) */
+        /* Paleta de Colores ULTRA TECH */
         :root {
             --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
             --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
@@ -24,14 +24,14 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
             padding: 30px 0 80px 0;
-            background-color: var(--color-new-background); /* Fondo oscuro aplicado aquí */
-            color: var(--color-primary); /* Texto principal claro */
+            background-color: var(--color-new-background);
+            color: var(--color-primary);
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Estilos del Título Principal */
+        /* Título Principal */
         .main-title {
             text-align: center;
             margin-bottom: 30px;
@@ -39,7 +39,7 @@
             width: 100%;
         }
         .main-title h1 {
-            color: var(--color-primary); /* Título en color claro */
+            color: var(--color-primary); 
             font-size: 36px;
             margin: 0;
             padding: 0;
@@ -49,7 +49,7 @@
             display: block;
             width: 120px;
             height: 3px;
-            background-color: var(--color-secondary); /* Acento dorado */
+            background-color: var(--color-secondary);
             margin: 5px auto 0 auto;
             border-radius: 2px;
         }
@@ -64,7 +64,7 @@
             max-width: 900px;
             margin-bottom: 30px;
             padding: 5px;
-            background-color: var(--color-card-background); /* Fondo de la barra de pestañas */
+            background-color: var(--color-card-background);
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             flex-wrap: wrap; 
@@ -83,10 +83,10 @@
             white-space: nowrap;
         }
         .tab-button:hover {
-            background-color: #3B4249; /* Gris más claro al pasar el mouse */
+            background-color: #3B4249;
         }
         .tab-button.active {
-            background-color: var(--color-secondary); /* Color de acento para la pestaña activa */
+            background-color: var(--color-secondary); 
             color: var(--color-primary);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
         }
@@ -108,24 +108,44 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             border-radius: 10px;
             overflow: hidden; 
-            background-color: var(--color-card-background); /* Fondo de la tabla */
+            background-color: var(--color-card-background);
         }
         th, td { 
-            border: 1px solid #3B4249; /* Líneas de tabla oscuras */
+            border: 1px solid #3B4249;
             padding: 18px 20px;
             text-align: left; 
         }
         th { 
-            background-color: var(--color-secondary); /* Encabezado en color de acento */
+            background-color: var(--color-secondary); 
             color: var(--color-primary); 
             font-weight: 700; 
             text-transform: uppercase;
             font-size: 15px;
+            white-space: nowrap;
         }
-        tr:nth-child(even) { background-color: var(--color-card-background); } /* Filas pares */
-        tr:nth-child(odd) { background-color: #30373D; } /* Filas impares ligeramente más oscuras */
-        tr:hover { background-color: #404B55; } /* Hover más visible */
+        tr:nth-child(even) { background-color: var(--color-card-background); } 
+        tr:nth-child(odd) { background-color: #30373D; } 
+        tr:hover { background-color: #404B55; }
         
+        /* Estilo del Botón Comprar en la Tabla */
+        .buy-button {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            white-space: nowrap;
+        }
+        .buy-button:hover {
+            background-color: #B89C40; /* Tono de dorado un poco más oscuro */
+            transform: translateY(-1px);
+        }
         /* Estilos del Botón Flotante de WhatsApp (Sin cambios) */
         .whatsapp-float {
             position: fixed;
@@ -293,19 +313,30 @@
                 }
 
                 let tableHTML = '<table>';
-                tableHTML += '<thead><tr><th>Producto</th><th>Precio Transferencia</th><th>Precio USDT</th></tr></thead>';
+                // AÑADIR NUEVO ENCABEZADO: COMPRAR
+                tableHTML += '<thead><tr><th>Producto</th><th>Precio Transferencia</th><th>Precio USDT</th><th>Comprar</th></tr></thead>';
                 tableHTML += '<tbody>';
 
                 filteredData.forEach(row => {
                     const producto = String(row['Producto'] || '—');
                     const precioTransferencia = String(row['Precio Transferencia'] || '—');
                     const precioUSDT = String(row['Precio USDT'] || '—');
+                    
+                    // Codificar los parámetros de la URL
+                    const urlProduct = encodeURIComponent(producto);
+                    const urlPriceT = encodeURIComponent(precioTransferencia);
+                    const urlPriceU = encodeURIComponent(precioUSDT);
+                    
+                    const buyLink = `purchase.html?product=${urlProduct}&priceT=${urlPriceT}&priceU=${urlPriceU}`;
 
                     tableHTML += `
                         <tr>
                             <td>${producto}</td>
                             <td>${precioTransferencia}</td>
                             <td>${precioUSDT}</td>
+                            <td>
+                                <a href="${buyLink}" class="buy-button">Comprar</a>
+                            </td>
                         </tr>
                     `;
                 });
