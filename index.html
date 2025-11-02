@@ -3,56 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Productos Ultra Store</title>
+    <title>Lista de Productos Ultra Tech</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     
     <style>
+        /* Paleta de Colores ULTRA TECH */
+        :root {
+            --color-primary: #343A40; /* Gris muy oscuro */
+            --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
+            --color-background: #F8F8F8; /* Fondo claro, casi blanco */
+            --color-white: #FFFFFF; /* Blanco Puro */
+            --color-whatsapp: #25d366; /* Verde WhatsApp */
+            --color-whatsapp-hover: #128c7e; /* Verde WhatsApp más oscuro */
+        }
+
         /* Estilos Generales */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
-            padding: 20px 0 80px 0;
-            background-color: #f4f7f6; 
+            padding: 30px 0 80px 0;
+            background-color: var(--color-background); 
+            color: var(--color-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centra el contenido principal */
         }
-        h1 { 
-            color: #007bff; 
-            border-bottom: 2px solid #007bff; 
-            padding-bottom: 10px; 
-            margin-bottom: 30px; 
-            text-align: center; 
-            font-size: 28px;
+
+        /* Estilos del Logo */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
         }
+        .logo-container img {
+            max-width: 180px; /* Ajusta el tamaño del logo */
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .logo-container h1 {
+            color: var(--color-primary);
+            font-size: 36px;
+            margin: 0;
+            padding: 0;
+            border-bottom: none; /* Eliminar la línea de abajo */
+        }
+        .logo-container .underline {
+            display: block;
+            width: 120px; /* Ancho de la línea del logo */
+            height: 3px;
+            background-color: var(--color-secondary);
+            margin: 5px auto 0 auto; /* Centrar y espaciar */
+            border-radius: 2px;
+        }
+
         #loading-message { 
             text-align: center; 
-            color: #555; 
+            color: var(--color-primary); 
             padding: 20px; 
             font-weight: bold; 
         }
         
-        /* Estilos de Tabla ("Forma Linda") */
+        /* Estilos de Tabla */
         table { 
             width: 90%; 
-            max-width: 800px;
+            max-width: 900px; /* Ancho máximo de la tabla */
             margin: 20px auto; 
             border-collapse: collapse; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); /* Sombra más pronunciada */
+            border-radius: 10px;
             overflow: hidden; 
         }
         th, td { 
             border: 1px solid #e0e0e0; 
-            padding: 15px; 
+            padding: 18px 20px; /* Más padding para legibilidad */
             text-align: left; 
         }
         th { 
-            background-color: #007bff; 
-            color: white; 
+            background-color: var(--color-primary); /* Encabezado oscuro */
+            color: var(--color-white); 
             font-weight: 600; 
             text-transform: uppercase;
+            font-size: 15px;
         }
-        tr:nth-child(even) { background-color: #f8f8ff; } 
-        tr:hover { background-color: #e6f7ff; } 
+        tr:nth-child(even) { background-color: var(--color-background); } /* Filas pares con color de fondo */
+        tr:nth-child(odd) { background-color: var(--color-white); } /* Filas impares blancas */
+        tr:hover { background-color: #e6e6e6; } /* Hover más suave */
         
         /* Estilos del Botón Flotante de WhatsApp */
         .whatsapp-float {
@@ -61,19 +97,19 @@
             height: 70px;
             bottom: 30px; 
             right: 30px; 
-            background-color: #25d366; 
-            color: #FFF;
+            background-color: var(--color-whatsapp); 
+            color: var(--color-white);
             border-radius: 50%;
             text-align: center;
             font-size: 14px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Sombra más profunda */
             z-index: 1000;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-decoration: none;
-            transition: background-color 0.3s, transform 0.3s;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
         .whatsapp-float .fa-whatsapp {
             font-size: 28px;
@@ -84,14 +120,18 @@
             line-height: 1.1;
         }
         .whatsapp-float:hover {
-            background-color: #128c7e;
-            transform: scale(1.05);
+            background-color: var(--color-whatsapp-hover);
+            transform: scale(1.08); /* Efecto de crecimiento al pasar el mouse */
         }
     </style>
 </head>
 <body>
 
-    <h1>Lista de Productos Ultra Store</h1>
+    <div class="logo-container">
+        <img src="ultra-tech-logo.png" alt="Ultra Tech Logo">
+        <h1>ULTRA TECH</h1>
+        <span class="underline"></span>
+    </div>
 
     <div id="loading-message">Cargando datos del archivo Excel, por favor espere...</div>
     
@@ -110,7 +150,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', loadExcelAutomatically);
 
-        const EXCEL_FILE_NAME = 'CELULARES_ULTRA_STORE.xlsx';
+        const EXCEL_FILE_NAME = 'CELULARES_ULTRA_STORE.xlsx'; // Asegúrate que la extensión sea minúscula
 
         async function loadExcelAutomatically() {
             const dataContainer = document.getElementById('excel-data');
@@ -129,20 +169,12 @@
                 const sheetName = workbook.SheetNames[0]; 
                 const worksheet = workbook.Sheets[sheetName];
 
-                // Convierte la hoja a formato JSON
                 const json = XLSX.utils.sheet_to_json(worksheet);
                 
-                // ----------------------------------------------------
-                // NUEVA LÓGICA DE FILTRADO
-                // ----------------------------------------------------
                 const filteredData = json.filter(row => {
-                    const producto = row['Producto'];
                     const precioTransferencia = row['Precio Transferencia'];
                     const precioUSDT = row['Precio USDT'];
 
-                    // 1. Ignorar filas si NO tienen valores de precio.
-                    // Si ambos campos de precio (Transferencia y USDT) están vacíos o son 0/null/undefined,
-                    // asumimos que es una fila de encabezado de grupo o una fila vacía y la ignoramos.
                     return (
                         precioTransferencia !== undefined && 
                         precioTransferencia !== null && 
@@ -153,20 +185,17 @@
                         String(precioUSDT).trim() !== ''
                     );
                 });
-                // ----------------------------------------------------
 
                 if (filteredData.length === 0) {
                     dataContainer.innerHTML = '<p style="color: red; text-align: center;">El archivo Excel no contiene datos de productos válidos para mostrar.</p>';
                     return;
                 }
 
-                // Genera la tabla HTML con los datos filtrados
                 let tableHTML = '<table>';
                 tableHTML += '<thead><tr><th>Producto</th><th>Precio Transferencia</th><th>Precio USDT</th></tr></thead>';
                 tableHTML += '<tbody>';
 
                 filteredData.forEach(row => {
-                    // Usamos String(value) || '—' para mostrar un guion si el campo está vacío en el Excel
                     const producto = String(row['Producto'] || '—');
                     const precioTransferencia = String(row['Precio Transferencia'] || '—');
                     const precioUSDT = String(row['Precio USDT'] || '—');
