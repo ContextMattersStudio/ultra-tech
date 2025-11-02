@@ -5,23 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Productos Ultra Tech</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <style>
         /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
         :root {
-            --color-primary: #E9ECEF; 
-            --color-secondary: #D0AE50; 
-            --color-new-background: #212529; 
-            --color-card-background: #2B3035; 
-            --color-white: #FFFFFF; 
-            --color-whatsapp: #25d366; 
-            --color-whatsapp-hover: #128c7e; 
-            
-            /* Colores de Estado */
-            --color-hot: #FF4500; 
-            --color-new: #1E90FF; 
-            --color-offers: #D0AE50; 
+            --color-primary: #E9ECEF;
+            --color-secondary: #D0AE50;
+            --color-new-background: #212529;
+            --color-card-background: #2B3035;
+            --color-white: #FFFFFF;
+            --color-whatsapp: #25d366;
+            --color-whatsapp-hover: #128c7e;
+            --color-hot: #FF4500;
+            --color-new: #1E90FF;
+            --color-offers: #D0AE50;
         }
 
         /* Estilos Generales */
@@ -37,7 +35,7 @@
             overflow-x: hidden; 
         }
 
-        /* [Resto de estilos de Título, Leyenda y Tabs sin cambios] */
+        /* Título Principal */
         .main-title {
             text-align: center;
             margin-bottom: 30px;
@@ -65,11 +63,9 @@
             max-width: 900px;
             margin-bottom: 20px; 
             padding: 15px; 
-            
             background-color: var(--color-card-background); 
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-            
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
@@ -82,20 +78,16 @@
             gap: 8px;
             color: var(--color-primary);
         }
-        .legend-icon {
-            font-size: 1.1em;
-        }
+        .legend-icon { font-size: 1.1em; }
         
         #tabs-container {
             width: 90%;
             max-width: 900px;
             margin-bottom: 30px; 
             padding: 5px; 
-            
             background-color: var(--color-card-background); 
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-
             display: flex;
             justify-content: center;
             align-items: center;
@@ -128,7 +120,6 @@
             font-weight: bold; 
         }
         
-        /* --- Contenedor de Scroll de Tabla --- */
         #table-wrapper {
             width: 90%;
             max-width: 900px;
@@ -138,14 +129,10 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
-        /* Estilos de Tabla */
         th, td { 
             border: 1px solid #3B4249;
             padding: 18px 20px;
-            /* Eliminamos white-space: nowrap; de TD para permitir saltos de línea en el texto */
         }
-        
-        /* Regla modificada: THs centrados por defecto */
         th { 
             text-align: center; 
             background-color: var(--color-secondary); 
@@ -153,9 +140,8 @@
             font-weight: 700; 
             text-transform: uppercase;
             font-size: 15px;
-            white-space: nowrap; /* Mantener encabezados en una línea */
+            white-space: nowrap;
         }
-        
         table { 
             width: 100%; 
             min-width: 600px; 
@@ -164,33 +150,39 @@
             background-color: var(--color-card-background);
         }
         
-        /* Regla modificada: Columna Producto (TH y TD) alineada a la izquierda */
         th:first-child, td:first-child { 
             text-align: left;
             padding-right: 15px;
-            /* Eliminación del borde redundante. El borde ya lo maneja la regla genérica 'th, td' */
             border: 1px solid #3B4249; 
         }
-        
-        /* CORRECCIÓN: Evitar doble borde y permitir alineación interna de producto */
         td:first-child { 
-             /* Se mantiene display:flex para alinear texto e ícono, pero con el ajuste de borde ya no hay problema */
             display: flex;
             align-items: center;
         }
-        
-        /* Regla modificada: Columna Producto (TD) alineada a la izquierda */
-        td:first-child > * {
-            display: inline;
+        th:first-child, td:first-child { 
+            text-align: left;
+            padding-right: 15px;
+            border: 1px solid #3B4249; 
         }
         
-        td:last-child {
-            text-align: center;
+        @media (max-width: 768px) {
+            th:first-child, td:first-child {
+                width: 70%;
+                min-width: 150px;
+                max-width: 250px;
+            }
+            td:first-child { 
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: normal !important;
+            }
+            th, td {
+                padding: 12px 10px;
+            }
         }
-        
-        tr:nth-child(even) { background-color: var(--color-card-background); } 
-        tr:nth-child(odd) { background-color: #30373D; } 
-        tr:hover { background-color: #404B55; }
         
         .buy-button {
             padding: 8px 15px;
@@ -207,63 +199,40 @@
             background-color: #B89C40;
             transform: translateY(-1px);
         }
+        
+        /* ESTILOS DEL BOTÓN FLOTANTE: AJUSTADO PARA SER SOLO UN ÍCONO */
         .whatsapp-float {
             position: fixed;
-            width: 70px;
-            height: 70px;
-            bottom: 20px; 
-            right: 20px; 
+            /* Se reducen el ancho y alto a un tamaño de ícono estándar */
+            width: 55px; 
+            height: 55px;
+            bottom: 25px; /* Ajuste la posición */
+            right: 25px; 
             background-color: var(--color-whatsapp); 
             color: var(--color-white);
             border-radius: 50%;
             text-align: center;
-            font-size: 14px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
             z-index: 1000;
+            /* Flexbox ahora solo centra el ícono, ya no necesita columna */
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             text-decoration: none;
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
-        .whatsapp-float .fa-whatsapp { font-size: 28px; margin-bottom: 2px; }
-        .whatsapp-float span { display: block; line-height: 1.1; }
+        .whatsapp-float .fa-whatsapp { 
+            /* Se hace el ícono un poco más grande ya que es el único elemento */
+            font-size: 32px; 
+            margin: 0;
+        }
+        /* ELIMINADA: La regla .whatsapp-float span ya no es necesaria */
         .whatsapp-float:hover { background-color: var(--color-whatsapp-hover); transform: scale(1.08); }
+        
         .status-icon { margin-left: 8px; font-size: 1em; display: inline-block; }
         .status-hot { color: var(--color-hot); }
         .status-new { color: var(--color-new); transform: rotate(-30deg); }
         .status-offers { color: var(--color-offers); }
-        
-        
-        /* ========================================================= */
-        /* === REGION DE ESTILOS RESPONSIVE (SOLO PARA MÓVILES) === */
-        /* ========================================================= */
-
-        @media (max-width: 768px) {
-            
-            /* Reducir el ancho de la columna de producto (TH y TD) */
-            th:first-child, td:first-child {
-                width: 70%; /* Ocupa el 70% del ancho disponible para la columna Producto */
-                min-width: 150px; /* Asegura un ancho mínimo para que sea funcional */
-                max-width: 250px;
-            }
-            
-            /* Permitir que el texto de los productos baje hasta 3 líneas */
-            td:first-child {
-                display: -webkit-box; /* Habilita el modo caja flexible */
-                -webkit-line-clamp: 3; /* Limita a 3 líneas */
-                -webkit-box-orient: vertical; /* Necesario para la limitación de líneas */
-                overflow: hidden; /* Oculta el texto restante */
-                text-overflow: ellipsis; /* Añade puntos suspensivos */
-                white-space: normal !important; /* Anula el nowrap global de los TD, permitiendo saltos de línea */
-            }
-            
-            /* Ajuste de padding en móvil */
-            th, td {
-                padding: 12px 10px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -290,13 +259,13 @@
 
 
     <a 
-        href="https://wa.me/5492281409457?text=Hola,%20vi%20la%20lista%20de%20productos%20y%20quiero%20hacer%20una%20consulta." 
+        href="#" 
         class="whatsapp-float" 
+        id="contact-whatsapp-float"
         target="_blank"
     >
         <i class="fa-brands fa-whatsapp"></i>
-        <span>Contacto</span>
-    </a>
+        </a>
 
     <script>
         document.addEventListener('DOMContentLoaded', initApp);
@@ -304,9 +273,22 @@
         let configData = []; 
         let legendData = []; 
         let currentActiveTab = null;
+        let CONTACT_PHONE = ''; // Variable para almacenar el número
 
         async function initApp() {
             try {
+                // 1. Cargar Configuración de Contacto
+                const contactResponse = await fetch('contact_info.json');
+                if (!contactResponse.ok) throw new Error(`Error ${contactResponse.status}: No se pudo cargar el archivo de contacto (contact_info.json).`);
+                const contactData = await contactResponse.json();
+                CONTACT_PHONE = contactData.phone;
+                
+                // Actualizar el botón flotante de Contacto
+                const whatsappFloat = document.getElementById('contact-whatsapp-float');
+                whatsappFloat.href = `https://wa.me/${CONTACT_PHONE}?text=Hola,%20vi%20la%20lista%20de%20productos%20y%20quiero%20hacer%20una%20consulta.`;
+
+
+                // 2. Cargar Configuración de Pestañas y Leyenda (Misma lógica)
                 const configResponse = await fetch('config.json');
                 if (!configResponse.ok) throw new Error(`Error ${configResponse.status}: No se pudo cargar el archivo de configuración (config.json).`);
                 configData = await configResponse.json();
@@ -402,7 +384,6 @@
 
         function renderTable(filteredData, dataContainer) {
             let tableHTML = '<table>';
-            // Encabezados con salto de línea
             tableHTML += '<thead><tr><th>Producto</th><th>Precio<br>Transferencia</th><th>Precio<br>USDT</th><th>Comprar</th></tr></thead>';
             tableHTML += '<tbody>';
 
