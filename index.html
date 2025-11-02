@@ -10,11 +10,11 @@
     <style>
         /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
         :root {
-            --color-primary: #E9ECEF; 
-            --color-secondary: #D0AE50; 
-            --color-new-background: #212529; 
-            --color-card-background: #2B3035; 
-            --color-white: #FFFFFF; 
+            --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
+            --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
+            --color-new-background: #212529; /* Fondo Oscuro */
+            --color-card-background: #2B3035; /* Fondo de la tarjeta (Tabs/Leyenda/Tabla) */
+            --color-white: #FFFFFF; /* Blanco Puro */
             --color-whatsapp: #25d366; 
             --color-whatsapp-hover: #128c7e; 
             
@@ -59,48 +59,29 @@
             border-radius: 2px;
         }
 
-        /* --- Barra de Leyenda --- */
-        #legend-bar {
-            /* Se ajusta al mismo ancho que la tabla y tabs */
-            width: 90%; 
+        /* --- NUEVO: Contenedor Principal de Controles (Tabs + Leyenda) --- */
+        #header-controls {
+            width: 90%;
             max-width: 900px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: var(--color-card-background);
+            margin-bottom: 30px; 
+            background-color: var(--color-card-background); /* Fondo compartido */
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 25px;
-            font-size: 14px;
+            /* Removido padding para que las secciones internas lo definan */
         }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--color-primary);
-        }
-        .legend-icon {
-            font-size: 1.1em;
-        }
-        /* --- Fin Leyenda --- */
 
-
-        /* Estilos de Pestañas (Tabs) y Tablas */
+        /* Estilos de Pestañas (Tabs) */
         #tabs-container {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 10px;
-            width: 90%;
-            max-width: 900px; /* Ancho consistente */
-            margin-bottom: 30px;
-            padding: 5px;
-            background-color: var(--color-card-background);
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            width: 100%; /* Ocupa el 100% del contenedor padre */
+            margin: 0; 
+            padding: 10px 5px; /* Padding interno para las pestañas */
             flex-wrap: wrap; 
+            /* Línea divisoria sutil para separar de la leyenda */
+            border-bottom: 1px solid #3B4249; 
         }
         .tab-button {
             padding: 12px 25px;
@@ -124,6 +105,29 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
         }
         
+        /* --- Barra de Leyenda --- */
+        #legend-bar {
+            width: 100%; /* Ocupa el 100% del contenedor padre */
+            margin: 0; 
+            padding: 15px; /* Padding interno para la leyenda */
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 25px;
+            font-size: 14px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-primary);
+        }
+        .legend-icon {
+            font-size: 1.1em;
+        }
+        /* --- Fin Leyenda --- */
+
+
         #loading-message { 
             text-align: center; 
             color: var(--color-primary); 
@@ -131,9 +135,10 @@
             font-weight: bold; 
         }
         
+        /* Estilos de Tabla */
         table { 
             width: 90%; 
-            max-width: 900px; /* Ancho consistente */
+            max-width: 900px;
             margin: 20px auto; 
             border-collapse: collapse; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -238,11 +243,13 @@
         <span class="underline"></span>
     </div>
 
-    <div id="legend-bar">
-        </div>
+    <div id="header-controls">
+        <div id="tabs-container">
+            </div>
 
-    <div id="tabs-container">
-        </div>
+        <div id="legend-bar">
+            </div>
+    </div>
     
     <div id="loading-message">Cargando datos, por favor espere...</div>
     
@@ -277,7 +284,7 @@
                 if (!legendResponse.ok) throw new Error(`Error ${legendResponse.status}: No se pudo cargar el archivo de configuración de leyenda (leyenda_config.json).`);
                 legendData = await legendResponse.json();
                 
-                // Generar la leyenda (Lógica modificada)
+                // Generar la leyenda
                 buildLegend(legendData);
 
                 const activeTabs = configData.filter(tab => tab.status === 'on');
@@ -309,10 +316,9 @@
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('legend-item');
                 
-                // Extrae solo el texto de la etiqueta (quitando el emoji si lo hubiera)
+                // Extrae solo el texto de la etiqueta
                 const textLabel = item.label.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '').trim();
 
-                // Usar la variable de color CSS y el ícono
                 itemDiv.innerHTML = `
                     <i class="fa-solid ${item.icon} legend-icon" style="color: var(${item.color_var});"></i>
                     <span>${textLabel}</span>
@@ -320,8 +326,6 @@
                 container.appendChild(itemDiv);
             });
         }
-
-        // --- Resto de las funciones (sin cambios en la lógica base) ---
 
         function buildTabs(tabs) {
             const container = document.getElementById('tabs-container');
