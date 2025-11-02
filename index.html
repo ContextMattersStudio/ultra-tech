@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     
     <style>
-        /* Paleta de Colores ULTRA TECH */
+        /* Paleta de Colores ULTRA TECH (Modificada para Tema Oscuro) */
         :root {
             --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
             --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
@@ -143,10 +143,10 @@
             white-space: nowrap;
         }
         .buy-button:hover {
-            background-color: #B89C40; /* Tono de dorado un poco más oscuro */
+            background-color: #B89C40;
             transform: translateY(-1px);
         }
-        /* Estilos del Botón Flotante de WhatsApp (Sin cambios) */
+        /* Estilos del Botón Flotante de WhatsApp */
         .whatsapp-float {
             position: fixed;
             width: 70px;
@@ -197,12 +197,12 @@
         </div>
 
     <a 
-        href="https://wa.me/5492281409457?text=Hola,%20vi%20la%20lista%20de%20productos%20y%20me%20interesa%20consultar%20/%20comprar." 
+        href="https://wa.me/5492281409457?text=Hola,%20vi%20la%20lista%20de%20productos%20y%20quiero%20hacer%20una%20consulta." 
         class="whatsapp-float" 
         target="_blank"
     >
         <i class="fa-brands fa-whatsapp"></i>
-        <span>Consultar / Comprar</span>
+        <span>Contacto</span>
     </a>
 
     <script>
@@ -313,7 +313,6 @@
                 }
 
                 let tableHTML = '<table>';
-                // AÑADIR NUEVO ENCABEZADO: COMPRAR
                 tableHTML += '<thead><tr><th>Producto</th><th>Precio Transferencia</th><th>Precio USDT</th><th>Comprar</th></tr></thead>';
                 tableHTML += '<tbody>';
 
@@ -322,7 +321,6 @@
                     const precioTransferencia = String(row['Precio Transferencia'] || '—');
                     const precioUSDT = String(row['Precio USDT'] || '—');
                     
-                    // Codificar los parámetros de la URL
                     const urlProduct = encodeURIComponent(producto);
                     const urlPriceT = encodeURIComponent(precioTransferencia);
                     const urlPriceU = encodeURIComponent(precioUSDT);
