@@ -1,0 +1,22 @@
+[
+  {
+    "tab_name": "CELULARES",
+    "status": "on",
+    "file_full_name": "CELULARES_ULTRA_STORE.xlsx"
+  },
+  {
+    "tab_name": "CONSOLAS",
+    "status": "on",
+    "file_full_name": "CONSOLAS_ULTRA_STORE.xlsx"
+  },
+  {
+    "tab_name": "DRONES",
+    "status": "off",
+    "file_full_name": "DRONES_ULTRA_STORE.xlsx"
+  },
+  {
+    "tab_name": "PCS",
+    "status": "on",
+    "file_full_name": "PCS_ULTRA_STORE.xlsx"
+  }
+]
