@@ -10,11 +10,11 @@
     <style>
         /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
         :root {
-            --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
-            --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
-            --color-new-background: #212529; /* Fondo Oscuro */
-            --color-card-background: #2B3035; /* Fondo de la tarjeta (Tabs/Leyenda/Tabla) */
-            --color-white: #FFFFFF; /* Blanco Puro */
+            --color-primary: #E9ECEF; 
+            --color-secondary: #D0AE50; 
+            --color-new-background: #212529; 
+            --color-card-background: #2B3035; 
+            --color-white: #FFFFFF; 
             --color-whatsapp: #25d366; 
             --color-whatsapp-hover: #128c7e; 
             
@@ -37,7 +37,7 @@
             overflow-x: hidden; 
         }
 
-        /* Título Principal */
+        /* [Resto de estilos de Título, Leyenda y Tabs sin cambios] */
         .main-title {
             text-align: center;
             margin-bottom: 30px;
@@ -60,7 +60,6 @@
             border-radius: 2px;
         }
 
-        /* --- Barra de Leyenda (Ordenado Arriba) --- */
         #legend-bar {
             width: 90%;
             max-width: 900px;
@@ -86,8 +85,7 @@
         .legend-icon {
             font-size: 1.1em;
         }
-
-        /* Estilos de Pestañas (Tabs) */
+        
         #tabs-container {
             width: 90%;
             max-width: 900px;
@@ -144,7 +142,7 @@
         th, td { 
             border: 1px solid #3B4249;
             padding: 18px 20px;
-            white-space: nowrap;
+            /* Eliminamos white-space: nowrap; de TD para permitir saltos de línea en el texto */
         }
         
         /* Regla modificada: THs centrados por defecto */
@@ -155,6 +153,7 @@
             font-weight: 700; 
             text-transform: uppercase;
             font-size: 15px;
+            white-space: nowrap; /* Mantener encabezados en una línea */
         }
         
         table { 
@@ -168,9 +167,23 @@
         /* Regla modificada: Columna Producto (TH y TD) alineada a la izquierda */
         th:first-child, td:first-child { 
             text-align: left;
-            padding-right: 15px; /* Ajuste el padding para espacio */
+            padding-right: 15px;
+            /* Eliminación del borde redundante. El borde ya lo maneja la regla genérica 'th, td' */
+            border: 1px solid #3B4249; 
         }
-        /* La columna Comprar (última) y sus TDs quedan centradas por el TH global */
+        
+        /* CORRECCIÓN: Evitar doble borde y permitir alineación interna de producto */
+        td:first-child { 
+             /* Se mantiene display:flex para alinear texto e ícono, pero con el ajuste de borde ya no hay problema */
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Regla modificada: Columna Producto (TD) alineada a la izquierda */
+        td:first-child > * {
+            display: inline;
+        }
+        
         td:last-child {
             text-align: center;
         }
@@ -194,7 +207,6 @@
             background-color: #B89C40;
             transform: translateY(-1px);
         }
-        /* Estilos de Botón Flotante y Status (sin cambios) */
         .whatsapp-float {
             position: fixed;
             width: 70px;
@@ -222,7 +234,36 @@
         .status-hot { color: var(--color-hot); }
         .status-new { color: var(--color-new); transform: rotate(-30deg); }
         .status-offers { color: var(--color-offers); }
-        td:first-child { display: flex; align-items: center; }
+        
+        
+        /* ========================================================= */
+        /* === REGION DE ESTILOS RESPONSIVE (SOLO PARA MÓVILES) === */
+        /* ========================================================= */
+
+        @media (max-width: 768px) {
+            
+            /* Reducir el ancho de la columna de producto (TH y TD) */
+            th:first-child, td:first-child {
+                width: 70%; /* Ocupa el 70% del ancho disponible para la columna Producto */
+                min-width: 150px; /* Asegura un ancho mínimo para que sea funcional */
+                max-width: 250px;
+            }
+            
+            /* Permitir que el texto de los productos baje hasta 3 líneas */
+            td:first-child {
+                display: -webkit-box; /* Habilita el modo caja flexible */
+                -webkit-line-clamp: 3; /* Limita a 3 líneas */
+                -webkit-box-orient: vertical; /* Necesario para la limitación de líneas */
+                overflow: hidden; /* Oculta el texto restante */
+                text-overflow: ellipsis; /* Añade puntos suspensivos */
+                white-space: normal !important; /* Anula el nowrap global de los TD, permitiendo saltos de línea */
+            }
+            
+            /* Ajuste de padding en móvil */
+            th, td {
+                padding: 12px 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -361,7 +402,7 @@
 
         function renderTable(filteredData, dataContainer) {
             let tableHTML = '<table>';
-            // CAMBIO: Insertar <br> para el salto de línea en los encabezados de precio
+            // Encabezados con salto de línea
             tableHTML += '<thead><tr><th>Producto</th><th>Precio<br>Transferencia</th><th>Precio<br>USDT</th><th>Comprar</th></tr></thead>';
             tableHTML += '<tbody>';
 
