@@ -59,29 +59,22 @@
             border-radius: 2px;
         }
 
-        /* --- Contenedor Principal de Controles (Tabs + Leyenda) --- */
-        #header-controls {
+        /* --- Barra de Leyenda (AHORA COMPONENTE INDIVIDUAL) --- */
+        #legend-bar {
             width: 90%;
             max-width: 900px;
-            margin-bottom: 30px; 
-            background-color: var(--color-card-background); /* Fondo compartido */
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        /* --- Barra de Leyenda --- */
-        #legend-bar {
-            /* POSICIÓN: ARRIBA */
-            width: 100%; 
-            margin: 0; 
+            margin-bottom: 20px; /* Separación vertical */
             padding: 15px; 
+            
+            background-color: var(--color-card-background); /* Fondo de tarjeta */
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Sombra de tarjeta */
+            
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             gap: 25px;
             font-size: 14px;
-            /* LÍNEA DIVISORIA AHORA ESTÁ AQUÍ (abajo de la leyenda) */
-            border-bottom: 1px solid #3B4249; 
         }
         .legend-item {
             display: flex;
@@ -94,19 +87,22 @@
         }
         /* --- Fin Leyenda --- */
 
-        /* Estilos de Pestañas (Tabs) */
+        /* Estilos de Pestañas (Tabs) (AHORA COMPONENTE INDIVIDUAL) */
         #tabs-container {
-            /* POSICIÓN: ABAJO */
+            width: 90%;
+            max-width: 900px;
+            margin-bottom: 30px; /* Separación vertical */
+            padding: 5px; 
+            
+            background-color: var(--color-card-background); /* Fondo de tarjeta */
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Sombra de tarjeta */
+
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 10px;
-            width: 100%; 
-            margin: 0; 
-            padding: 10px 5px; 
             flex-wrap: wrap; 
-            /* SIN borde, usa el de la leyenda */
-            border-bottom: none; 
         }
         .tab-button {
             padding: 12px 25px;
@@ -245,13 +241,11 @@
         <span class="underline"></span>
     </div>
 
-    <div id="header-controls">
-        <div id="legend-bar">
-            </div>
+    <div id="legend-bar">
+        </div>
 
-        <div id="tabs-container">
-            </div>
-    </div>
+    <div id="tabs-container">
+        </div>
     
     <div id="loading-message">Cargando datos, por favor espere...</div>
     
