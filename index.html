@@ -8,14 +8,15 @@
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     
     <style>
-        /* Paleta de Colores ULTRA TECH */
+        /* Paleta de Colores ULTRA TECH (Modificada para Tema Oscuro) */
         :root {
-            --color-primary: #343A40; /* Gris muy oscuro */
+            --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
             --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
-            --color-background: #F8F8F8; /* Fondo claro, casi blanco */
+            --color-new-background: #212529; /* Nuevo Fondo Oscuro */
+            --color-card-background: #2B3035; /* Fondo más claro para la tabla/tarjetas */
             --color-white: #FFFFFF; /* Blanco Puro */
-            --color-whatsapp: #25d366; /* Verde WhatsApp */
-            --color-whatsapp-hover: #128c7e; /* Verde WhatsApp más oscuro */
+            --color-whatsapp: #25d366; 
+            --color-whatsapp-hover: #128c7e; 
         }
 
         /* Estilos Generales */
@@ -23,8 +24,8 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
             padding: 30px 0 80px 0;
-            background-color: var(--color-background); 
-            color: var(--color-primary);
+            background-color: var(--color-new-background); /* Fondo oscuro aplicado aquí */
+            color: var(--color-primary); /* Texto principal claro */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -38,7 +39,7 @@
             width: 100%;
         }
         .main-title h1 {
-            color: var(--color-primary);
+            color: var(--color-primary); /* Título en color claro */
             font-size: 36px;
             margin: 0;
             padding: 0;
@@ -48,7 +49,7 @@
             display: block;
             width: 120px;
             height: 3px;
-            background-color: var(--color-secondary);
+            background-color: var(--color-secondary); /* Acento dorado */
             margin: 5px auto 0 auto;
             border-radius: 2px;
         }
@@ -63,9 +64,9 @@
             max-width: 900px;
             margin-bottom: 30px;
             padding: 5px;
-            background-color: var(--color-white);
+            background-color: var(--color-card-background); /* Fondo de la barra de pestañas */
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             flex-wrap: wrap; 
         }
         .tab-button {
@@ -82,15 +83,14 @@
             white-space: nowrap;
         }
         .tab-button:hover {
-            background-color: #e0e0e0;
+            background-color: #3B4249; /* Gris más claro al pasar el mouse */
         }
         .tab-button.active {
-            background-color: var(--color-secondary); 
+            background-color: var(--color-secondary); /* Color de acento para la pestaña activa */
             color: var(--color-primary);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
         }
         /* -- FIN Estilos de Pestañas -- */
-
 
         #loading-message { 
             text-align: center; 
@@ -99,33 +99,34 @@
             font-weight: bold; 
         }
         
-        /* Estilos de Tabla (Mismos que antes) */
+        /* Estilos de Tabla */
         table { 
             width: 90%; 
             max-width: 900px;
             margin: 20px auto; 
             border-collapse: collapse; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             border-radius: 10px;
             overflow: hidden; 
+            background-color: var(--color-card-background); /* Fondo de la tabla */
         }
         th, td { 
-            border: 1px solid #e0e0e0; 
+            border: 1px solid #3B4249; /* Líneas de tabla oscuras */
             padding: 18px 20px;
             text-align: left; 
         }
         th { 
-            background-color: var(--color-primary);
-            color: var(--color-white); 
-            font-weight: 600; 
+            background-color: var(--color-secondary); /* Encabezado en color de acento */
+            color: var(--color-primary); 
+            font-weight: 700; 
             text-transform: uppercase;
             font-size: 15px;
         }
-        tr:nth-child(even) { background-color: var(--color-background); }
-        tr:nth-child(odd) { background-color: var(--color-white); }
-        tr:hover { background-color: #e6e6e6; }
+        tr:nth-child(even) { background-color: var(--color-card-background); } /* Filas pares */
+        tr:nth-child(odd) { background-color: #30373D; } /* Filas impares ligeramente más oscuras */
+        tr:hover { background-color: #404B55; } /* Hover más visible */
         
-        /* Estilos del Botón Flotante de WhatsApp (Mismos que antes) */
+        /* Estilos del Botón Flotante de WhatsApp (Sin cambios) */
         .whatsapp-float {
             position: fixed;
             width: 70px;
@@ -137,7 +138,7 @@
             border-radius: 50%;
             text-align: center;
             font-size: 14px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
             z-index: 1000;
             display: flex;
             flex-direction: column;
@@ -190,13 +191,8 @@
         let configData = []; 
         let currentActiveTab = null;
 
-        /**
-         * 1. Inicializa la aplicación: Carga el JSON, construye las pestañas
-         * y carga el contenido de la primera pestaña activa.
-         */
         async function initApp() {
             try {
-                // Cargar el archivo de configuración JSON
                 const response = await fetch('config.json');
                 if (!response.ok) {
                     throw new Error(`Error ${response.status}: No se pudo cargar el archivo de configuración (config.json).`);
@@ -205,15 +201,13 @@
 
                 const activeTabs = configData.filter(tab => tab.status === 'on');
                 if (activeTabs.length === 0) {
-                    document.getElementById('excel-data').innerHTML = '<p style="color: red; text-align: center;">No hay pestañas activas configuradas.</p>';
+                    document.getElementById('excel-data').innerHTML = '<p style="color: var(--color-primary); text-align: center;">No hay pestañas activas configuradas.</p>';
                     return;
                 }
 
                 buildTabs(activeTabs);
                 
-                // Cargar el contenido de la primera pestaña activa
                 const firstTab = activeTabs[0];
-                // Usamos el nombre de archivo completo directamente desde el JSON
                 await loadExcelData(firstTab.file_full_name, firstTab.tab_name); 
 
             } catch (error) {
@@ -223,9 +217,6 @@
             }
         }
 
-        /**
-         * 2. Construye los botones de pestaña.
-         */
         function buildTabs(tabs) {
             const container = document.getElementById('tabs-container');
             container.innerHTML = ''; 
@@ -234,11 +225,9 @@
                 const button = document.createElement('button');
                 button.classList.add('tab-button');
                 button.textContent = tab.tab_name;
-                // Adjunta el nombre de archivo completo
                 button.dataset.fileName = tab.file_full_name; 
 
                 button.addEventListener('click', () => {
-                    // Pasa el nombre de archivo completo
                     loadExcelData(tab.file_full_name, tab.tab_name); 
                 });
 
@@ -246,9 +235,6 @@
             });
         }
 
-        /**
-         * 3. Maneja el cambio de contenido al hacer clic en una pestaña.
-         */
         function updateActiveTab(tabName) {
             if (currentActiveTab) {
                 currentActiveTab.classList.remove('active');
@@ -262,10 +248,6 @@
             });
         }
 
-        /**
-         * 4. Descarga, parsea y renderiza el Excel del nombre de archivo dado.
-         * 'fullFileName' ya incluye la extensión (.xlsx)
-         */
         async function loadExcelData(fullFileName, tabName) {
             const dataContainer = document.getElementById('excel-data');
             const loadingMessage = document.getElementById('loading-message');
@@ -276,7 +258,6 @@
             updateActiveTab(tabName);
 
             try {
-                // Usa el nombre de archivo completo
                 const response = await fetch(fullFileName);
                 
                 if (!response.ok) {
@@ -291,7 +272,6 @@
 
                 const json = XLSX.utils.sheet_to_json(worksheet);
                 
-                // Lógica de filtrado de filas
                 const filteredData = json.filter(row => {
                     const precioTransferencia = row['Precio Transferencia'];
                     const precioUSDT = row['Precio USDT'];
@@ -308,11 +288,10 @@
                 });
 
                 if (filteredData.length === 0) {
-                    dataContainer.innerHTML = `<p style="color: orange; text-align: center;">El archivo ${fullFileName} está vacío o no tiene datos válidos.</p>`;
+                    dataContainer.innerHTML = `<p style="color: var(--color-secondary); text-align: center;">El archivo ${fullFileName} está vacío o no tiene datos válidos.</p>`;
                     return;
                 }
 
-                // Genera la tabla HTML
                 let tableHTML = '<table>';
                 tableHTML += '<thead><tr><th>Producto</th><th>Precio Transferencia</th><th>Precio USDT</th></tr></thead>';
                 tableHTML += '<tbody>';
