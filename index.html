@@ -12,7 +12,7 @@
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
-            padding: 20px 0 80px 0; /* Padding inferior para el botón flotante */
+            padding: 20px 0 80px 0;
             background-color: #f4f7f6; 
         }
         h1 { 
@@ -34,7 +34,7 @@
         table { 
             width: 90%; 
             max-width: 800px;
-            margin: 20px auto; /* Centra la tabla */
+            margin: 20px auto; 
             border-collapse: collapse; 
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
             border-radius: 8px;
@@ -51,8 +51,8 @@
             font-weight: 600; 
             text-transform: uppercase;
         }
-        tr:nth-child(even) { background-color: #f8f8ff; } /* Azul muy claro para filas pares */
-        tr:hover { background-color: #e6f7ff; } /* Hover azul sutil */
+        tr:nth-child(even) { background-color: #f8f8ff; } 
+        tr:hover { background-color: #e6f7ff; } 
         
         /* Estilos del Botón Flotante de WhatsApp */
         .whatsapp-float {
@@ -117,18 +117,14 @@
             const loadingMessage = document.getElementById('loading-message');
 
             try {
-                // 1. Descarga el archivo desde la ruta relativa (el mismo repositorio)
                 const response = await fetch(EXCEL_FILE_NAME);
                 
                 if (!response.ok) {
-                    throw new Error(`Error al cargar el archivo. Código: ${response.status}. Asegúrese de que el archivo "${EXCEL_FILE_NAME}" exista en el repositorio.`);
+                    throw new Error(`Error ${response.status}: No se pudo encontrar el archivo "${EXCEL_FILE_NAME}".`);
                 }
 
-                // 2. Lee el archivo como ArrayBuffer
                 const arrayBuffer = await response.arrayBuffer();
                 const data = new Uint8Array(arrayBuffer);
-
-                // 3. Procesa el archivo con SheetJS
                 const workbook = XLSX.read(data, { type: 'array' });
                 const sheetName = workbook.SheetNames[0]; 
                 const worksheet = workbook.Sheets[sheetName];
@@ -136,21 +132,44 @@
                 // Convierte la hoja a formato JSON
                 const json = XLSX.utils.sheet_to_json(worksheet);
                 
-                if (json.length === 0) {
-                    dataContainer.innerHTML = '<p style="color: red; text-align: center;">El archivo Excel está vacío o el formato es incorrecto.</p>';
+                // ----------------------------------------------------
+                // NUEVA LÓGICA DE FILTRADO
+                // ----------------------------------------------------
+                const filteredData = json.filter(row => {
+                    const producto = row['Producto'];
+                    const precioTransferencia = row['Precio Transferencia'];
+                    const precioUSDT = row['Precio USDT'];
+
+                    // 1. Ignorar filas si NO tienen valores de precio.
+                    // Si ambos campos de precio (Transferencia y USDT) están vacíos o son 0/null/undefined,
+                    // asumimos que es una fila de encabezado de grupo o una fila vacía y la ignoramos.
+                    return (
+                        precioTransferencia !== undefined && 
+                        precioTransferencia !== null && 
+                        String(precioTransferencia).trim() !== ''
+                    ) || (
+                        precioUSDT !== undefined && 
+                        precioUSDT !== null && 
+                        String(precioUSDT).trim() !== ''
+                    );
+                });
+                // ----------------------------------------------------
+
+                if (filteredData.length === 0) {
+                    dataContainer.innerHTML = '<p style="color: red; text-align: center;">El archivo Excel no contiene datos de productos válidos para mostrar.</p>';
                     return;
                 }
 
-                // 4. Genera la tabla HTML
+                // Genera la tabla HTML con los datos filtrados
                 let tableHTML = '<table>';
                 tableHTML += '<thead><tr><th>Producto</th><th>Precio Transferencia</th><th>Precio USDT</th></tr></thead>';
                 tableHTML += '<tbody>';
 
-                json.forEach(row => {
-                    // **IMPORTANTE:** Estas claves deben coincidir exactamente con los nombres de columna de tu Excel
-                    const producto = row['Producto'] || 'N/A';
-                    const precioTransferencia = row['Precio Transferencia'] || 'N/A';
-                    const precioUSDT = row['Precio USDT'] || 'N/A';
+                filteredData.forEach(row => {
+                    // Usamos String(value) || '—' para mostrar un guion si el campo está vacío en el Excel
+                    const producto = String(row['Producto'] || '—');
+                    const precioTransferencia = String(row['Precio Transferencia'] || '—');
+                    const precioUSDT = String(row['Precio USDT'] || '—');
 
                     tableHTML += `
                         <tr>
@@ -162,15 +181,12 @@
                 });
 
                 tableHTML += '</tbody></table>';
-
-                // 5. Muestra la tabla
                 dataContainer.innerHTML = tableHTML;
 
             } catch (error) {
                 console.error("Error al cargar o procesar el Excel:", error);
-                dataContainer.innerHTML = `<p style="color: red; text-align: center;">No se pudo cargar la lista de productos automáticamente. Por favor, verifica el nombre y la existencia del archivo "${EXCEL_FILE_NAME}".</p>`;
+                dataContainer.innerHTML = `<p style="color: red; text-align: center;">${error.message || 'Ocurrió un error desconocido al cargar la lista.'}</p>`;
             } finally {
-                // Oculta el mensaje de carga en cualquier caso
                 loadingMessage.style.display = 'none';
             }
         }
