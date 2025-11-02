@@ -8,15 +8,20 @@
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     
     <style>
-        /* Paleta de Colores ULTRA TECH (Modificada para Tema Oscuro) */
+        /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
         :root {
             --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
             --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
-            --color-new-background: #212529; /* Nuevo Fondo Oscuro */
-            --color-card-background: #2B3035; /* Fondo más claro para la tabla/tarjetas */
+            --color-new-background: #212529; /* Fondo Oscuro */
+            --color-card-background: #2B3035; /* Fondo de la tarjeta (Tabs/Leyenda/Tabla) */
             --color-white: #FFFFFF; /* Blanco Puro */
             --color-whatsapp: #25d366; 
             --color-whatsapp-hover: #128c7e; 
+            
+            /* Colores de Estado */
+            --color-hot: #FF4500; 
+            --color-new: #1E90FF; 
+            --color-offers: #D0AE50; 
         }
 
         /* Estilos Generales */
@@ -54,19 +59,49 @@
             border-radius: 2px;
         }
 
-        /* Estilos de Pestañas (Tabs) */
+        /* --- Barra de Leyenda (AHORA COMPONENTE INDIVIDUAL) --- */
+        #legend-bar {
+            width: 90%;
+            max-width: 900px;
+            margin-bottom: 20px; 
+            padding: 15px; 
+            
+            background-color: var(--color-card-background); 
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+            
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 25px;
+            font-size: 14px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-primary);
+        }
+        .legend-icon {
+            font-size: 1.1em;
+        }
+        /* --- Fin Leyenda --- */
+
+        /* Estilos de Pestañas (Tabs) (AHORA COMPONENTE INDIVIDUAL) */
         #tabs-container {
+            width: 90%;
+            max-width: 900px;
+            margin-bottom: 30px; 
+            padding: 5px; 
+            
+            background-color: var(--color-card-background); 
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 10px;
-            width: 90%;
-            max-width: 900px;
-            margin-bottom: 30px;
-            padding: 5px;
-            background-color: var(--color-card-background);
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             flex-wrap: wrap; 
         }
         .tab-button {
@@ -90,8 +125,7 @@
             color: var(--color-primary);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
         }
-        /* -- FIN Estilos de Pestañas -- */
-
+        
         #loading-message { 
             text-align: center; 
             color: var(--color-primary); 
@@ -127,7 +161,6 @@
         tr:nth-child(odd) { background-color: #30373D; } 
         tr:hover { background-color: #404B55; }
         
-        /* Estilo del Botón Comprar en la Tabla */
         .buy-button {
             display: inline-block;
             padding: 8px 15px;
@@ -146,7 +179,6 @@
             background-color: #B89C40;
             transform: translateY(-1px);
         }
-        /* Estilos del Botón Flotante de WhatsApp */
         .whatsapp-float {
             position: fixed;
             width: 70px;
@@ -179,6 +211,27 @@
             background-color: var(--color-whatsapp-hover);
             transform: scale(1.08);
         }
+
+        /* Estilos para los íconos de Status */
+        .status-icon {
+            margin-left: 8px;
+            font-size: 1em;
+            display: inline-block;
+        }
+        .status-hot {
+            color: var(--color-hot); 
+        }
+        .status-new {
+            color: var(--color-new);
+            transform: rotate(-30deg);
+        }
+        .status-offers {
+            color: var(--color-offers);
+        }
+        td:first-child {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -188,6 +241,11 @@
         <span class="underline"></span>
     </div>
 
+    
+    <div id="legend-bar">
+        </div>
+
+    
     <div id="tabs-container">
         </div>
     
@@ -209,15 +267,20 @@
         document.addEventListener('DOMContentLoaded', initApp);
 
         let configData = []; 
+        let legendData = []; 
         let currentActiveTab = null;
 
         async function initApp() {
             try {
-                const response = await fetch('config.json');
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: No se pudo cargar el archivo de configuración (config.json).`);
-                }
-                configData = await response.json();
+                const configResponse = await fetch('config.json');
+                if (!configResponse.ok) throw new Error(`Error ${configResponse.status}: No se pudo cargar el archivo de configuración (config.json).`);
+                configData = await configResponse.json();
+
+                const legendResponse = await fetch('leyenda_config.json');
+                if (!legendResponse.ok) throw new Error(`Error ${legendResponse.status}: No se pudo cargar el archivo de configuración de leyenda (leyenda_config.json).`);
+                legendData = await legendResponse.json();
+                
+                buildLegend(legendData);
 
                 const activeTabs = configData.filter(tab => tab.status === 'on');
                 if (activeTabs.length === 0) {
@@ -227,8 +290,15 @@
 
                 buildTabs(activeTabs);
                 
-                const firstTab = activeTabs[0];
-                await loadExcelData(firstTab.file_full_name, firstTab.tab_name); 
+                // Carga inicial: Pestaña "TODO" si está definida, o la primera activa.
+                const todoButton = document.querySelector('.tab-button[data-file-name="TODO"]');
+                
+                if (todoButton) {
+                    await loadAllExcelData(activeTabs);
+                } else {
+                    const firstTab = activeTabs[0];
+                    await loadExcelData(firstTab.file_full_name, firstTab.tab_name); 
+                }
 
             } catch (error) {
                 console.error("Error crítico al iniciar la aplicación:", error);
@@ -237,10 +307,41 @@
             }
         }
 
+        function buildLegend(data) {
+            const container = document.getElementById('legend-bar');
+            container.innerHTML = '';
+            
+            data.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('legend-item');
+                
+                const textLabel = item.label.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '').trim();
+
+                itemDiv.innerHTML = `
+                    <i class="fa-solid ${item.icon} legend-icon" style="color: var(${item.color_var});"></i>
+                    <span>${textLabel}</span>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
+
         function buildTabs(tabs) {
             const container = document.getElementById('tabs-container');
             container.innerHTML = ''; 
 
+            // 1. Añadir el botón "TODO"
+            const todoButton = document.createElement('button');
+            todoButton.classList.add('tab-button');
+            todoButton.textContent = "TODO";
+            todoButton.dataset.fileName = "TODO"; // Usamos un nombre de archivo especial para distinguirlo
+
+            todoButton.addEventListener('click', () => {
+                loadAllExcelData(tabs);
+            });
+            container.appendChild(todoButton);
+
+
+            // 2. Añadir las pestañas individuales
             tabs.forEach(tab => {
                 const button = document.createElement('button');
                 button.classList.add('tab-button');
@@ -268,6 +369,134 @@
             });
         }
 
+        /**
+         * NUEVA FUNCIÓN: Combina y muestra datos de todos los excels activos.
+         */
+        async function loadAllExcelData(activeTabs) {
+            const dataContainer = document.getElementById('excel-data');
+            const loadingMessage = document.getElementById('loading-message');
+            const TAB_NAME = "TODO";
+
+            loadingMessage.textContent = `Cargando todos los productos...`;
+            loadingMessage.style.display = 'block';
+            dataContainer.innerHTML = '';
+            updateActiveTab(TAB_NAME);
+
+            let allFilteredData = [];
+
+            try {
+                // Descargar y procesar cada archivo Excel activo
+                const fetchPromises = activeTabs.map(async (tab) => {
+                    const fullFileName = tab.file_full_name;
+                    
+                    try {
+                        const response = await fetch(fullFileName);
+                        if (!response.ok) {
+                            console.warn(`[TODO] No se pudo cargar ${fullFileName} (Error ${response.status}). Se omitirá.`);
+                            return []; // Devolver un array vacío si falla la carga
+                        }
+
+                        const arrayBuffer = await response.arrayBuffer();
+                        const data = new Uint8Array(arrayBuffer);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const json = XLSX.utils.sheet_to_json(worksheet);
+
+                        // Aplicar el mismo filtro de filas vacías
+                        return json.filter(row => {
+                            const pt = row['Precio Transferencia'];
+                            const pu = row['Precio USDT'];
+                            return (pt !== undefined && String(pt).trim() !== '') || (pu !== undefined && String(pu).trim() !== '');
+                        });
+                        
+                    } catch (e) {
+                        console.error(`Error al procesar ${fullFileName}:`, e);
+                        return [];
+                    }
+                });
+
+                // Esperar a que todos los archivos se procesen
+                const results = await Promise.all(fetchPromises);
+                allFilteredData = results.flat(); // Combina todos los arrays de datos en uno solo
+
+                if (allFilteredData.length === 0) {
+                    dataContainer.innerHTML = `<p style="color: var(--color-secondary); text-align: center;">No se encontraron productos en ninguna categoría activa.</p>`;
+                    return;
+                }
+
+                // Renderizar la tabla combinada
+                renderTable(allFilteredData, dataContainer);
+
+
+            } catch (error) {
+                console.error("Error al cargar la lista TODO:", error);
+                dataContainer.innerHTML = `<p style="color: red; text-align: center;">Error al cargar la lista TODO: ${error.message}</p>`;
+            } finally {
+                loadingMessage.style.display = 'none';
+            }
+        }
+
+        /**
+         * Función para renderizar una tabla (Usada tanto por tabs individuales como por TODO)
+         */
+        function renderTable(filteredData, dataContainer) {
+            let tableHTML = '<table>';
+            tableHTML += '<thead><tr><th>Producto</th><th>Precio Transferencia</th><th>Precio USDT</th><th>Comprar</th></tr></thead>';
+            tableHTML += '<tbody>';
+
+            const STATUS_MAP = {
+                'HOT': { icon: 'fa-fire', class: 'status-hot' },
+                'NEW': { icon: 'fa-rocket', class: 'status-new' },
+                'OFFERS': { icon: 'fa-tags', class: 'status-offers' }
+            };
+
+
+            filteredData.forEach(row => {
+                const producto = String(row['Producto'] || '—');
+                const precioTransferencia = String(row['Precio Transferencia'] || '—');
+                const precioUSDT = String(row['Precio USDT'] || '—');
+                const status = String(row['STATUS'] || '').toUpperCase().trim();
+                
+                let statusIconHtml = '';
+                const statusConfig = STATUS_MAP[status];
+                
+                if (statusConfig) {
+                     statusIconHtml = `
+                         <span class="status-icon ${statusConfig.class}" title="${status}">
+                             <i class="fa-solid ${statusConfig.icon}"></i>
+                         </span>
+                     `;
+                }
+                
+                const urlProduct = encodeURIComponent(producto);
+                const urlPriceT = encodeURIComponent(precioTransferencia);
+                const urlPriceU = encodeURIComponent(precioUSDT);
+                
+                const buyLink = `purchase.html?product=${urlProduct}&priceT=${urlPriceT}&priceU=${urlPriceU}`;
+
+                tableHTML += `
+                    <tr>
+                        <td>
+                            ${producto}
+                            ${statusIconHtml} 
+                        </td>
+                        <td>${precioTransferencia}</td>
+                        <td>${precioUSDT}</td>
+                        <td>
+                            <a href="${buyLink}" class="buy-button">Comprar</a>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table>';
+            dataContainer.innerHTML = tableHTML;
+        }
+
+
+        /**
+         * Carga de datos de una sola pestaña (Modificada para usar renderTable)
+         */
         async function loadExcelData(fullFileName, tabName) {
             const dataContainer = document.getElementById('excel-data');
             const loadingMessage = document.getElementById('loading-message');
@@ -312,35 +541,8 @@
                     return;
                 }
 
-                let tableHTML = '<table>';
-                tableHTML += '<thead><tr><th>Producto</th><th>Precio Transferencia</th><th>Precio USDT</th><th>Comprar</th></tr></thead>';
-                tableHTML += '<tbody>';
-
-                filteredData.forEach(row => {
-                    const producto = String(row['Producto'] || '—');
-                    const precioTransferencia = String(row['Precio Transferencia'] || '—');
-                    const precioUSDT = String(row['Precio USDT'] || '—');
-                    
-                    const urlProduct = encodeURIComponent(producto);
-                    const urlPriceT = encodeURIComponent(precioTransferencia);
-                    const urlPriceU = encodeURIComponent(precioUSDT);
-                    
-                    const buyLink = `purchase.html?product=${urlProduct}&priceT=${urlPriceT}&priceU=${urlPriceU}`;
-
-                    tableHTML += `
-                        <tr>
-                            <td>${producto}</td>
-                            <td>${precioTransferencia}</td>
-                            <td>${precioUSDT}</td>
-                            <td>
-                                <a href="${buyLink}" class="buy-button">Comprar</a>
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                tableHTML += '</tbody></table>';
-                dataContainer.innerHTML = tableHTML;
+                // Usar la nueva función de renderizado
+                renderTable(filteredData, dataContainer);
 
             } catch (error) {
                 console.error("Error al cargar o procesar el Excel:", error);
