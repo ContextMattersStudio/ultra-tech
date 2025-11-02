@@ -59,7 +59,7 @@
             border-radius: 2px;
         }
 
-        /* --- NUEVO: Contenedor Principal de Controles (Tabs + Leyenda) --- */
+        /* --- Contenedor Principal de Controles (Tabs + Leyenda) --- */
         #header-controls {
             width: 90%;
             max-width: 900px;
@@ -67,20 +67,20 @@
             background-color: var(--color-card-background); /* Fondo compartido */
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            /* Removido padding para que las secciones internas lo definan */
         }
 
         /* Estilos de Pestañas (Tabs) */
         #tabs-container {
+            /* POSICIÓN: ARRIBA */
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 10px;
-            width: 100%; /* Ocupa el 100% del contenedor padre */
+            width: 100%; 
             margin: 0; 
-            padding: 10px 5px; /* Padding interno para las pestañas */
+            padding: 10px 5px; 
             flex-wrap: wrap; 
-            /* Línea divisoria sutil para separar de la leyenda */
+            /* Línea divisoria entre Tabs y Leyenda */
             border-bottom: 1px solid #3B4249; 
         }
         .tab-button {
@@ -107,9 +107,10 @@
         
         /* --- Barra de Leyenda --- */
         #legend-bar {
-            width: 100%; /* Ocupa el 100% del contenedor padre */
+            /* POSICIÓN: ABAJO */
+            width: 100%; 
             margin: 0; 
-            padding: 15px; /* Padding interno para la leyenda */
+            padding: 15px; 
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
@@ -274,17 +275,14 @@
 
         async function initApp() {
             try {
-                // 1. Cargar Configuración de Pestañas
                 const configResponse = await fetch('config.json');
                 if (!configResponse.ok) throw new Error(`Error ${configResponse.status}: No se pudo cargar el archivo de configuración (config.json).`);
                 configData = await configResponse.json();
 
-                // 2. Cargar Configuración de Leyenda
                 const legendResponse = await fetch('leyenda_config.json');
                 if (!legendResponse.ok) throw new Error(`Error ${legendResponse.status}: No se pudo cargar el archivo de configuración de leyenda (leyenda_config.json).`);
                 legendData = await legendResponse.json();
                 
-                // Generar la leyenda
                 buildLegend(legendData);
 
                 const activeTabs = configData.filter(tab => tab.status === 'on');
@@ -305,9 +303,6 @@
             }
         }
 
-        /**
-         * Genera la barra de leyenda SIN usar el emoji del label para evitar duplicidad.
-         */
         function buildLegend(data) {
             const container = document.getElementById('legend-bar');
             container.innerHTML = '';
@@ -316,7 +311,6 @@
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('legend-item');
                 
-                // Extrae solo el texto de la etiqueta
                 const textLabel = item.label.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '').trim();
 
                 itemDiv.innerHTML = `
