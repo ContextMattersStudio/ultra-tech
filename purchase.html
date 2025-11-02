@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasos de Compra | ULTRA TECH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Paleta de Colores ULTRA TECH - MISMA QUE INDEX.HTML */
+        :root {
+            --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
+            --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
+            --color-new-background: #212529; /* Nuevo Fondo Oscuro */
+            --color-card-background: #2B3035; /* Fondo más claro para la tabla/tarjetas */
+            --color-white: #FFFFFF; /* Blanco Puro */
+            --color-whatsapp: #25d366; 
+            --color-whatsapp-hover: #128c7e; 
+        }
+
+        /* Estilos Generales */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 30px 0 80px 0;
+            background-color: var(--color-new-background); 
+            color: var(--color-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Título Principal */
+        .main-title {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 0 20px;
+            width: 100%;
+        }
+        .main-title h1 {
+            color: var(--color-primary); 
+            font-size: 36px;
+            margin: 0;
+            padding: 0;
+            border-bottom: none;
+        }
+        .main-title .underline {
+            display: block;
+            width: 180px; /* Un poco más ancho para el título más largo */
+            height: 3px;
+            background-color: var(--color-secondary); 
+            margin: 5px auto 0 auto;
+            border-radius: 2px;
+        }
+
+        /* Contenedor de Pasos */
+        .purchase-steps-container {
+            width: 90%;
+            max-width: 600px;
+            background-color: var(--color-card-background);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Estilos de Pasos */
+        .step {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #404B55;
+        }
+        .step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .step h2 {
+            font-size: 20px;
+            color: var(--color-secondary);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        /* Estilo del Dropdown */
+        #payment-method-select {
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--color-secondary);
+            background-color: #3B4249;
+            color: var(--color-primary);
+            font-size: 16px;
+            width: 100%;
+            max-width: 300px;
+            cursor: pointer;
+            appearance: none; /* Oculta la flecha por defecto en algunos navegadores */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23E9ECEF%22%20d%3D%22M287%2069.4l-14.9-14.9c-2.3-2.3-4.9-3.4-7.6-3.4-2.7%200-5.3%201.1-7.7%203.4L146.2%20170.8%2029.8%2054.4c-4.7-4.7-12.2-4.7-16.9%200l-14.9%2014.9c-4.7%204.7-4.7%2012.2%200%2016.9l133.5%20133.5c2.3%202.3%204.9%203.4%207.6%203.4s5.3-1.1%207.7-3.4l133.5-133.5c4.7-4.6%204.7-12.2%200-16.9z%22%2F%3E%3C%2Fsvg%3E'); /* Flecha personalizada */
+            background-repeat: no-repeat;
+            background-position: right 10px top 50%;
+            background-size: 12px;
+        }
+        
+        /* Contenedor Dinámico de Cuenta */
+        #account-info-container {
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid var(--color-secondary);
+            border-radius: 5px;
+            background-color: #3B4249;
+        }
+        #account-info-container p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .product-details {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-secondary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Estilos del Botón de WhatsApp */
+        .whatsapp-transfer-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--color-whatsapp); 
+            color: var(--color-white);
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+        }
+        .whatsapp-transfer-btn:hover {
+            background-color: var(--color-whatsapp-hover);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-title">
+        <h1>PASOS A SEGUIR PARA CONCRETAR LA COMPRA</h1>
+        <span class="underline"></span>
+    </div>
+
+    <div class="purchase-steps-container">
+
+        <div class="product-details" id="product-display"></div>
+        
+        <div class="step">
+            <h2>1. Seleccionar Método de Pago</h2>
+            <select id="payment-method-select"></select>
+        </div>
+
+        <div class="step">
+            <h2>2. Realizar el Pago</h2>
+            <p id="payment-description">...</p>
+            
+            <div id="account-info-container">
+                </div>
+        </div>
+
+        <div class="step">
+            <h2>3. Informar y Confirmar</h2>
+            <a 
+                href="#" 
+                class="whatsapp-transfer-btn"
+                id="whatsapp-btn"
+                target="_blank"
+            >
+                <i class="fa-brands fa-whatsapp"></i> Informar Transferencia
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', initPurchasePage);
+
+        let PAYMENT_METHODS_DATA = {};
+        let productDetails = {};
+
+        async function initPurchasePage() {
+            // 1. Obtener detalles del producto de la URL
+            const params = new URLSearchParams(window.location.search);
+            productDetails = {
+                product: params.get('product') || 'Producto Desconocido',
+                priceTransferencia: params.get('priceT') || 'N/A',
+                priceUSDT: params.get('priceU') || 'N/A'
+            };
+
+            document.getElementById('product-display').textContent = 
+                `Artículo seleccionado: ${productDetails.product}`;
+
+            // 2. Cargar métodos de pago
+            try {
+                const response = await fetch('payment_methods.json');
+                if (!response.ok) throw new Error("No se pudo cargar payment_methods.json");
+                PAYMENT_METHODS_DATA = await response.json();
+                
+                populatePaymentDropdown();
+                // 3. Cargar la información inicial (Transferencia por defecto)
+                handlePaymentMethodChange('TRANSFERENCIA'); 
+
+                // 4. Configurar listener para el dropdown
+                document.getElementById('payment-method-select').addEventListener('change', (e) => {
+                    handlePaymentMethodChange(e.target.value);
+                });
+
+            } catch (error) {
+                console.error("Error al cargar la configuración de pagos:", error);
+                document.getElementById('purchase-steps-container').innerHTML = 
+                    `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        /**
+         * Rellena el dropdown con las opciones de pago.
+         */
+        function populatePaymentDropdown() {
+            const select = document.getElementById('payment-method-select');
+            
+            // Vaciar y añadir las opciones
+            select.innerHTML = '';
+            for (const key in PAYMENT_METHODS_DATA) {
+                const option = document.createElement('option');
+                option.value = key; // TRANSFERENCIA o USDT
+                option.textContent = PAYMENT_METHODS_DATA[key].title;
+                select.appendChild(option);
+            }
+        }
+
+        /**
+         * Actualiza la información de la cuenta y el botón de WhatsApp.
+         */
+        function handlePaymentMethodChange(methodKey) {
+            const data = PAYMENT_METHODS_DATA[methodKey];
+            const infoContainer = document.getElementById('account-info-container');
+            const descriptionElement = document.getElementById('payment-description');
+            const whatsappBtn = document.getElementById('whatsapp-btn');
+            
+            descriptionElement.textContent = data.description;
+            
+            let htmlContent = '';
+            let price = '';
+            let whatsappText = '';
+            
+            if (methodKey === 'TRANSFERENCIA') {
+                price = productDetails.priceTransferencia;
+                const acc = data.account;
+                htmlContent = `
+                    <p><strong>Total a pagar: ${price}</strong></p>
+                    <p><strong>CBU:</strong> ${acc.cbu}</p>
+                    <p><strong>Alias:</strong> ${acc.alias}</p>
+                    <p><strong>Banco:</strong> ${acc.banco}</p>
+                    <p><strong>Titular:</strong> ${acc.nombre}</p>
+                `;
+                whatsappText = `Hola! Acabo de hacer una transferencia por ${price} para la compra de ${productDetails.product}. Adjunto comprobante.`;
+
+            } else if (methodKey === 'USDT') {
+                price = productDetails.priceUSDT;
+                const acc = data.account;
+                htmlContent = `
+                    <p><strong>Total a pagar: ${price}</strong></p>
+                    <p><strong>Wallet (Address):</strong> ${acc.address}</p>
+                    <p><strong>Red/Network:</strong> ${acc.network}</p>
+                `;
+                whatsappText = `Hola! Acabo de enviar ${price} USDT para la compra de ${productDetails.product}. Adjunto comprobante.`;
+            }
+
+            infoContainer.innerHTML = htmlContent;
+
+            // Actualizar el botón de WhatsApp
+            const encodedText = encodeURIComponent(whatsappText);
+            whatsappBtn.href = `https://wa.me/5492281409457?text=${encodedText}`;
+        }
+    </script>
+</body>
+</html>
