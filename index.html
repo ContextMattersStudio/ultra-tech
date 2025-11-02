@@ -3,46 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Productos y Precios</title>
+    <title>Lista de Productos Ultra Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    
     <style>
         /* Estilos Generales */
-        body { font-family: sans-serif; margin: 20px; padding-bottom: 80px; }
-        h1 { color: #333; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px 0 80px 0; /* Padding inferior para el botón flotante */
+            background-color: #f4f7f6; 
+        }
+        h1 { 
+            color: #007bff; 
+            border-bottom: 2px solid #007bff; 
+            padding-bottom: 10px; 
+            margin-bottom: 30px; 
+            text-align: center; 
+            font-size: 28px;
+        }
+        #loading-message { 
+            text-align: center; 
+            color: #555; 
+            padding: 20px; 
+            font-weight: bold; 
+        }
+        
+        /* Estilos de Tabla ("Forma Linda") */
         table { 
-            width: 100%; 
+            width: 90%; 
+            max-width: 800px;
+            margin: 20px auto; /* Centra la tabla */
             border-collapse: collapse; 
-            margin-top: 20px; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden; 
         }
         th, td { 
-            border: 1px solid #ddd; 
-            padding: 12px 15px; 
+            border: 1px solid #e0e0e0; 
+            padding: 15px; 
             text-align: left; 
         }
         th { 
             background-color: #007bff; 
             color: white; 
-            font-weight: bold; 
+            font-weight: 600; 
+            text-transform: uppercase;
         }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        tr:hover { background-color: #f1f1f1; }
+        tr:nth-child(even) { background-color: #f8f8ff; } /* Azul muy claro para filas pares */
+        tr:hover { background-color: #e6f7ff; } /* Hover azul sutil */
         
         /* Estilos del Botón Flotante de WhatsApp */
         .whatsapp-float {
             position: fixed;
-            width: 70px; /* Un poco más grande para el texto */
+            width: 70px;
             height: 70px;
             bottom: 30px; 
             right: 30px; 
             background-color: #25d366; 
             color: #FFF;
-            border-radius: 50%; /* Redondo */
+            border-radius: 50%;
             text-align: center;
-            font-size: 14px; /* Tamaño de fuente para el texto */
+            font-size: 14px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-            z-index: 1000; /* Asegura que esté al frente */
+            z-index: 1000;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -50,17 +75,14 @@
             text-decoration: none;
             transition: background-color 0.3s, transform 0.3s;
         }
-
         .whatsapp-float .fa-whatsapp {
             font-size: 28px;
             margin-bottom: 2px;
         }
-        
         .whatsapp-float span {
             display: block;
             line-height: 1.1;
         }
-
         .whatsapp-float:hover {
             background-color: #128c7e;
             transform: scale(1.05);
@@ -69,11 +91,10 @@
 </head>
 <body>
 
-    <h1>Cargar Lista de Productos y Precios</h1>
+    <h1>Lista de Productos Ultra Store</h1>
 
-    <p>Selecciona un archivo Excel (.xlsx/.xls) con las columnas: **Producto**, **Precio Transferencia**, **Precio USDT**.</p>
-    <input type="file" id="excel-file" accept=".xlsx, .xls">
-
+    <div id="loading-message">Cargando datos del archivo Excel, por favor espere...</div>
+    
     <div id="excel-data">
         </div>
 
@@ -83,4 +104,76 @@
         target="_blank"
     >
         <i class="fa-brands fa-whatsapp"></i>
-        <span>
+        <span>Consultar / Comprar</span>
+    </a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadExcelAutomatically);
+
+        const EXCEL_FILE_NAME = 'CELULARES_ULTRA_STORE.xlsx';
+
+        async function loadExcelAutomatically() {
+            const dataContainer = document.getElementById('excel-data');
+            const loadingMessage = document.getElementById('loading-message');
+
+            try {
+                // 1. Descarga el archivo desde la ruta relativa (el mismo repositorio)
+                const response = await fetch(EXCEL_FILE_NAME);
+                
+                if (!response.ok) {
+                    throw new Error(`Error al cargar el archivo. Código: ${response.status}. Asegúrese de que el archivo "${EXCEL_FILE_NAME}" exista en el repositorio.`);
+                }
+
+                // 2. Lee el archivo como ArrayBuffer
+                const arrayBuffer = await response.arrayBuffer();
+                const data = new Uint8Array(arrayBuffer);
+
+                // 3. Procesa el archivo con SheetJS
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0]; 
+                const worksheet = workbook.Sheets[sheetName];
+
+                // Convierte la hoja a formato JSON
+                const json = XLSX.utils.sheet_to_json(worksheet);
+                
+                if (json.length === 0) {
+                    dataContainer.innerHTML = '<p style="color: red; text-align: center;">El archivo Excel está vacío o el formato es incorrecto.</p>';
+                    return;
+                }
+
+                // 4. Genera la tabla HTML
+                let tableHTML = '<table>';
+                tableHTML += '<thead><tr><th>Producto</th><th>Precio Transferencia</th><th>Precio USDT</th></tr></thead>';
+                tableHTML += '<tbody>';
+
+                json.forEach(row => {
+                    // **IMPORTANTE:** Estas claves deben coincidir exactamente con los nombres de columna de tu Excel
+                    const producto = row['Producto'] || 'N/A';
+                    const precioTransferencia = row['Precio Transferencia'] || 'N/A';
+                    const precioUSDT = row['Precio USDT'] || 'N/A';
+
+                    tableHTML += `
+                        <tr>
+                            <td>${producto}</td>
+                            <td>${precioTransferencia}</td>
+                            <td>${precioUSDT}</td>
+                        </tr>
+                    `;
+                });
+
+                tableHTML += '</tbody></table>';
+
+                // 5. Muestra la tabla
+                dataContainer.innerHTML = tableHTML;
+
+            } catch (error) {
+                console.error("Error al cargar o procesar el Excel:", error);
+                dataContainer.innerHTML = `<p style="color: red; text-align: center;">No se pudo cargar la lista de productos automáticamente. Por favor, verifica el nombre y la existencia del archivo "${EXCEL_FILE_NAME}".</p>`;
+            } finally {
+                // Oculta el mensaje de carga en cualquier caso
+                loadingMessage.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
