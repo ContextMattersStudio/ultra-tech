@@ -10,23 +10,23 @@
     <style>
         /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
         :root {
-            --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
-            --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
-            --color-new-background: #212529; /* Fondo Oscuro */
-            --color-card-background: #2B3035; /* Fondo de la tarjeta (Tabs/Leyenda/Tabla) */
-            --color-white: #FFFFFF; /* Blanco Puro */
-            --color-whatsapp: #25d366; 
-            --color-whatsapp-hover: #128c7e; 
+            --color-primary: #E9ECEF;
+            --color-secondary: #D0AE50;
+            --color-new-background: #212529;
+            --color-card-background: #2B3035;
+            --color-white: #FFFFFF;
+            --color-whatsapp: #25d366;
+            --color-whatsapp-hover: #128c7e;
             
             /* Colores de Estado */
-            --color-hot: #FF4500; 
-            --color-new: #1E90FF; 
-            --color-offers: #D0AE50; 
+            --color-hot: #FF4500;
+            --color-new: #1E90FF;
+            --color-offers: #D0AE50;
             
-            /* Colores de Filas Alternas (NUEVOS) */
-            --row-odd: #2E343A; /* Un gris oscuro, ligeramente más claro que el fondo */
-            --row-even: #383E45; /* Un gris oscuro más claro aún */
-            --row-hover: #404B55; /* Mismo color de hover para consistencia */
+            /* Colores de Filas Alternas */
+            --row-odd: #2E343A; 
+            --row-even: #383E45; 
+            --row-hover: #404B55;
         }
 
         /* Estilos Generales */
@@ -41,7 +41,7 @@
             align-items: center;
             overflow-x: hidden; 
         }
-
+        
         /* [Resto de estilos de Título, Leyenda y Tabs sin cambios] */
 
         .main-title {
@@ -157,7 +157,7 @@
             overflow: hidden; 
         }
         
-        /* FILAS ALTERNAS MODIFICADAS */
+        /* FILAS ALTERNAS */
         tr:nth-child(even) { background-color: var(--row-even); } 
         tr:nth-child(odd) { background-color: var(--row-odd); } 
         tr:hover { background-color: var(--row-hover); }
@@ -167,11 +167,40 @@
             padding-right: 15px;
             border: 1px solid #3B4249; 
         }
+        
+        /* SOLUCIÓN: Eliminamos la línea inferior en la celda flexbox */
         td:first-child { 
             display: flex;
             align-items: center;
+            /* Esta línea es la solución para eliminar el borde redundante interno: */
+            border-bottom: none; 
+        }
+        /* PERO el TR necesita el borde inferior para separarse de la fila siguiente. 
+           La solución más segura es que los elementos dentro del TD no generen ese conflicto.
+           Vamos a restablecer el borde en la celda y ajustar el estilo interno.
+           
+           Revertimos el border-bottom: none en td:first-child, y ajustamos el estilo flex.
+           
+           El problema es que el flex está en el TD, pero los hijos del TD tienen padding. 
+           Usaremos width: 100% en el contenedor flex para asegurar que el borde inferior se dibuje correctamente en todo el TD. 
+        */
+
+        td:first-child {
+            /* REAJUSTE DE FLEX PARA SOLUCIONAR EL ARTEFACTO VISUAL */
+            display: flex;
+            align-items: center;
+            /* Usamos este div interior para dibujar el contenido sin conflictos */
+            width: 100%; 
+            box-sizing: border-box; /* Asegura que width 100% incluya padding */
         }
         
+        /* MANTENEMOS EL ESTILO DE LA CELDA COMPLETA PARA EL BORDE: */
+        td { 
+            border: 1px solid #3B4249;
+            padding: 18px 20px;
+        }
+        
+        /* Resto de estilos responsive sin cambios */
         @media (max-width: 768px) {
             th:first-child, td:first-child {
                 width: 70%;
@@ -191,6 +220,8 @@
             }
         }
         
+        /* [Resto de estilos de botones y flotante sin cambios] */
+
         .buy-button {
             padding: 8px 15px;
             background-color: var(--color-secondary);
@@ -201,10 +232,6 @@
             text-decoration: none;
             transition: background-color 0.2s ease, transform 0.1s ease;
             display: inline-block;
-        }
-        .buy-button:hover {
-            background-color: #B89C40;
-            transform: translateY(-1px);
         }
         .whatsapp-float {
             position: fixed;
@@ -524,7 +551,7 @@
                 const arrayBuffer = await response.arrayBuffer();
                 const data = new Uint8Array(arrayBuffer);
                 const workbook = XLSX.read(data, { type: 'array' });
-                const sheetName = workbook.SheetNames[0]; 
+                const sheetName = workbook.Sheets[workbook.SheetNames[0]]; 
                 const worksheet = workbook.Sheets[sheetName];
 
                 const json = XLSX.utils.sheet_to_json(worksheet);
