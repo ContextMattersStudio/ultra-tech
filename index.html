@@ -20,7 +20,7 @@
             --color-hot: #FF4500;
             --color-new: #1E90FF;
             --color-offers: #D0AE50;
-            /* Nuevos colores para filas alternas */
+            /* Colores para filas alternas */
             --color-row-even: #2B3035; /* Color para filas pares (más oscuro) */
             --color-row-odd: #2F353A;  /* Color para filas impares (más claro) */
         }
@@ -164,19 +164,27 @@
             background-color: var(--color-row-odd); /* Color para filas impares */
         }
 
-        /* Corrección para la primera columna */
+        /* CORRECCIÓN: Estilos para la primera celda de la fila */
         td:first-child { 
             text-align: left;
             padding-right: 15px;
-            /* Eliminar el borde inferior independiente, ahora es parte del borde de la fila */
-            border-bottom: 1px solid #3B4249; 
-            border-top: 1px solid #3B4249;
-            display: flex; /* Asegura que el contenido esté centrado verticalmente */
-            align-items: center; /* Alinea el texto del producto con los iconos */
-            white-space: normal; /* Permite que el texto se rompa en varias líneas */
+            /* CLAVE: Eliminar los bordes superior e inferior de la celda */
+            border-top: none; 
+            border-bottom: none;
+            
+            display: flex; 
+            align-items: center; 
+            white-space: normal; 
+            /* Se añade el color de fondo de la fila para rellenar */
         }
+
+        /* CLAVE: Asegurar que el borde inferior de la fila se muestre y sea sólido */
+        tbody tr {
+            border-bottom: 1px solid #3B4249; 
+        }
+
         th:first-child { 
-            text-align: left; /* Mantener el título "Producto" alineado a la izquierda si se desea */
+            text-align: left; /* Mantener el título "Producto" alineado a la izquierda */
             padding-right: 15px;
         }
         
