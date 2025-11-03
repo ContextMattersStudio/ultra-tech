@@ -327,10 +327,9 @@
             }
 
             // 2. Formatear el número con el punto como separador de miles
-            // Se usa style: 'decimal' para evitar el símbolo de moneda.
             const formatter = new Intl.NumberFormat('es-AR', {
-                style: 'decimal', // Usar formato decimal
-                minimumFractionDigits: 0, // No mostrar decimales
+                style: 'decimal', 
+                minimumFractionDigits: 0, 
                 maximumFractionDigits: 0
             });
             
@@ -338,6 +337,30 @@
             const formattedNumber = formatter.format(numericValue);
             return `ARS ${formattedNumber}`;
         }
+        
+        // Función para formatear el número como USDT, sin símbolo de moneda
+        function formatUSDT(value) {
+            // Intenta convertir el valor a un número
+            // El valor puede venir ya como 'u$s157', por eso se mantiene la lógica de limpieza
+            const numericValue = parseFloat(String(value).replace(/[^0-9.-]+/g, ""));
+            
+            // 1. Validar si el valor es un número válido
+            if (isNaN(numericValue) || numericValue === 0) {
+                return 'CONSULTAR';
+            }
+
+            // 2. Formatear el número con el punto como separador de miles
+            const formatter = new Intl.NumberFormat('es-AR', {
+                style: 'decimal', 
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: 0
+            });
+            
+            // 3. Obtener el número formateado (ej: "123.456") y prefijar con "USDT "
+            const formattedNumber = formatter.format(numericValue);
+            return `USDT ${formattedNumber}`;
+        }
+
 
         async function initApp() {
             try {
@@ -461,11 +484,12 @@
             filteredData.forEach(row => {
                 const producto = String(row['Producto'] || '—');
                 const rawPriceTransferencia = row['Precio Transferencia'];
-                const precioUSDT = String(row['Precio USDT'] || '—');
+                const rawPriceUSDT = row['Precio USDT'];
                 const status = String(row['STATUS'] || '').toUpperCase().trim();
                 
-                // Aplicar el nuevo formato al precio de transferencia
+                // Aplicar formatos a ambas columnas
                 const formattedPriceTransferencia = formatARS(rawPriceTransferencia);
+                const formattedPriceUSDT = formatUSDT(rawPriceUSDT); // Nueva función aplicada
                 
                 let statusIconHtml = '';
                 const statusConfig = STATUS_MAP[status];
@@ -479,9 +503,9 @@
                 }
                 
                 const urlProduct = encodeURIComponent(producto);
-                // Usar el precio formateado o el original para la URL si es 'CONSULTAR'
+                // Usar el precio original o 'CONSULTAR' para la URL
                 const urlPriceT = encodeURIComponent(rawPriceTransferencia || 'CONSULTAR'); 
-                const urlPriceU = encodeURIComponent(precioUSDT);
+                const urlPriceU = encodeURIComponent(rawPriceUSDT || 'CONSULTAR');
                 
                 const buyLink = `purchase.html?product=${urlProduct}&priceT=${urlPriceT}&priceU=${urlPriceU}`;
 
@@ -492,7 +516,7 @@
                             ${statusIconHtml} 
                         </td>
                         <td>${formattedPriceTransferencia}</td>
-                        <td>${precioUSDT}</td>
+                        <td>${formattedPriceUSDT}</td>
                         <td>
                             <a href="${buyLink}" class="buy-button">Comprar</a>
                         </td>
