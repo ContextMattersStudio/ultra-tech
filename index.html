@@ -80,13 +80,13 @@
             align-items: center;
             gap: 8px;
             color: var(--color-primary);
-            cursor: pointer; 
-            padding: 5px 10px; 
+            cursor: pointer; /* Hacer que parezca clickeable */
+            padding: 5px 10px; /* Añadir padding para hacer la zona de click más grande */
             border-radius: 4px;
             transition: background-color 0.2s;
         }
         .legend-item:hover {
-            background-color: #3B4249; 
+            background-color: #3B4249; /* Pequeño efecto hover */
         }
 
         .legend-icon { font-size: 1.1em; }
@@ -769,8 +769,8 @@
                     return;
                 }
 
+                // CLAVE: SOLO LLAMAR A RENDER, NO LLAMAR A filterTable()
                 renderTable(allFilteredData, dataContainer);
-                filterTable();
 
 
             } catch (error) {
@@ -828,8 +828,8 @@
                     return;
                 }
 
+                // CLAVE: SOLO LLAMAR A RENDER, NO LLAMAR A filterTable()
                 renderTable(filteredData, dataContainer);
-                filterTable();
 
             } catch (error) {
                 console.error("Error al cargar o procesar el Excel:", error);
