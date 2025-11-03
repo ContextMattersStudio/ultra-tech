@@ -626,6 +626,7 @@
 
                 button.addEventListener('click', () => {
                     clearSearch(); 
+                    // CLAVE: Llamar a la función de carga de datos individual con los parámetros correctos
                     loadExcelData(tab.file_full_name, tab.tab_name); 
                 });
 
@@ -788,8 +789,7 @@
             loadingMessage.textContent = `Cargando datos de ${tabName}...`;
             loadingMessage.style.display = 'block';
             dataContainer.innerHTML = ''; 
-            // CLAVE: Activar la pestaña antes de la carga
-            updateActiveTab(tabName); 
+            updateActiveTab(tabName);
 
             try {
                 const response = await fetch(fullFileName);
@@ -828,7 +828,6 @@
                     return;
                 }
 
-                // CLAVE: Renderizar la data de la pestaña seleccionada
                 renderTable(filteredData, dataContainer);
 
             } catch (error) {
