@@ -10,16 +10,18 @@
     <style>
         /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
         :root {
-            --color-primary: #E9ECEF;
-            --color-secondary: #D0AE50;
-            --color-new-background: #212529;
-            --color-card-background: #2B3035;
-            --color-white: #FFFFFF;
-            --color-whatsapp: #25d366;
-            --color-whatsapp-hover: #128c7e;
-            --color-hot: #FF4500;
-            --color-new: #1E90FF;
-            --color-offers: #D0AE50;
+            --color-primary: #E9ECEF; /* Gris muy claro (Texto principal) */
+            --color-secondary: #D0AE50; /* Marrón/Dorado de acento */
+            --color-new-background: #212529; /* Fondo Oscuro */
+            --color-card-background: #2B3035; /* Fondo de la tarjeta (Tabs/Leyenda/Tabla) */
+            --color-white: #FFFFFF; /* Blanco Puro */
+            --color-whatsapp: #25d366; 
+            --color-whatsapp-hover: #128c7e; 
+            
+            /* Colores de Estado */
+            --color-hot: #FF4500; 
+            --color-new: #1E90FF; 
+            --color-offers: #D0AE50; 
         }
 
         /* Estilos Generales */
@@ -58,6 +60,7 @@
             border-radius: 2px;
         }
 
+        /* --- Barra de Leyenda --- */
         #legend-bar {
             width: 90%;
             max-width: 900px;
@@ -79,7 +82,8 @@
             color: var(--color-primary);
         }
         .legend-icon { font-size: 1.1em; }
-        
+
+        /* Estilos de Pestañas (Tabs) */
         #tabs-container {
             width: 90%;
             max-width: 900px;
@@ -120,6 +124,7 @@
             font-weight: bold; 
         }
         
+        /* Contenedor de Scroll de Tabla */
         #table-wrapper {
             width: 90%;
             max-width: 900px;
@@ -129,6 +134,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
+        /* Estilos de Tabla */
         th, td { 
             border: 1px solid #3B4249;
             padding: 18px 20px;
@@ -158,11 +164,6 @@
         td:first-child { 
             display: flex;
             align-items: center;
-        }
-        th:first-child, td:first-child { 
-            text-align: left;
-            padding-right: 15px;
-            border: 1px solid #3B4249; 
         }
         
         @media (max-width: 768px) {
@@ -265,20 +266,21 @@
         let legendData = []; 
         let currentActiveTab = null;
         let CONTACT_PHONE = ''; 
-        let REMOTE_CONFIGS = {}; // Variable global para las URLs de configuración
+        let REMOTE_CONFIGS = {}; 
 
         async function initApp() {
             try {
-                // PASO 1: Cargar el mapa de configuración remota
-                const remoteResponse = await fetch('remote_configs.json');
-                if (!remoteResponse.ok) throw new Error(`Error ${remoteResponse.status}: No se pudo cargar el mapa de configuración (remote_configs.json).`);
+                // PASO 1: Cargar el mapa de configuración (AHORA DESDE LA CARPETA CONFIG)
+                const remoteResponse = await fetch('config/remote_configs.json');
+                if (!remoteResponse.ok) throw new Error(`Error ${remoteResponse.status}: No se pudo cargar el mapa de configuración (config/remote_configs.json).`);
                 REMOTE_CONFIGS = await remoteResponse.json();
 
                 // PASO 2: Cargar el resto de las configuraciones en paralelo
+                // Se agrega el prefijo 'config/' a todas las rutas que usan el archivo local
                 const [contactResponse, tabsConfigResponse, legendResponse] = await Promise.all([
-                    fetch(REMOTE_CONFIGS.contact_info),
-                    fetch(REMOTE_CONFIGS.tabs_config), // Carga el JSON de pestañas desde la URL de Drive
-                    fetch(REMOTE_CONFIGS.leyenda_config)
+                    fetch('config/' + REMOTE_CONFIGS.contact_info), 
+                    fetch('config/' + REMOTE_CONFIGS.tabs_config),  
+                    fetch('config/' + REMOTE_CONFIGS.leyenda_config) 
                 ]);
 
                 // 3. Procesar datos de contacto
@@ -322,8 +324,6 @@
                 document.getElementById('excel-data').innerHTML = `<p style="color: red; text-align: center; max-width: 900px; margin: auto;">Error al iniciar: ${error.message}</p>`;
             }
         }
-
-        // [Funciones buildLegend, buildTabs, updateActiveTab, renderTable, loadAllExcelData, loadExcelData sin cambios funcionales]
 
         function buildLegend(data) {
             const container = document.getElementById('legend-bar');

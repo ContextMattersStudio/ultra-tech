@@ -57,7 +57,7 @@
         .back-button {
             display: inline-block;
             padding: 10px 15px;
-            background-color: #495057; /* Gris oscuro para el botón */
+            background-color: #495057; 
             color: var(--color-primary);
             text-decoration: none;
             border-radius: 5px;
@@ -78,7 +78,7 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            text-align: center; /* Centrar el botón de volver */
+            text-align: center; 
         }
 
         /* Estilos de Pasos */
@@ -86,13 +86,13 @@
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 1px solid #404B55;
-            text-align: left; /* Volver a alinear el contenido del paso a la izquierda */
+            text-align: left; 
         }
         .step:last-child {
             border-bottom: none;
             margin-bottom: 0;
             padding-bottom: 0;
-            text-align: center; /* Centrar el botón final de WhatsApp */
+            text-align: center; 
         }
         .step h2 {
             font-size: 20px;
@@ -112,7 +112,7 @@
             width: 100%;
             max-width: 300px;
             cursor: pointer;
-            appearance: none;
+            appearance: none; 
             background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23E9ECEF%22%20d%3D%22M287%2069.4l-14.9-14.9c-2.3-2.3-4.9-3.4-7.6-3.4-2.7%200-5.3%201.1-7.7%203.4L146.2%20170.8%2029.8%2054.4c-4.7-4.7-12.2-4.7-16.9%200l-14.9%2014.9c-4.7%204.7-4.7%2012.2%200%2016.9l133.5%20133.5c2.3%202.3%204.9%203.4%207.6%203.4s5.3-1.1%207.7-3.4l133.5-133.5c4.7-4.6%204.7-12.2%200-16.9z%22%2F%3E%3C%2Fsvg%3E'); 
             background-repeat: no-repeat;
             background-position: right 10px top 50%;
@@ -206,9 +206,38 @@
 
         let PAYMENT_METHODS_DATA = {};
         let productDetails = {};
+        let CONTACT_PHONE = ''; 
 
         async function initPurchasePage() {
-            // 1. Obtener detalles del producto de la URL
+            try {
+                // 1. Cargar el mapa de configuración remota
+                const remoteResponse = await fetch('config/remote_configs.json');
+                if (!remoteResponse.ok) throw new Error(`Error ${remoteResponse.status}: No se pudo cargar el mapa de configuración (config/remote_configs.json).`);
+                const REMOTE_CONFIGS = await remoteResponse.json();
+                
+                // 2. Cargar datos de Contacto y Métodos de Pago (USANDO RUTAS ACTUALIZADAS)
+                const [contactResponse, paymentResponse] = await Promise.all([
+                    fetch('config/' + REMOTE_CONFIGS.contact_info),
+                    fetch('config/' + REMOTE_CONFIGS.payment_methods)
+                ]);
+
+                if (!contactResponse.ok) throw new Error("No se pudo cargar contact_info.json");
+                if (!paymentResponse.ok) throw new Error("No se pudo cargar payment_methods.json");
+
+                const contactData = await contactResponse.json();
+                PAYMENT_METHODS_DATA = await paymentResponse.json();
+                
+                CONTACT_PHONE = contactData.phone;
+                
+            } catch (error) {
+                console.error("Error al cargar la configuración:", error);
+                document.querySelector('.purchase-steps-container').innerHTML = 
+                    `<p style="color: red; text-align: center;">Error al cargar datos esenciales: ${error.message}</p>`;
+                return;
+            }
+
+
+            // 3. Obtener detalles del producto de la URL
             const params = new URLSearchParams(window.location.search);
             productDetails = {
                 product: params.get('product') || 'Producto Desconocido',
@@ -218,28 +247,15 @@
 
             document.getElementById('product-display').textContent = 
                 `Artículo seleccionado: ${productDetails.product}`;
+            
+            // 4. Rellenar y configurar la lógica
+            populatePaymentDropdown();
+            const firstMethod = Object.keys(PAYMENT_METHODS_DATA)[0];
+            handlePaymentMethodChange(firstMethod); 
 
-            // 2. Cargar métodos de pago
-            try {
-                const response = await fetch('payment_methods.json');
-                if (!response.ok) throw new Error("No se pudo cargar payment_methods.json");
-                PAYMENT_METHODS_DATA = await response.json();
-                
-                populatePaymentDropdown();
-                // 3. Cargar la información inicial (Transferencia por defecto o la primera opción disponible)
-                const firstMethod = Object.keys(PAYMENT_METHODS_DATA)[0];
-                handlePaymentMethodChange(firstMethod); 
-
-                // 4. Configurar listener para el dropdown
-                document.getElementById('payment-method-select').addEventListener('change', (e) => {
-                    handlePaymentMethodChange(e.target.value);
-                });
-
-            } catch (error) {
-                console.error("Error al cargar la configuración de pagos:", error);
-                document.getElementById('purchase-steps-container').innerHTML = 
-                    `<p style="color: red;">Error: ${error.message}</p>`;
-            }
+            document.getElementById('payment-method-select').addEventListener('change', (e) => {
+                handlePaymentMethodChange(e.target.value);
+            });
         }
 
         /**
@@ -296,9 +312,9 @@
 
             infoContainer.innerHTML = htmlContent;
 
-            // Actualizar el botón de WhatsApp
+            // Actualizar el botón de WhatsApp con el número centralizado
             const encodedText = encodeURIComponent(whatsappText);
-            whatsappBtn.href = `https://wa.me/5492281409457?text=${encodedText}`;
+            whatsappBtn.href = `https://wa.me/${CONTACT_PHONE}?text=${encodedText}`;
         }
     </script>
 </body>
