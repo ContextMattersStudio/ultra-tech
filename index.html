@@ -9,28 +9,30 @@
     <script src="utils/priceFormatter.js"></script>
     
     <style>
-        /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
+        /* Paleta de Colores ULTRA TECH (Tema Oscuro Moderno) */
         :root {
-            --color-primary: #E9ECEF;
-            --color-secondary: #D0AE50;
-            --color-new-background: #212529;
-            --color-card-background: #2B3035;
-            --color-white: #FFFFFF;
-            --color-whatsapp: #25d366;
-            --color-whatsapp-hover: #128c7e;
+            --color-primary: #f8f9fa; /* Blanco suave */
+            --color-secondary: #D0AE50; /* Dorado de acento */
+            --color-new-background: #121212; /* Negro profundo para el fondo */
+            --color-card-background: #1e1e1e; /* Gris oscuro para contenedores */
+            --color-table-header: #212529; /* Gris muy oscuro para encabezados */
+            --color-white: #FFFFFF; 
+            --color-whatsapp: #25d366; 
+            --color-whatsapp-hover: #128c7e; 
             --color-hot: #FF4500;
-            --color-new: #1E90FF;
+            --color-new: #4c73e8; /* Azul moderno */
             --color-offers: #D0AE50;
             /* Colores para filas alternas */
-            --color-row-even: #2B3035; /* Color para filas pares (más oscuro) */
-            --color-row-odd: #2F353A;  /* Color para filas impares (más claro) */
+            --color-row-even: #1e1e1e; 
+            --color-row-odd: #282828;  
+            --color-border: #333333;
         }
 
         /* Estilos Generales */
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
-            padding: 30px 0 80px 0;
+            padding: 40px 0 80px 0;
             background-color: var(--color-new-background);
             color: var(--color-primary);
             display: flex;
@@ -39,158 +41,166 @@
             overflow-x: hidden; 
         }
 
+        /* Contenedores Principales */
+        #legend-bar, #tabs-container, #table-wrapper {
+            width: 95%;
+            max-width: 1000px;
+            margin: 15px auto;
+            border-radius: 12px;
+            background-color: var(--color-card-background);
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
         /* Título Principal */
         .main-title {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             padding: 0 20px;
             width: 100%;
         }
         .main-title h1 {
             color: var(--color-primary); 
-            font-size: 36px;
+            font-size: 40px;
+            font-weight: 800; /* Más audaz */
             margin: 0;
             padding: 0;
-            border-bottom: none;
         }
         .main-title .underline {
             display: block;
-            width: 120px;
-            height: 3px;
+            width: 150px;
+            height: 4px; /* Más grueso */
             background-color: var(--color-secondary);
-            margin: 5px auto 0 auto;
+            margin: 8px auto 0 auto;
             border-radius: 2px;
         }
-
+        
+        /* Barra de Leyenda */
         #legend-bar {
-            width: 90%;
-            max-width: 900px;
-            margin-bottom: 20px; 
-            padding: 15px; 
-            background-color: var(--color-card-background); 
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+            padding: 20px 15px;
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 25px;
-            font-size: 14px;
+            gap: 20px;
+            font-size: 15px;
+            border: 1px solid var(--color-border);
         }
         .legend-item {
             display: flex;
             align-items: center;
             gap: 8px;
             color: var(--color-primary);
-            cursor: pointer; /* Hacer que parezca clickeable */
-            padding: 5px 10px; /* Añadir padding para hacer la zona de click más grande */
-            border-radius: 4px;
-            transition: background-color 0.2s;
+            cursor: pointer; 
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: background-color 0.2s, transform 0.1s;
         }
         .legend-item:hover {
-            background-color: #3B4249; /* Pequeño efecto hover */
+            background-color: #333333; 
+            transform: translateY(-1px);
         }
-
-        .legend-icon { font-size: 1.1em; }
+        .legend-icon { font-size: 1.2em; }
         
+        /* Contenedor de Pestañas */
         #tabs-container {
-            width: 90%;
-            max-width: 900px;
-            margin-bottom: 10px; 
-            padding: 5px; 
-            background-color: var(--color-card-background); 
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+            padding: 10px; 
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 5px;
             flex-wrap: wrap; 
+            background-color: #1e1e1e;
         }
-
-        /* Estilos para el campo de búsqueda */
+        
+        /* Campo de Búsqueda */
         #search-container {
-            width: 90%;
-            max-width: 900px;
-            margin-bottom: 20px;
-            padding: 10px 0;
+            width: 95%;
+            max-width: 1000px;
+            margin: 15px auto;
+            padding: 0;
             text-align: center;
         }
         #search-input {
             width: 100%;
-            max-width: 400px;
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 1px solid var(--color-secondary);
-            background-color: #3B4249;
+            max-width: 450px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--color-border);
+            background-color: #282828;
             color: var(--color-primary);
-            font-size: 16px;
+            font-size: 17px;
             box-sizing: border-box;
             transition: border-color 0.3s ease;
         }
         #search-input:focus {
             border-color: var(--color-secondary);
             outline: none;
+            box-shadow: 0 0 0 1px var(--color-secondary);
         }
         
         .tab-button {
-            padding: 12px 25px;
-            font-size: 14px;
+            padding: 10px 20px;
+            font-size: 15px;
             font-weight: 600;
             text-transform: uppercase;
             color: var(--color-primary);
             background-color: transparent;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             white-space: nowrap;
         }
+        .tab-button:hover:not(.active) {
+            background-color: #333333;
+        }
         .tab-button.active {
             background-color: var(--color-secondary); 
-            color: var(--color-primary);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+            color: var(--color-card-background); /* Texto oscuro sobre dorado */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         }
         
-        #loading-message { 
+        #loading-message, #no-results-message { 
             text-align: center; 
-            color: var(--color-primary); 
-            padding: 20px; 
+            color: var(--color-secondary); 
+            padding: 30px; 
             font-weight: bold; 
+            font-size: 1.1em;
         }
         
+        /* Estilos de la Tabla */
         #table-wrapper {
-            width: 90%;
-            max-width: 900px;
-            margin: 20px auto;
+            padding: 0;
             overflow-x: auto; 
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid var(--color-border);
         }
 
         table { 
             width: 100%; 
             min-width: 600px; 
             border-collapse: collapse; 
-            overflow: hidden; 
         }
 
         th { 
             text-align: center; 
-            background-color: var(--color-secondary); 
+            background-color: var(--color-table-header); 
             color: var(--color-primary); 
             font-weight: 700; 
             text-transform: uppercase;
-            font-size: 15px;
+            font-size: 14px;
             white-space: nowrap;
-            padding: 18px 20px;
-            border: 1px solid #3B4249;
+            padding: 15px 12px;
+            border: none;
+            border-bottom: 2px solid var(--color-secondary); /* Acento dorado en el encabezado */
         }
         
         td { 
-            padding: 18px 20px;
-            border: 1px solid #3B4249; 
+            padding: 15px 12px;
+            border: none; 
+            border-bottom: 1px solid var(--color-border);
             text-align: center; 
             vertical-align: middle; 
+            font-size: 15px;
         }
 
         /* Estilos para filas alternas */
@@ -200,100 +210,79 @@
         tbody tr:nth-child(odd) {
             background-color: var(--color-row-odd); 
         }
+        tbody tr:hover {
+            background-color: #383838; /* Efecto hover en fila */
+        }
 
-        /* Corrección para la primera celda */
+        /* Primera columna (Producto) */
         td:first-child { 
+            text-align: left; /* Alineado a la izquierda para el producto */
             display: flex; 
             align-items: center; 
-            justify-content: center; 
-            flex-direction: row; 
-            flex-wrap: wrap; 
-
-            padding-right: 15px;
-            border-top: none; 
-            border-bottom: none;
-            white-space: normal; 
+            justify-content: flex-start; /* Alinear contenido a la izquierda */
+            padding-right: 10px;
+            white-space: normal;
         }
         
-        td:first-child > span {
-            display: inline-block;
-        }
-
         td:first-child .product-text {
-            text-align: center;
+            display: block;
+            flex-grow: 1;
         }
-
-        .status-icon { margin-left: 5px; font-size: 1em; display: inline-block; }
-
-
+        
         th:first-child { 
-            text-align: center; 
-            padding-right: 15px;
+            text-align: left; 
+            padding-left: 15px;
         }
 
-        tbody tr {
-            border-bottom: 1px solid #3B4249; 
-        }
-        
-        #no-results-message {
-            text-align: center;
-            color: var(--color-secondary);
-            padding: 20px;
-            font-weight: bold;
-            display: none; 
-        }
-        
+        /* Estilos en Móvil */
         @media (max-width: 768px) {
-            th:first-child, td:first-child {
-                width: 70%;
-                min-width: 150px;
-                max-width: 250px;
-            }
-            td:first-child { 
-                display: block; 
-                text-align: left;
-                padding-right: 10px;
-                
-                display: -webkit-box;
-                -webkit-line-clamp: 3;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: normal !important;
+            .main-title h1 {
+                font-size: 30px;
             }
             th, td {
-                padding: 12px 10px;
+                padding: 10px 8px;
+            }
+            td {
+                font-size: 13px;
+            }
+            /* La primera columna debe mantenerse legible */
+            td:first-child {
+                display: block;
+                padding-right: 15px;
+            }
+            td:first-child .product-text {
+                display: inline;
             }
         }
         
         .buy-button {
-            padding: 8px 15px;
+            padding: 8px 16px;
             background-color: var(--color-secondary);
-            color: var(--color-primary);
-            border-radius: 4px;
+            color: var(--color-card-background); /* Texto oscuro en el botón */
+            border-radius: 6px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
             text-decoration: none;
             transition: background-color 0.2s ease, transform 0.1s ease;
             display: inline-block;
         }
         .buy-button:hover {
-            background-color: #B89C40;
-            transform: translateY(-1px);
+            background-color: #e6b840;
+            transform: translateY(-2px);
         }
         
         /* ESTILOS DEL BOTÓN FLOTANTE */
         .whatsapp-float {
             position: fixed;
-            width: 55px; 
-            height: 55px;
-            bottom: 25px; 
-            right: 25px; 
+            width: 60px; /* Más grande */
+            height: 60px;
+            bottom: 30px; 
+            right: 30px; 
             background-color: var(--color-whatsapp); 
             color: var(--color-white);
             border-radius: 50%;
             text-align: center;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
             z-index: 1000;
             display: flex;
             justify-content: center;
@@ -302,14 +291,14 @@
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
         .whatsapp-float .fa-whatsapp { 
-            font-size: 32px; 
-            margin: 0;
+            font-size: 34px; 
         }
-        .whatsapp-float:hover { background-color: var(--color-whatsapp-hover); transform: scale(1.08); }
+        .whatsapp-float:hover { background-color: var(--color-whatsapp-hover); transform: scale(1.1); }
         
-        .status-icon { margin-left: 5px; font-size: 1em; display: inline-block; }
+        /* Estilos de Iconos de Estatus */
+        .status-icon { margin-left: 10px; font-size: 1.1em; display: inline-block; }
         .status-hot { color: var(--color-hot); }
-        .status-new { color: var(--color-new); transform: rotate(-30deg); }
+        .status-new { color: var(--color-new); transform: none; } /* Quitamos la rotación para hacerlo más limpio */
         .status-offers { color: var(--color-offers); }
     </style>
 </head>
