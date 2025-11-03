@@ -168,12 +168,12 @@
 
         /* Corrección para la primera celda */
         td:first-child { 
-            /* Para centrar vertical y horizontalmente el texto/icono: */
+            /* CLAVE: Usamos Flexbox para centrar y mantener elementos en línea (default) */
             display: flex; 
-            justify-content: center; /* Centra horizontalmente */
-            align-items: center; /* Centra verticalmente */
-            flex-direction: column; /* Permite centrar múltiples elementos como texto y el icono */
-            text-align: center; /* Asegura el centrado del texto en varias líneas */
+            align-items: center; /* Centra verticalmente el contenido */
+            justify-content: center; /* Centra horizontalmente el grupo (producto + ícono) */
+            flex-direction: row; /* Asegura la alineación horizontal */
+            flex-wrap: wrap; /* Permite que el contenido se envuelva si es demasiado largo */
 
             padding-right: 15px;
             border-top: none; 
@@ -181,11 +181,20 @@
             white-space: normal; 
         }
         
-        /* Ajuste para que el texto y el ícono estén en una fila si es posible */
-        td:first-child > * {
-            display: inline; /* Hace que el contenido se alinee como una sola línea si hay espacio */
+        /* Aseguramos que el texto y el ícono se traten como bloques flexibles */
+        td:first-child > span {
+            display: inline-block;
         }
-        
+
+        /* Estilo específico para el texto del producto para que se centre */
+        td:first-child .product-text {
+            text-align: center;
+        }
+
+        /* Ajuste el margin del icono para que esté pegado al texto */
+        .status-icon { margin-left: 5px; font-size: 1em; display: inline-block; }
+
+
         th:first-child { 
             text-align: center; /* Centrar el título "Producto" horizontalmente */
             padding-right: 15px;
@@ -203,18 +212,17 @@
                 max-width: 250px;
             }
             td:first-child { 
-                /* Mantenemos el estilo para dispositivos móviles si se excede el espacio */
+                /* Se revierte a la alineación vertical estándar de la tabla para evitar cortes extraños en móvil */
+                display: block; 
+                text-align: left;
+                padding-right: 10px;
+                
                 display: -webkit-box;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: normal !important;
-                
-                /* Desactivar flexbox para el centrado vertical en móvil si el texto se corta */
-                justify-content: flex-start;
-                align-items: flex-start;
-                flex-direction: row;
             }
             th, td {
                 padding: 12px 10px;
@@ -262,7 +270,7 @@
         }
         .whatsapp-float:hover { background-color: var(--color-whatsapp-hover); transform: scale(1.08); }
         
-        .status-icon { margin-left: 8px; font-size: 1em; display: inline-block; }
+        .status-icon { margin-left: 5px; font-size: 1em; display: inline-block; }
         .status-hot { color: var(--color-hot); }
         .status-new { color: var(--color-new); transform: rotate(-30deg); }
         .status-offers { color: var(--color-offers); }
@@ -453,7 +461,7 @@
                 tableHTML += `
                     <tr>
                         <td>
-                            ${producto}
+                            <span class="product-text">${producto}</span>
                             ${statusIconHtml} 
                         </td>
                         <td>${precioTransferencia}</td>
