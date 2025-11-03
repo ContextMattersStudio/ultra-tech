@@ -769,7 +769,6 @@
                     return;
                 }
 
-                // CLAVE: SOLO LLAMAR A RENDER, NO LLAMAR A filterTable()
                 renderTable(allFilteredData, dataContainer);
 
 
@@ -789,7 +788,8 @@
             loadingMessage.textContent = `Cargando datos de ${tabName}...`;
             loadingMessage.style.display = 'block';
             dataContainer.innerHTML = ''; 
-            updateActiveTab(tabName);
+            // CLAVE: Activar la pestaña antes de la carga
+            updateActiveTab(tabName); 
 
             try {
                 const response = await fetch(fullFileName);
@@ -828,7 +828,7 @@
                     return;
                 }
 
-                // CLAVE: SOLO LLAMAR A RENDER, NO LLAMAR A filterTable()
+                // CLAVE: Renderizar la data de la pestaña seleccionada
                 renderTable(filteredData, dataContainer);
 
             } catch (error) {
