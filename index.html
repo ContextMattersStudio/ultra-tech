@@ -20,6 +20,9 @@
             --color-hot: #FF4500;
             --color-new: #1E90FF;
             --color-offers: #D0AE50;
+            /* Nuevos colores para filas alternas */
+            --color-row-even: #2B3035; /* Color para filas pares (más oscuro) */
+            --color-row-odd: #2F353A;  /* Color para filas impares (más claro) */
         }
 
         /* Estilos Generales */
@@ -129,40 +132,52 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
-        th, td { 
-            border: 1px solid #3B4249;
-            padding: 18px 20px;
+        table { 
+            width: 100%; 
+            min-width: 600px; 
+            border-collapse: collapse; 
+            overflow: hidden; 
         }
+
         th { 
-            text-align: center; 
+            text-align: center; /* Centrar encabezados */
             background-color: var(--color-secondary); 
             color: var(--color-primary); 
             font-weight: 700; 
             text-transform: uppercase;
             font-size: 15px;
             white-space: nowrap;
-        }
-        table { 
-            width: 100%; 
-            min-width: 600px; 
-            border-collapse: collapse; 
-            overflow: hidden; 
-            background-color: var(--color-card-background);
+            padding: 18px 20px;
+            border: 1px solid #3B4249;
         }
         
-        th:first-child, td:first-child { 
-            text-align: left;
-            padding-right: 15px;
-            border: 1px solid #3B4249; 
+        td { 
+            padding: 18px 20px;
+            border: 1px solid #3B4249; /* Borde general para todas las celdas */
         }
+
+        /* Estilos para filas alternas */
+        tbody tr:nth-child(even) {
+            background-color: var(--color-row-even); /* Color para filas pares */
+        }
+        tbody tr:nth-child(odd) {
+            background-color: var(--color-row-odd); /* Color para filas impares */
+        }
+
+        /* Corrección para la primera columna */
         td:first-child { 
-            display: flex;
-            align-items: center;
-        }
-        th:first-child, td:first-child { 
             text-align: left;
             padding-right: 15px;
-            border: 1px solid #3B4249; 
+            /* Eliminar el borde inferior independiente, ahora es parte del borde de la fila */
+            border-bottom: 1px solid #3B4249; 
+            border-top: 1px solid #3B4249;
+            display: flex; /* Asegura que el contenido esté centrado verticalmente */
+            align-items: center; /* Alinea el texto del producto con los iconos */
+            white-space: normal; /* Permite que el texto se rompa en varias líneas */
+        }
+        th:first-child { 
+            text-align: left; /* Mantener el título "Producto" alineado a la izquierda si se desea */
+            padding-right: 15px;
         }
         
         @media (max-width: 768px) {
@@ -203,10 +218,9 @@
         /* ESTILOS DEL BOTÓN FLOTANTE: AJUSTADO PARA SER SOLO UN ÍCONO */
         .whatsapp-float {
             position: fixed;
-            /* Se reducen el ancho y alto a un tamaño de ícono estándar */
             width: 55px; 
             height: 55px;
-            bottom: 25px; /* Ajuste la posición */
+            bottom: 25px; 
             right: 25px; 
             background-color: var(--color-whatsapp); 
             color: var(--color-white);
@@ -214,7 +228,6 @@
             text-align: center;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
             z-index: 1000;
-            /* Flexbox ahora solo centra el ícono, ya no necesita columna */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -222,11 +235,9 @@
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
         .whatsapp-float .fa-whatsapp { 
-            /* Se hace el ícono un poco más grande ya que es el único elemento */
             font-size: 32px; 
             margin: 0;
         }
-        /* ELIMINADA: La regla .whatsapp-float span ya no es necesaria */
         .whatsapp-float:hover { background-color: var(--color-whatsapp-hover); transform: scale(1.08); }
         
         .status-icon { margin-left: 8px; font-size: 1em; display: inline-block; }
