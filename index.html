@@ -316,7 +316,7 @@
         let currentActiveTab = null;
         let CONTACT_PHONE = ''; 
 
-        // Función para formatear el número como moneda ARS
+        // Función para formatear el número como moneda ARS, sin símbolo de moneda
         function formatARS(value) {
             // Intenta convertir el valor a un número
             const numericValue = parseFloat(String(value).replace(/[^0-9.-]+/g, ""));
@@ -326,18 +326,17 @@
                 return 'CONSULTAR';
             }
 
-            // 2. Formatear el número con ARS y punto como separador de miles
-            // 'es-AR' usa el punto (.) como separador de miles y coma (,) como decimal.
-            // style: 'currency' y currency: 'ARS' se encargarán del prefijo.
+            // 2. Formatear el número con el punto como separador de miles
+            // Se usa style: 'decimal' para evitar el símbolo de moneda.
             const formatter = new Intl.NumberFormat('es-AR', {
-                style: 'currency',
-                currency: 'ARS',
+                style: 'decimal', // Usar formato decimal
                 minimumFractionDigits: 0, // No mostrar decimales
                 maximumFractionDigits: 0
             });
             
-            // El resultado será un string como "ARS 123.456"
-            return formatter.format(numericValue);
+            // 3. Obtener el número formateado (ej: "123.456") y prefijar con "ARS "
+            const formattedNumber = formatter.format(numericValue);
+            return `ARS ${formattedNumber}`;
         }
 
         async function initApp() {
