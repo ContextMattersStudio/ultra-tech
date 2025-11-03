@@ -153,39 +153,47 @@
         
         td { 
             padding: 18px 20px;
-            border: 1px solid #3B4249; /* Borde general para todas las celdas */
+            border: 1px solid #3B4249; 
+            text-align: center; /* Centrado horizontal para todas las celdas */
+            vertical-align: middle; /* Centrado vertical para todas las celdas (excepto la primera) */
         }
 
         /* Estilos para filas alternas */
         tbody tr:nth-child(even) {
-            background-color: var(--color-row-even); /* Color para filas pares */
+            background-color: var(--color-row-even); 
         }
         tbody tr:nth-child(odd) {
-            background-color: var(--color-row-odd); /* Color para filas impares */
+            background-color: var(--color-row-odd); 
         }
 
-        /* CORRECCIÓN: Estilos para la primera celda de la fila */
+        /* Corrección para la primera celda */
         td:first-child { 
-            text-align: left;
+            /* Para centrar vertical y horizontalmente el texto/icono: */
+            display: flex; 
+            justify-content: center; /* Centra horizontalmente */
+            align-items: center; /* Centra verticalmente */
+            flex-direction: column; /* Permite centrar múltiples elementos como texto y el icono */
+            text-align: center; /* Asegura el centrado del texto en varias líneas */
+
             padding-right: 15px;
-            /* CLAVE: Eliminar los bordes superior e inferior de la celda */
             border-top: none; 
             border-bottom: none;
-            
-            display: flex; 
-            align-items: center; 
             white-space: normal; 
-            /* Se añade el color de fondo de la fila para rellenar */
+        }
+        
+        /* Ajuste para que el texto y el ícono estén en una fila si es posible */
+        td:first-child > * {
+            display: inline; /* Hace que el contenido se alinee como una sola línea si hay espacio */
+        }
+        
+        th:first-child { 
+            text-align: center; /* Centrar el título "Producto" horizontalmente */
+            padding-right: 15px;
         }
 
-        /* CLAVE: Asegurar que el borde inferior de la fila se muestre y sea sólido */
+        /* Asegurar que el borde inferior de la fila se muestre y sea sólido */
         tbody tr {
             border-bottom: 1px solid #3B4249; 
-        }
-
-        th:first-child { 
-            text-align: left; /* Mantener el título "Producto" alineado a la izquierda */
-            padding-right: 15px;
         }
         
         @media (max-width: 768px) {
@@ -195,12 +203,18 @@
                 max-width: 250px;
             }
             td:first-child { 
+                /* Mantenemos el estilo para dispositivos móviles si se excede el espacio */
                 display: -webkit-box;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: normal !important;
+                
+                /* Desactivar flexbox para el centrado vertical en móvil si el texto se corta */
+                justify-content: flex-start;
+                align-items: flex-start;
+                flex-direction: row;
             }
             th, td {
                 padding: 12px 10px;
@@ -223,7 +237,7 @@
             transform: translateY(-1px);
         }
         
-        /* ESTILOS DEL BOTÓN FLOTANTE: AJUSTADO PARA SER SOLO UN ÍCONO */
+        /* ESTILOS DEL BOTÓN FLOTANTE */
         .whatsapp-float {
             position: fixed;
             width: 55px; 
