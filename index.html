@@ -80,13 +80,13 @@
             align-items: center;
             gap: 8px;
             color: var(--color-primary);
-            cursor: pointer; /* Hacer que parezca clickeable */
-            padding: 5px 10px; /* Añadir padding para hacer la zona de click más grande */
+            cursor: pointer; 
+            padding: 5px 10px; 
             border-radius: 4px;
             transition: background-color 0.2s;
         }
         .legend-item:hover {
-            background-color: #3B4249; /* Pequeño efecto hover */
+            background-color: #3B4249; 
         }
 
         .legend-icon { font-size: 1.1em; }
@@ -106,18 +106,29 @@
             flex-wrap: wrap; 
         }
 
-        /* Estilos para el campo de búsqueda */
+        /* Estilos para el contenedor de búsqueda (Nuevo) */
         #search-container {
             width: 90%;
             max-width: 900px;
             margin-bottom: 20px;
             padding: 10px 0;
             text-align: center;
+            position: relative; /* Contenedor para posicionar la X */
         }
+        
+        /* Contenedor del input y el botón de borrado */
+        #search-input-wrapper {
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
         #search-input {
             width: 100%;
-            max-width: 400px;
             padding: 12px 15px;
+            padding-right: 40px; /* Espacio para el icono */
             border-radius: 8px;
             border: 1px solid var(--color-secondary);
             background-color: #3B4249;
@@ -129,6 +140,23 @@
         #search-input:focus {
             border-color: var(--color-secondary);
             outline: none;
+        }
+        
+        /* Estilos para el botón de cancelar (X) */
+        #clear-search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-primary);
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            display: none; /* Oculto por defecto */
+        }
+        #clear-search-btn:hover {
+            opacity: 1;
         }
         
         .tab-button {
@@ -310,6 +338,21 @@
         .status-hot { color: var(--color-hot); }
         .status-new { color: var(--color-new); transform: rotate(-30deg); }
         .status-offers { color: var(--color-offers); }
+
+        /* ANIMACIÓN: Definición del Fade-in */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Aplicar animación a las filas del cuerpo de la tabla */
+        .animated-row {
+            opacity: 0; /* Iniciar invisible */
+            animation-name: fadeIn;
+            animation-duration: 0.3s; /* Duración de cada fade */
+            animation-timing-function: ease-out;
+            animation-fill-mode: forwards; /* Mantener el estado final (opacity: 1) */
+        }
     </style>
 </head>
 <body>
@@ -328,12 +371,19 @@
         </div>
     
     <div id="search-container">
-        <input 
-            type="text" 
-            id="search-input" 
-            placeholder="Buscar por nombre de producto..."
-            onkeyup="filterTable()" 
-        >
+        <div id="search-input-wrapper">
+            <input 
+                type="text" 
+                id="search-input" 
+                placeholder="Buscar por nombre de producto..."
+                onkeyup="handleSearchInput()" 
+            >
+            <i 
+                class="fa-solid fa-xmark" 
+                id="clear-search-btn" 
+                onclick="clearSearch()"
+            ></i>
+        </div>
     </div>
     <div id="loading-message">Cargando datos, por favor espere...</div>
     
@@ -361,9 +411,9 @@
         let currentActiveTab = null;
         let CONTACT_PHONE = ''; 
         let currentData = []; 
-        let activeTabsConfig = []; // Para guardar la lista de tabs activos
+        let activeTabsConfig = []; 
 
-        // --- Funciones de Formato de Precio ---
+        // --- Funciones de Utilidad y Formato ---
 
         function formatARS(value) {
             const numericValue = parseFloat(String(value).replace(/[^0-9.-]+/g, ""));
@@ -399,7 +449,28 @@
             return `USDT ${formattedNumber}`;
         }
         
-        // --- Función de Filtrado y Búsqueda ---
+        // --- Funciones de Búsqueda y Filtro ---
+        
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-search-btn').style.display = 'none';
+            filterTable(); 
+        }
+
+        function handleSearchInput() {
+            const input = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search-btn');
+            
+            if (!clearBtn) return;
+            
+            if (input.value.length > 0) {
+                clearBtn.style.display = 'block';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+            
+            filterTable();
+        }
         
         function filterTable() {
             const query = document.getElementById('search-input').value.toLowerCase().trim();
@@ -414,13 +485,16 @@
 
             const filteredResults = currentData.filter(row => {
                 const producto = String(row['Producto'] || '').toLowerCase();
-                return producto.includes(query);
+                const status = String(row['STATUS'] || '').toLowerCase(); 
+                
+                return producto.includes(query) || status.includes(query);
             });
 
             if (filteredResults.length === 0) {
                 dataContainer.innerHTML = '';
                 dataContainer.appendChild(noResultsMsg);
                 noResultsMsg.style.display = 'block';
+                noResultsMsg.textContent = `Sin resultados para la búsqueda actual.`;
             } else {
                 renderTable(filteredResults, dataContainer);
                 noResultsMsg.style.display = 'none';
@@ -451,24 +525,7 @@
             const query = statusKey.toUpperCase();
             
             document.getElementById('search-input').value = query; // Mostrar el filtro en el campo
-            
-            const dataContainer = document.getElementById('excel-data');
-            const noResultsMsg = document.getElementById('no-results-message');
-
-            const filteredResults = currentData.filter(row => {
-                const status = String(row['STATUS'] || '').toUpperCase().trim();
-                return status === query;
-            });
-
-            if (filteredResults.length === 0) {
-                dataContainer.innerHTML = '';
-                dataContainer.appendChild(noResultsMsg);
-                noResultsMsg.style.display = 'block';
-                noResultsMsg.textContent = `Sin resultados de ${statusKey.charAt(0) + statusKey.slice(1).toLowerCase()}.`;
-            } else {
-                renderTable(filteredResults, dataContainer);
-                noResultsMsg.style.display = 'none';
-            }
+            handleSearchInput(); // Llama a filterTable y muestra la X
         }
 
 
@@ -556,7 +613,7 @@
             todoButton.dataset.fileName = "TODO";
 
             todoButton.addEventListener('click', () => {
-                document.getElementById('search-input').value = ''; 
+                clearSearch(); 
                 loadAllExcelData(tabs);
             });
             container.appendChild(todoButton);
@@ -568,7 +625,7 @@
                 button.dataset.fileName = tab.file_full_name; 
 
                 button.addEventListener('click', () => {
-                    document.getElementById('search-input').value = ''; 
+                    clearSearch(); 
                     loadExcelData(tab.file_full_name, tab.tab_name); 
                 });
 
@@ -600,12 +657,19 @@
                 'OFFERS': { icon: 'fa-tags', class: 'status-offers' }
             };
 
+            const legendLabelMap = {};
+            if (legendData && Array.isArray(legendData)) {
+                legendData.forEach(item => {
+                    legendLabelMap[item.status_key.toUpperCase()] = item.label; 
+                });
+            }
+
             const noResultsMsg = document.getElementById('no-results-message');
             if (noResultsMsg && dataContainer.contains(noResultsMsg)) {
                 dataContainer.removeChild(noResultsMsg);
             }
 
-            dataToRender.forEach(row => {
+            dataToRender.forEach((row, index) => {
                 const producto = String(row['Producto'] || '—');
                 const rawPriceTransferencia = row['Precio Transferencia'];
                 const rawPriceUSDT = row['Precio USDT'];
@@ -617,9 +681,11 @@
                 let statusIconHtml = '';
                 const statusConfig = STATUS_MAP[status];
                 
+                const statusTitle = legendLabelMap[status] || status; 
+                
                 if (statusConfig) {
                      statusIconHtml = `
-                         <span class="status-icon ${statusConfig.class}" title="${status}">
+                         <span class="status-icon ${statusConfig.class}" title="${statusTitle}"> 
                              <i class="fa-solid ${statusConfig.icon}"></i>
                          </span>
                      `;
@@ -631,8 +697,9 @@
                 
                 const buyLink = `purchase.html?product=${urlProduct}&priceT=${urlPriceT}&priceU=${urlPriceU}`;
 
+                // CLAVE: Agregar la clase de animación y el style con el delay
                 tableHTML += `
-                    <tr>
+                    <tr class="animated-row" style="animation-delay: ${index * 0.05}s;">
                         <td>
                             <span class="product-text">${producto}</span>
                             ${statusIconHtml} 
@@ -703,11 +770,12 @@
                 }
 
                 renderTable(allFilteredData, dataContainer);
+                filterTable();
 
 
             } catch (error) {
                 console.error("Error al cargar la lista TODO:", error);
-                dataContainer.innerHTML = `<p style="color: red; text-align: center;">Error al cargar la lista TODO: ${error.message}</p>`;
+                document.getElementById('excel-data').innerHTML = `<p style="color: red; text-align: center;">Error al cargar la lista. Ver consola para más detalles.</p>`; 
             } finally {
                 loadingMessage.style.display = 'none';
             }
@@ -761,6 +829,7 @@
                 }
 
                 renderTable(filteredData, dataContainer);
+                filterTable();
 
             } catch (error) {
                 console.error("Error al cargar o procesar el Excel:", error);
