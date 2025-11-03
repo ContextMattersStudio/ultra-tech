@@ -6,6 +6,7 @@
     <title>Lista de Productos Ultra Tech</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="utils/priceFormatter.js"></script>
     
     <style>
         /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
@@ -363,42 +364,8 @@
         let currentData = []; 
         let activeTabsConfig = []; // Para guardar la lista de tabs activos
 
-        // --- Funciones de Formato de Precio ---
+        // --- Funciones de Formato de Precio (Movidas a utils/priceFormatter.js) ---
 
-        function formatARS(value) {
-            const numericValue = parseFloat(String(value).replace(/[^0-9.-]+/g, ""));
-            
-            if (isNaN(numericValue) || numericValue === 0) {
-                return 'CONSULTAR';
-            }
-
-            const formatter = new Intl.NumberFormat('es-AR', {
-                style: 'decimal', 
-                minimumFractionDigits: 0, 
-                maximumFractionDigits: 0
-            });
-            
-            const formattedNumber = formatter.format(numericValue);
-            return `ARS ${formattedNumber}`;
-        }
-        
-        function formatUSDT(value) {
-            const numericValue = parseFloat(String(value).replace(/[^0-9.-]+/g, ""));
-            
-            if (isNaN(numericValue) || numericValue === 0) {
-                return 'CONSULTAR';
-            }
-
-            const formatter = new Intl.NumberFormat('es-AR', {
-                style: 'decimal', 
-                minimumFractionDigits: 0, 
-                maximumFractionDigits: 0
-            });
-            
-            const formattedNumber = formatter.format(numericValue);
-            return `USDT ${formattedNumber}`;
-        }
-        
         // --- Función de Filtrado y Búsqueda ---
         
         function filterTable() {
@@ -611,6 +578,7 @@
                 const rawPriceUSDT = row['Precio USDT'];
                 const status = String(row['STATUS'] || '').toUpperCase().trim();
                 
+                // Usamos las funciones importadas de utils/priceFormatter.js
                 const formattedPriceTransferencia = formatARS(rawPriceTransferencia);
                 const formattedPriceUSDT = formatUSDT(rawPriceUSDT);
                 
