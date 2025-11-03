@@ -2,21 +2,31 @@
   {
     "tab_name": "CELULARES",
     "status": "on",
-    "file_full_name": "CELULARES_ULTRA_STORE.xlsx"
+    "file_full_name": "https://docs.google.com/spreadsheets/d/1MCpHoaMVxuICA8UWScS3_lXu5MoPd-B8_cggbZV7KDE/export?format=xlsx"
   },
   {
     "tab_name": "CONSOLAS",
     "status": "on",
-    "file_full_name": "CONSOLAS_ULTRA_STORE.xlsx"
+    "file_full_name": "https://docs.google.com/spreadsheets/d/1fygncnH3Z2PuvHqMe6CoCFitNGt9WsQg43fiD0k32g/export?format=xlsx"
   },
   {
-    "tab_name": "DRONES",
-    "status": "off",
-    "file_full_name": "DRONES_ULTRA_STORE.xlsx"
-  },
-  {
-    "tab_name": "PCS",
+    "tab_name": "NOTEBOOKS",
     "status": "on",
-    "file_full_name": "PCS_ULTRA_STORE.xlsx"
+    "file_full_name": "https://docs.google.com/spreadsheets/d/1zFCf6hG_4Rrn74gw5J8gQY0MCjF4sWfaZCiHpgTuphE/export?format=xlsx"
+  },
+  {
+    "tab_name": "GAMING",
+    "status": "on",
+    "file_full_name": "https://docs.google.com/spreadsheets/d/1ZN646iYy814VR_YnuYJNVd6XXeWP7h3hvL772lpJ-ME/export?format=xlsx"
+  },
+  {
+    "tab_name": "AUDIO",
+    "status": "on",
+    "file_full_name": "https://docs.google.com/spreadsheets/d/1fygncnH3Z2PuvHqMe6CoCFitNGt9WsQ4g43fiD0k32g/export?format=xlsx"
+  },
+  {
+    "tab_name": "ASPIRADORAS",
+    "status": "on",
+    "file_full_name": "https://docs.google.com/spreadsheets/d/1fiGEbWMUR-U7KwRH0IowYKnMfuvKwu3IEh0peZEZN4s/export?format=xlsx"
   }
 ]
