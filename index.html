@@ -278,8 +278,8 @@
         async function initApp() {
             try {
                 // 1. Cargar Configuración de Contacto
-                const contactResponse = await fetch('contact_info.json');
-                if (!contactResponse.ok) throw new Error(`Error ${contactResponse.status}: No se pudo cargar el archivo de contacto (contact_info.json).`);
+                const contactResponse = await fetch('config/contact_info.json');
+                if (!contactResponse.ok) throw new Error(`Error ${contactResponse.status}: No se pudo cargar el archivo de contacto (config/contact_info.json).`);
                 const contactData = await contactResponse.json();
                 CONTACT_PHONE = contactData.phone;
                 
@@ -289,12 +289,12 @@
 
 
                 // 2. Cargar Configuración de Pestañas y Leyenda (Misma lógica)
-                const configResponse = await fetch('config.json');
-                if (!configResponse.ok) throw new Error(`Error ${configResponse.status}: No se pudo cargar el archivo de configuración (config.json).`);
+                const configResponse = await fetch('config/config.json');
+                if (!configResponse.ok) throw new Error(`Error ${configResponse.status}: No se pudo cargar el archivo de configuración (config/config.json).`);
                 configData = await configResponse.json();
 
-                const legendResponse = await fetch('leyenda_config.json');
-                if (!legendResponse.ok) throw new Error(`Error ${legendResponse.status}: No se pudo cargar el archivo de configuración de leyenda (leyenda_config.json).`);
+                const legendResponse = await fetch('config/leyenda_config.json');
+                if (!legendResponse.ok) throw new Error(`Error ${legendResponse.status}: No se pudo cargar el archivo de configuración de leyenda (config/leyenda_config.json).`);
                 legendData = await legendResponse.json();
                 
                 buildLegend(legendData);

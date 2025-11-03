@@ -221,8 +221,8 @@
 
             // 2. Cargar métodos de pago
             try {
-                const response = await fetch('payment_methods.json');
-                if (!response.ok) throw new Error("No se pudo cargar payment_methods.json");
+                const response = await fetch('config/payment_methods.json');
+                if (!response.ok) throw new Error("No se pudo cargar config/payment_methods.json");
                 PAYMENT_METHODS_DATA = await response.json();
                 
                 populatePaymentDropdown();
@@ -297,8 +297,8 @@
             infoContainer.innerHTML = htmlContent;
 
             // Actualizar el botón de WhatsApp
-            const encodedText = encodeURIComponent(whatsappText);
-            whatsappBtn.href = `https://wa.me/5492281409457?text=${encodedText}`;
+            // NOTA: El número de WhatsApp está HARDCODEADO aquí (5492281409457), lo ideal sería cargarlo desde contact_info.json también en esta página.
+            whatsappBtn.href = `https://wa.me/5492281409457?text=${encodeURIComponent(whatsappText)}`;
         }
     </script>
 </body>
