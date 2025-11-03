@@ -101,7 +101,7 @@
             margin-bottom: 15px;
         }
 
-        /* Estilo del Dropdown */
+        /* Estilo del Dropdown (CORREGIDO) */
         #payment-method-select {
             padding: 10px 15px;
             border-radius: 5px;
@@ -109,8 +109,10 @@
             background-color: #3B4249;
             color: var(--color-primary);
             font-size: 16px;
-            width: 100%;
-            max-width: 300px;
+            /* CLAVE: Ajustar el width para que se ajuste al contenido del texto de la opción seleccionada */
+            width: fit-content; 
+            min-width: 250px; /* Asegurar un mínimo para usabilidad */
+            max-width: 100%; /* No exceder el contenedor */
             cursor: pointer;
             appearance: none;
             background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23E9ECEF%22%20d%3D%22M287%2069.4l-14.9-14.9c-2.3-2.3-4.9-3.4-7.6-3.4-2.7%200-5.3%201.1-7.7%203.4L146.2%20170.8%2029.8%2054.4c-4.7-4.7-12.2-4.7-16.9%200l-14.9%2014.9c-4.7%204.7-4.7%2012.2%200%2016.9l133.5%20133.5c2.3%202.3%204.9%203.4%207.6%203.4s5.3-1.1%207.7-3.4l133.5-133.5c4.7-4.6%204.7-12.2%200-16.9z%22%2F%3E%3C%2Fsvg%3E'); 
@@ -206,8 +208,21 @@
 
         let PAYMENT_METHODS_DATA = {};
         let productDetails = {};
+        let CONTACT_PHONE = ''; // Nueva variable para el número de contacto
 
         async function initPurchasePage() {
+            // 0. Cargar el número de teléfono
+            try {
+                const contactResponse = await fetch('config/contact_info.json');
+                if (!contactResponse.ok) throw new Error("No se pudo cargar config/contact_info.json");
+                const contactData = await contactResponse.json();
+                CONTACT_PHONE = contactData.phone;
+            } catch (error) {
+                console.error("Error al cargar el número de contacto:", error);
+                // Continuar sin teléfono si falla, pero el botón de WhatsApp no funcionará
+            }
+
+
             // 1. Obtener detalles del producto de la URL
             const params = new URLSearchParams(window.location.search);
             productDetails = {
@@ -221,7 +236,8 @@
 
             // 2. Cargar métodos de pago
             try {
-                const response = await fetch('config/payment_methods.json');
+                // NOTA: La ruta se corrigió a 'config/payment_methods.json' en un paso anterior.
+                const response = await fetch('config/payment_methods.json'); 
                 if (!response.ok) throw new Error("No se pudo cargar config/payment_methods.json");
                 PAYMENT_METHODS_DATA = await response.json();
                 
@@ -237,8 +253,10 @@
 
             } catch (error) {
                 console.error("Error al cargar la configuración de pagos:", error);
-                document.getElementById('purchase-steps-container').innerHTML = 
-                    `<p style="color: red;">Error: ${error.message}</p>`;
+                const container = document.querySelector('.purchase-steps-container');
+                if (container) {
+                     container.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                }
             }
         }
 
@@ -296,9 +314,14 @@
 
             infoContainer.innerHTML = htmlContent;
 
-            // Actualizar el botón de WhatsApp
-            // NOTA: El número de WhatsApp está HARDCODEADO aquí (5492281409457), lo ideal sería cargarlo desde contact_info.json también en esta página.
-            whatsappBtn.href = `https://wa.me/5492281409457?text=${encodeURIComponent(whatsappText)}`;
+            // Actualizar el botón de WhatsApp con el número de contacto cargado
+            const encodedText = encodeURIComponent(whatsappText);
+            
+            if (CONTACT_PHONE) {
+                whatsappBtn.href = `https://wa.me/${CONTACT_PHONE}?text=${encodedText}`;
+            } else {
+                whatsappBtn.href = "#"; // Enlace inactivo si el teléfono no se cargó
+            }
         }
     </script>
 </body>
