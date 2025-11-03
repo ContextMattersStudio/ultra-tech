@@ -41,9 +41,8 @@
             align-items: center;
             overflow-x: hidden; 
         }
-        
-        /* [Resto de estilos de Título, Leyenda y Tabs sin cambios] */
 
+        /* Título Principal */
         .main-title {
             text-align: center;
             margin-bottom: 30px;
@@ -167,40 +166,11 @@
             padding-right: 15px;
             border: 1px solid #3B4249; 
         }
-        
-        /* SOLUCIÓN: Eliminamos la línea inferior en la celda flexbox */
         td:first-child { 
             display: flex;
             align-items: center;
-            /* Esta línea es la solución para eliminar el borde redundante interno: */
-            border-bottom: none; 
-        }
-        /* PERO el TR necesita el borde inferior para separarse de la fila siguiente. 
-           La solución más segura es que los elementos dentro del TD no generen ese conflicto.
-           Vamos a restablecer el borde en la celda y ajustar el estilo interno.
-           
-           Revertimos el border-bottom: none en td:first-child, y ajustamos el estilo flex.
-           
-           El problema es que el flex está en el TD, pero los hijos del TD tienen padding. 
-           Usaremos width: 100% en el contenedor flex para asegurar que el borde inferior se dibuje correctamente en todo el TD. 
-        */
-
-        td:first-child {
-            /* REAJUSTE DE FLEX PARA SOLUCIONAR EL ARTEFACTO VISUAL */
-            display: flex;
-            align-items: center;
-            /* Usamos este div interior para dibujar el contenido sin conflictos */
-            width: 100%; 
-            box-sizing: border-box; /* Asegura que width 100% incluya padding */
         }
         
-        /* MANTENEMOS EL ESTILO DE LA CELDA COMPLETA PARA EL BORDE: */
-        td { 
-            border: 1px solid #3B4249;
-            padding: 18px 20px;
-        }
-        
-        /* Resto de estilos responsive sin cambios */
         @media (max-width: 768px) {
             th:first-child, td:first-child {
                 width: 70%;
@@ -220,8 +190,6 @@
             }
         }
         
-        /* [Resto de estilos de botones y flotante sin cambios] */
-
         .buy-button {
             padding: 8px 15px;
             background-color: var(--color-secondary);
@@ -232,6 +200,10 @@
             text-decoration: none;
             transition: background-color 0.2s ease, transform 0.1s ease;
             display: inline-block;
+        }
+        .buy-button:hover {
+            background-color: #B89C40;
+            transform: translateY(-1px);
         }
         .whatsapp-float {
             position: fixed;
@@ -454,8 +426,10 @@
                 tableHTML += `
                     <tr>
                         <td>
-                            ${producto}
-                            ${statusIconHtml} 
+                            <div style="display: flex; align-items: center; width: 100%;"> /* Contenedor interno para el producto */
+                                ${producto}
+                                ${statusIconHtml} 
+                            </div>
                         </td>
                         <td>${precioTransferencia}</td>
                         <td>${precioUSDT}</td>
@@ -498,12 +472,13 @@
                         const data = new Uint8Array(arrayBuffer);
                         const workbook = XLSX.read(data, { type: 'array' });
                         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const json = XLSX.utils.sheet_to_json(worksheet);
+                        // Usamos defval: "" para manejar celdas vacías de forma consistente
+                        const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" }); 
 
                         return json.filter(row => {
                             const pt = row['Precio Transferencia'];
                             const pu = row['Precio USDT'];
-                            return (pt !== undefined && String(pt).trim() !== '') || (pu !== undefined && String(pu).trim() !== '');
+                            return (pt !== "" && String(pt).trim() !== '') || (pu !== "" && String(pu).trim() !== '');
                         });
                         
                     } catch (e) {
@@ -554,20 +529,17 @@
                 const sheetName = workbook.Sheets[workbook.SheetNames[0]]; 
                 const worksheet = workbook.Sheets[sheetName];
 
-                const json = XLSX.utils.sheet_to_json(worksheet);
+                // Usamos defval: "" para manejar celdas vacías de forma consistente
+                const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" }); 
                 
                 const filteredData = json.filter(row => {
                     const precioTransferencia = row['Precio Transferencia'];
                     const precioUSDT = row['Precio USDT'];
 
                     return (
-                        precioTransferencia !== undefined && 
-                        precioTransferencia !== null && 
-                        String(precioTransferencia).trim() !== ''
+                        precioTransferencia !== "" && String(precioTransferencia).trim() !== ''
                     ) || (
-                        precioUSDT !== undefined && 
-                        precioUSDT !== null && 
-                        String(precioUSDT).trim() !== ''
+                        precioUSDT !== "" && String(precioUSDT).trim() !== ''
                     );
                 });
 
