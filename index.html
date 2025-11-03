@@ -314,7 +314,53 @@
         let configData = []; 
         let legendData = []; 
         let currentActiveTab = null;
-        let CONTACT_PHONE = ''; // Variable para almacenar el número
+        let CONTACT_PHONE = ''; 
+
+        // Función para formatear el número como moneda ARS, sin símbolo de moneda
+        function formatARS(value) {
+            // Intenta convertir el valor a un número
+            const numericValue = parseFloat(String(value).replace(/[^0-9.-]+/g, ""));
+            
+            // 1. Validar si el valor es un número válido
+            if (isNaN(numericValue) || numericValue === 0) {
+                return 'CONSULTAR';
+            }
+
+            // 2. Formatear el número con el punto como separador de miles
+            const formatter = new Intl.NumberFormat('es-AR', {
+                style: 'decimal', 
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: 0
+            });
+            
+            // 3. Obtener el número formateado (ej: "123.456") y prefijar con "ARS "
+            const formattedNumber = formatter.format(numericValue);
+            return `ARS ${formattedNumber}`;
+        }
+        
+        // Función para formatear el número como USDT, sin símbolo de moneda
+        function formatUSDT(value) {
+            // Intenta convertir el valor a un número
+            // El valor puede venir ya como 'u$s157', por eso se mantiene la lógica de limpieza
+            const numericValue = parseFloat(String(value).replace(/[^0-9.-]+/g, ""));
+            
+            // 1. Validar si el valor es un número válido
+            if (isNaN(numericValue) || numericValue === 0) {
+                return 'CONSULTAR';
+            }
+
+            // 2. Formatear el número con el punto como separador de miles
+            const formatter = new Intl.NumberFormat('es-AR', {
+                style: 'decimal', 
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: 0
+            });
+            
+            // 3. Obtener el número formateado (ej: "123.456") y prefijar con "USDT "
+            const formattedNumber = formatter.format(numericValue);
+            return `USDT ${formattedNumber}`;
+        }
+
 
         async function initApp() {
             try {
@@ -437,9 +483,13 @@
 
             filteredData.forEach(row => {
                 const producto = String(row['Producto'] || '—');
-                const precioTransferencia = String(row['Precio Transferencia'] || '—');
-                const precioUSDT = String(row['Precio USDT'] || '—');
+                const rawPriceTransferencia = row['Precio Transferencia'];
+                const rawPriceUSDT = row['Precio USDT'];
                 const status = String(row['STATUS'] || '').toUpperCase().trim();
+                
+                // Aplicar formatos a ambas columnas
+                const formattedPriceTransferencia = formatARS(rawPriceTransferencia);
+                const formattedPriceUSDT = formatUSDT(rawPriceUSDT); // Nueva función aplicada
                 
                 let statusIconHtml = '';
                 const statusConfig = STATUS_MAP[status];
@@ -453,8 +503,9 @@
                 }
                 
                 const urlProduct = encodeURIComponent(producto);
-                const urlPriceT = encodeURIComponent(precioTransferencia);
-                const urlPriceU = encodeURIComponent(precioUSDT);
+                // Usar el precio original o 'CONSULTAR' para la URL
+                const urlPriceT = encodeURIComponent(rawPriceTransferencia || 'CONSULTAR'); 
+                const urlPriceU = encodeURIComponent(rawPriceUSDT || 'CONSULTAR');
                 
                 const buyLink = `purchase.html?product=${urlProduct}&priceT=${urlPriceT}&priceU=${urlPriceU}`;
 
@@ -464,8 +515,8 @@
                             <span class="product-text">${producto}</span>
                             ${statusIconHtml} 
                         </td>
-                        <td>${precioTransferencia}</td>
-                        <td>${precioUSDT}</td>
+                        <td>${formattedPriceTransferencia}</td>
+                        <td>${formattedPriceUSDT}</td>
                         <td>
                             <a href="${buyLink}" class="buy-button">Comprar</a>
                         </td>
