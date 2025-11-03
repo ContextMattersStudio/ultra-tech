@@ -314,7 +314,31 @@
         let configData = []; 
         let legendData = []; 
         let currentActiveTab = null;
-        let CONTACT_PHONE = ''; // Variable para almacenar el número
+        let CONTACT_PHONE = ''; 
+
+        // Función para formatear el número como moneda ARS
+        function formatARS(value) {
+            // Intenta convertir el valor a un número
+            const numericValue = parseFloat(String(value).replace(/[^0-9.-]+/g, ""));
+            
+            // 1. Validar si el valor es un número válido
+            if (isNaN(numericValue) || numericValue === 0) {
+                return 'CONSULTAR';
+            }
+
+            // 2. Formatear el número con ARS y punto como separador de miles
+            // 'es-AR' usa el punto (.) como separador de miles y coma (,) como decimal.
+            // style: 'currency' y currency: 'ARS' se encargarán del prefijo.
+            const formatter = new Intl.NumberFormat('es-AR', {
+                style: 'currency',
+                currency: 'ARS',
+                minimumFractionDigits: 0, // No mostrar decimales
+                maximumFractionDigits: 0
+            });
+            
+            // El resultado será un string como "ARS 123.456"
+            return formatter.format(numericValue);
+        }
 
         async function initApp() {
             try {
@@ -437,9 +461,12 @@
 
             filteredData.forEach(row => {
                 const producto = String(row['Producto'] || '—');
-                const precioTransferencia = String(row['Precio Transferencia'] || '—');
+                const rawPriceTransferencia = row['Precio Transferencia'];
                 const precioUSDT = String(row['Precio USDT'] || '—');
                 const status = String(row['STATUS'] || '').toUpperCase().trim();
+                
+                // Aplicar el nuevo formato al precio de transferencia
+                const formattedPriceTransferencia = formatARS(rawPriceTransferencia);
                 
                 let statusIconHtml = '';
                 const statusConfig = STATUS_MAP[status];
@@ -453,7 +480,8 @@
                 }
                 
                 const urlProduct = encodeURIComponent(producto);
-                const urlPriceT = encodeURIComponent(precioTransferencia);
+                // Usar el precio formateado o el original para la URL si es 'CONSULTAR'
+                const urlPriceT = encodeURIComponent(rawPriceTransferencia || 'CONSULTAR'); 
                 const urlPriceU = encodeURIComponent(precioUSDT);
                 
                 const buyLink = `purchase.html?product=${urlProduct}&priceT=${urlPriceT}&priceU=${urlPriceU}`;
@@ -464,7 +492,7 @@
                             <span class="product-text">${producto}</span>
                             ${statusIconHtml} 
                         </td>
-                        <td>${precioTransferencia}</td>
+                        <td>${formattedPriceTransferencia}</td>
                         <td>${precioUSDT}</td>
                         <td>
                             <a href="${buyLink}" class="buy-button">Comprar</a>
