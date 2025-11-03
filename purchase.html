@@ -203,6 +203,7 @@
         </div>
     </div>
 
+    <script src="utils/priceFormatter.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', initPurchasePage);
 
@@ -289,25 +290,27 @@
             
             if (methodKey === 'TRANSFERENCIA') {
                 price = productDetails.priceTransferencia;
+                const formattedPrice = formatARS(price); 
                 const acc = data.account;
                 htmlContent = `
-                    <p><strong>Total a pagar: ${price}</strong></p>
+                    <p><strong>Total a pagar: ${formattedPrice}</strong></p>
                     <p><strong>CBU:</strong> ${acc.cbu}</p>
                     <p><strong>Alias:</strong> ${acc.alias}</p>
                     <p><strong>Banco:</strong> ${acc.banco}</p>
                     <p><strong>Titular:</strong> ${acc.nombre}</p>
                 `;
-                whatsappText = `Hola! Acabo de hacer una transferencia por ${price} para la compra de ${productDetails.product}. Adjunto comprobante.`;
+                whatsappText = `Hola! Acabo de hacer una transferencia por ${formattedPrice} para la compra de ${productDetails.product}. Adjunto comprobante.`;
 
             } else if (methodKey === 'USDT') {
                 price = productDetails.priceUSDT;
+                const formattedPrice = formatUSDT(price);
                 const acc = data.account;
                 htmlContent = `
-                    <p><strong>Total a pagar: ${price}</strong></p>
+                    <p><strong>Total a pagar: ${formattedPrice}</strong></p>
                     <p><strong>Wallet (Address):</strong> ${acc.address}</p>
                     <p><strong>Red/Network:</strong> ${acc.network}</p>
                 `;
-                whatsappText = `Hola! Acabo de enviar ${price} USDT para la compra de ${productDetails.product}. Adjunto comprobante.`;
+                whatsappText = `Hola! Acabo de enviar ${formattedPrice} para la compra de ${productDetails.product}. Adjunto comprobante.`;
             }
 
             infoContainer.innerHTML = htmlContent;
