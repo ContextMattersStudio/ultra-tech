@@ -17,13 +17,9 @@
             --color-white: #FFFFFF;
             --color-whatsapp: #25d366;
             --color-whatsapp-hover: #128c7e;
-            
-            /* Colores de Estado */
             --color-hot: #FF4500;
             --color-new: #1E90FF;
             --color-offers: #D0AE50;
-            
-            /* Colores de Filas Alternas */
             --row-odd: #2E343A; 
             --row-even: #383E45; 
             --row-hover: #404B55;
@@ -42,7 +38,7 @@
             overflow-x: hidden; 
         }
 
-        /* Título Principal */
+        /* Título y Controles (sin cambios) */
         .main-title {
             text-align: center;
             margin-bottom: 30px;
@@ -64,7 +60,6 @@
             margin: 5px auto 0 auto;
             border-radius: 2px;
         }
-
         #legend-bar {
             width: 90%;
             max-width: 900px;
@@ -79,12 +74,7 @@
             gap: 25px;
             font-size: 14px;
         }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--color-primary);
-        }
+        .legend-item { display: flex; align-items: center; gap: 8px; color: var(--color-primary); }
         .legend-icon { font-size: 1.1em; }
         
         #tabs-container {
@@ -156,28 +146,40 @@
             overflow: hidden; 
         }
         
-        /* FILAS ALTERNAS */
         tr:nth-child(even) { background-color: var(--row-even); } 
         tr:nth-child(odd) { background-color: var(--row-odd); } 
         tr:hover { background-color: var(--row-hover); }
         
-        th:first-child, td:first-child { 
+        /* CELDAS DE PRODUCTO: Limpieza de bordes y alineación */
+        td:first-child { 
             text-align: left;
-            padding-right: 15px;
+            padding: 0 20px; /* Reset padding para usarlo en el contenedor interno */
+            /* Restablecemos el borde normal, el conflicto se resuelve moviendo el flex al interior */
             border: 1px solid #3B4249; 
         }
-        td:first-child { 
+        
+        /* NUEVO: Contenedor flex para alinear PRODUCTO + ÍCONO */
+        .product-cell-content {
             display: flex;
             align-items: center;
+            width: 100%;
+            /* El padding que se removió del TD se aplica aquí */
+            padding: 18px 0; 
+            height: 100%; /* Asegura que ocupe todo el alto para las líneas múltiples */
+            box-sizing: border-box;
+            /* Aquí podemos forzar el borde interior si el TR lo requiere, pero debería funcionar sin esto: */
+            /* border-bottom: 1px solid red; <- No es necesario */
         }
         
+        /* Resto de estilos responsive sin cambios */
         @media (max-width: 768px) {
             th:first-child, td:first-child {
                 width: 70%;
                 min-width: 150px;
                 max-width: 250px;
             }
-            td:first-child { 
+            .product-cell-content { 
+                /* Se aplica el clamping al contenido interno */
                 display: -webkit-box;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;
@@ -190,6 +192,7 @@
             }
         }
         
+        /* Estilos de botones y flotante (sin cambios) */
         .buy-button {
             padding: 8px 15px;
             background-color: var(--color-secondary);
@@ -200,10 +203,6 @@
             text-decoration: none;
             transition: background-color 0.2s ease, transform 0.1s ease;
             display: inline-block;
-        }
-        .buy-button:hover {
-            background-color: #B89C40;
-            transform: translateY(-1px);
         }
         .whatsapp-float {
             position: fixed;
@@ -426,7 +425,7 @@
                 tableHTML += `
                     <tr>
                         <td>
-                            <div style="display: flex; align-items: center; width: 100%;"> /* Contenedor interno para el producto */
+                            <div class="product-cell-content"> 
                                 ${producto}
                                 ${statusIconHtml} 
                             </div>
@@ -472,9 +471,8 @@
                         const data = new Uint8Array(arrayBuffer);
                         const workbook = XLSX.read(data, { type: 'array' });
                         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                        // Usamos defval: "" para manejar celdas vacías de forma consistente
-                        const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" }); 
-
+                        const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" }); // Usa defval: ""
+                        
                         return json.filter(row => {
                             const pt = row['Precio Transferencia'];
                             const pu = row['Precio USDT'];
@@ -529,8 +527,7 @@
                 const sheetName = workbook.Sheets[workbook.SheetNames[0]]; 
                 const worksheet = workbook.Sheets[sheetName];
 
-                // Usamos defval: "" para manejar celdas vacías de forma consistente
-                const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" }); 
+                const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" }); // Usa defval: ""
                 
                 const filteredData = json.filter(row => {
                     const precioTransferencia = row['Precio Transferencia'];
