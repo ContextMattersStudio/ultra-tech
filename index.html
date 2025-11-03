@@ -25,7 +25,7 @@
             --row-hover: #404B55;
         }
 
-        /* Estilos Generales */
+        /* Estilos Generales (sin cambios) */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
@@ -38,97 +38,26 @@
             overflow-x: hidden; 
         }
 
-        /* Título y Controles (sin cambios) */
-        .main-title {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 0 20px;
-            width: 100%;
-        }
-        .main-title h1 {
-            color: var(--color-primary); 
-            font-size: 36px;
-            margin: 0;
-            padding: 0;
-            border-bottom: none;
-        }
-        .main-title .underline {
-            display: block;
-            width: 120px;
-            height: 3px;
-            background-color: var(--color-secondary);
-            margin: 5px auto 0 auto;
-            border-radius: 2px;
-        }
-        #legend-bar {
-            width: 90%;
-            max-width: 900px;
-            margin-bottom: 20px; 
-            padding: 15px; 
-            background-color: var(--color-card-background); 
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 25px;
-            font-size: 14px;
-        }
+        .main-title { text-align: center; margin-bottom: 30px; padding: 0 20px; width: 100%; }
+        .main-title h1 { color: var(--color-primary); font-size: 36px; margin: 0; padding: 0; border-bottom: none; }
+        .main-title .underline { display: block; width: 120px; height: 3px; background-color: var(--color-secondary); margin: 5px auto 0 auto; border-radius: 2px; }
+
+        #legend-bar { width: 90%; max-width: 900px; margin-bottom: 20px; padding: 15px; background-color: var(--color-card-background); border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; justify-content: center; flex-wrap: wrap; gap: 25px; font-size: 14px; }
         .legend-item { display: flex; align-items: center; gap: 8px; color: var(--color-primary); }
         .legend-icon { font-size: 1.1em; }
         
-        #tabs-container {
-            width: 90%;
-            max-width: 900px;
-            margin-bottom: 30px; 
-            padding: 5px; 
-            background-color: var(--color-card-background); 
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap; 
-        }
-        .tab-button {
-            padding: 12px 25px;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--color-primary);
-            background-color: transparent;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        .tab-button.active {
-            background-color: var(--color-secondary); 
-            color: var(--color-primary);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-        }
+        #tabs-container { width: 90%; max-width: 900px; margin-bottom: 30px; padding: 5px; background-color: var(--color-card-background); border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .tab-button { padding: 12px 25px; font-size: 14px; font-weight: 600; text-transform: uppercase; color: var(--color-primary); background-color: transparent; border: none; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
+        .tab-button.active { background-color: var(--color-secondary); color: var(--color-primary); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4); }
         
-        #loading-message { 
-            text-align: center; 
-            color: var(--color-primary); 
-            padding: 20px; 
-            font-weight: bold; 
-        }
+        #loading-message { text-align: center; color: var(--color-primary); padding: 20px; font-weight: bold; }
         
-        #table-wrapper {
-            width: 90%;
-            max-width: 900px;
-            margin: 20px auto;
-            overflow-x: auto; 
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
+        #table-wrapper { width: 90%; max-width: 900px; margin: 20px auto; overflow-x: auto; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
 
+        /* Estilos de Tabla */
         th, td { 
             border: 1px solid #3B4249;
-            padding: 18px 20px;
+            padding: 0; /* Reset padding para controlarlo en el interior */
         }
         th { 
             text-align: center; 
@@ -137,6 +66,7 @@
             font-weight: 700; 
             text-transform: uppercase;
             font-size: 15px;
+            padding: 18px 20px; /* Mantener padding en TH */
             white-space: nowrap;
         }
         table { 
@@ -150,28 +80,27 @@
         tr:nth-child(odd) { background-color: var(--row-odd); } 
         tr:hover { background-color: var(--row-hover); }
         
-        /* CELDAS DE PRODUCTO: Limpieza de bordes y alineación */
+        /* CELDAS DE CONTENIDO: Ajustamos el padding y alineación aquí */
+        td:not(:first-child) {
+            padding: 18px 20px;
+            text-align: center; /* Centrar contenido de precio y botón */
+        }
+
+        /* COLUMNA PRODUCTO: Contenedor para la limpieza visual y flexbox */
         td:first-child { 
             text-align: left;
-            padding: 0 20px; /* Reset padding para usarlo en el contenedor interno */
-            /* Restablecemos el borde normal, el conflicto se resuelve moviendo el flex al interior */
-            border: 1px solid #3B4249; 
         }
-        
-        /* NUEVO: Contenedor flex para alinear PRODUCTO + ÍCONO */
         .product-cell-content {
+            /* ESTO AHORA ES EL CONTENIDO VISIBLE */
             display: flex;
             align-items: center;
             width: 100%;
-            /* El padding que se removió del TD se aplica aquí */
-            padding: 18px 0; 
-            height: 100%; /* Asegura que ocupe todo el alto para las líneas múltiples */
+            height: 100%;
+            /* Re-aplicamos el padding que quitamos del TD */
+            padding: 18px 20px; 
             box-sizing: border-box;
-            /* Aquí podemos forzar el borde interior si el TR lo requiere, pero debería funcionar sin esto: */
-            /* border-bottom: 1px solid red; <- No es necesario */
         }
         
-        /* Resto de estilos responsive sin cambios */
         @media (max-width: 768px) {
             th:first-child, td:first-child {
                 width: 70%;
@@ -179,20 +108,19 @@
                 max-width: 250px;
             }
             .product-cell-content { 
-                /* Se aplica el clamping al contenido interno */
                 display: -webkit-box;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: normal !important;
+                padding: 12px 10px; /* Padding más pequeño en móvil */
             }
             th, td {
                 padding: 12px 10px;
             }
         }
         
-        /* Estilos de botones y flotante (sin cambios) */
         .buy-button {
             padding: 8px 15px;
             background-color: var(--color-secondary);
@@ -204,24 +132,8 @@
             transition: background-color 0.2s ease, transform 0.1s ease;
             display: inline-block;
         }
-        .whatsapp-float {
-            position: fixed;
-            width: 55px; 
-            height: 55px;
-            bottom: 25px; 
-            right: 25px; 
-            background-color: var(--color-whatsapp); 
-            color: var(--color-white);
-            border-radius: 50%;
-            text-align: center;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
+        .buy-button:hover { background-color: #B89C40; transform: translateY(-1px); }
+        .whatsapp-float { position: fixed; width: 55px; height: 55px; bottom: 25px; right: 25px; background-color: var(--color-whatsapp); color: var(--color-white); border-radius: 50%; text-align: center; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6); z-index: 1000; display: flex; justify-content: center; align-items: center; text-decoration: none; transition: background-color 0.3s ease, transform 0.3s ease; }
         .whatsapp-float .fa-whatsapp { font-size: 32px; margin: 0; }
         .whatsapp-float:hover { background-color: var(--color-whatsapp-hover); transform: scale(1.08); }
         
@@ -328,6 +240,8 @@
             }
         }
 
+        // [Funciones buildLegend, buildTabs, updateActiveTab (sin cambios en la lógica)]
+
         function buildLegend(data) {
             const container = document.getElementById('legend-bar');
             container.innerHTML = '';
@@ -400,7 +314,12 @@
 
 
             filteredData.forEach(row => {
-                const producto = String(row['Producto'] || '—');
+                // Limpiamos el texto de la columna Producto de cualquier prefijo no deseado
+                let producto = String(row['Producto'] || '—');
+                
+                // Limpieza de Prefijos Comunes (si 'u$s' o 'u$s ' aparece accidentalmente en Producto)
+                producto = producto.replace(/^u\$s\s*/i, '').trim(); 
+                
                 const precioTransferencia = String(row['Precio Transferencia'] || '—');
                 const precioUSDT = String(row['Precio USDT'] || '—');
                 const status = String(row['STATUS'] || '').toUpperCase().trim();
@@ -471,8 +390,8 @@
                         const data = new Uint8Array(arrayBuffer);
                         const workbook = XLSX.read(data, { type: 'array' });
                         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" }); // Usa defval: ""
-                        
+                        const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" }); 
+
                         return json.filter(row => {
                             const pt = row['Precio Transferencia'];
                             const pu = row['Precio USDT'];
@@ -527,7 +446,7 @@
                 const sheetName = workbook.Sheets[workbook.SheetNames[0]]; 
                 const worksheet = workbook.Sheets[sheetName];
 
-                const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" }); // Usa defval: ""
+                const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
                 
                 const filteredData = json.filter(row => {
                     const precioTransferencia = row['Precio Transferencia'];
