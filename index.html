@@ -199,14 +199,11 @@
             background-color: #B89C40;
             transform: translateY(-1px);
         }
-        
-        /* ESTILOS DEL BOTÓN FLOTANTE: AJUSTADO PARA SER SOLO UN ÍCONO */
         .whatsapp-float {
             position: fixed;
-            /* Se reducen el ancho y alto a un tamaño de ícono estándar */
             width: 55px; 
             height: 55px;
-            bottom: 25px; /* Ajuste la posición */
+            bottom: 25px; 
             right: 25px; 
             background-color: var(--color-whatsapp); 
             color: var(--color-white);
@@ -214,19 +211,13 @@
             text-align: center;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
             z-index: 1000;
-            /* Flexbox ahora solo centra el ícono, ya no necesita columna */
             display: flex;
             justify-content: center;
             align-items: center;
             text-decoration: none;
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
-        .whatsapp-float .fa-whatsapp { 
-            /* Se hace el ícono un poco más grande ya que es el único elemento */
-            font-size: 32px; 
-            margin: 0;
-        }
-        /* ELIMINADA: La regla .whatsapp-float span ya no es necesaria */
+        .whatsapp-float .fa-whatsapp { font-size: 32px; margin: 0; }
         .whatsapp-float:hover { background-color: var(--color-whatsapp-hover); transform: scale(1.08); }
         
         .status-icon { margin-left: 8px; font-size: 1em; display: inline-block; }
@@ -265,7 +256,7 @@
         target="_blank"
     >
         <i class="fa-brands fa-whatsapp"></i>
-        </a>
+    </a>
 
     <script>
         document.addEventListener('DOMContentLoaded', initApp);
@@ -273,32 +264,41 @@
         let configData = []; 
         let legendData = []; 
         let currentActiveTab = null;
-        let CONTACT_PHONE = ''; // Variable para almacenar el número
+        let CONTACT_PHONE = ''; 
+        let REMOTE_CONFIGS = {}; // Variable global para las URLs de configuración
 
         async function initApp() {
             try {
-                // 1. Cargar Configuración de Contacto
-                const contactResponse = await fetch('contact_info.json');
-                if (!contactResponse.ok) throw new Error(`Error ${contactResponse.status}: No se pudo cargar el archivo de contacto (contact_info.json).`);
+                // PASO 1: Cargar el mapa de configuración remota
+                const remoteResponse = await fetch('remote_configs.json');
+                if (!remoteResponse.ok) throw new Error(`Error ${remoteResponse.status}: No se pudo cargar el mapa de configuración (remote_configs.json).`);
+                REMOTE_CONFIGS = await remoteResponse.json();
+
+                // PASO 2: Cargar el resto de las configuraciones en paralelo
+                const [contactResponse, tabsConfigResponse, legendResponse] = await Promise.all([
+                    fetch(REMOTE_CONFIGS.contact_info),
+                    fetch(REMOTE_CONFIGS.tabs_config), // Carga el JSON de pestañas desde la URL de Drive
+                    fetch(REMOTE_CONFIGS.leyenda_config)
+                ]);
+
+                // 3. Procesar datos de contacto
+                if (!contactResponse.ok) throw new Error(`Error: No se pudo cargar el archivo de contacto.`);
                 const contactData = await contactResponse.json();
                 CONTACT_PHONE = contactData.phone;
                 
-                // Actualizar el botón flotante de Contacto
                 const whatsappFloat = document.getElementById('contact-whatsapp-float');
                 whatsappFloat.href = `https://wa.me/${CONTACT_PHONE}?text=Hola,%20vi%20la%20lista%20de%20productos%20y%20quiero%20hacer%20una%20consulta.`;
 
-
-                // 2. Cargar Configuración de Pestañas y Leyenda (Misma lógica)
-                const configResponse = await fetch('config.json');
-                if (!configResponse.ok) throw new Error(`Error ${configResponse.status}: No se pudo cargar el archivo de configuración (config.json).`);
-                configData = await configResponse.json();
-
-                const legendResponse = await fetch('leyenda_config.json');
-                if (!legendResponse.ok) throw new Error(`Error ${legendResponse.status}: No se pudo cargar el archivo de configuración de leyenda (leyenda_config.json).`);
+                // 4. Procesar datos de tabs y leyenda
+                if (!tabsConfigResponse.ok) throw new Error(`Error: No se pudo cargar el archivo de configuración de pestañas.`);
+                configData = await tabsConfigResponse.json();
+                
+                if (!legendResponse.ok) throw new Error(`Error: No se pudo cargar el archivo de configuración de leyenda.`);
                 legendData = await legendResponse.json();
                 
                 buildLegend(legendData);
 
+                // 5. Construir la UI
                 const activeTabs = configData.filter(tab => tab.status === 'on');
                 if (activeTabs.length === 0) {
                     document.getElementById('excel-data').innerHTML = '<p style="color: var(--color-primary); text-align: center;">No hay pestañas activas configuradas.</p>';
@@ -322,6 +322,8 @@
                 document.getElementById('excel-data').innerHTML = `<p style="color: red; text-align: center; max-width: 900px; margin: auto;">Error al iniciar: ${error.message}</p>`;
             }
         }
+
+        // [Funciones buildLegend, buildTabs, updateActiveTab, renderTable, loadAllExcelData, loadExcelData sin cambios funcionales]
 
         function buildLegend(data) {
             const container = document.getElementById('legend-bar');
