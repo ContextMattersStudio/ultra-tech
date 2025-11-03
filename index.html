@@ -80,13 +80,21 @@
             align-items: center;
             gap: 8px;
             color: var(--color-primary);
+            cursor: pointer; /* Hacer que parezca clickeable */
+            padding: 5px 10px; /* Añadir padding para hacer la zona de click más grande */
+            border-radius: 4px;
+            transition: background-color 0.2s;
         }
+        .legend-item:hover {
+            background-color: #3B4249; /* Pequeño efecto hover */
+        }
+
         .legend-icon { font-size: 1.1em; }
         
         #tabs-container {
             width: 90%;
             max-width: 900px;
-            margin-bottom: 10px; /* Reducido para hacer espacio para la búsqueda */
+            margin-bottom: 10px; 
             padding: 5px; 
             background-color: var(--color-card-background); 
             border-radius: 8px;
@@ -166,7 +174,7 @@
         }
 
         th { 
-            text-align: center; /* Centrar encabezados */
+            text-align: center; 
             background-color: var(--color-secondary); 
             color: var(--color-primary); 
             font-weight: 700; 
@@ -180,8 +188,8 @@
         td { 
             padding: 18px 20px;
             border: 1px solid #3B4249; 
-            text-align: center; /* Centrado horizontal para todas las celdas */
-            vertical-align: middle; /* Centrado vertical para todas las celdas (excepto la primera) */
+            text-align: center; 
+            vertical-align: middle; 
         }
 
         /* Estilos para filas alternas */
@@ -194,12 +202,11 @@
 
         /* Corrección para la primera celda */
         td:first-child { 
-            /* CLAVE: Usamos Flexbox para centrar y mantener elementos en línea (default) */
             display: flex; 
-            align-items: center; /* Centra verticalmente el contenido */
-            justify-content: center; /* Centra horizontalmente el grupo (producto + ícono) */
-            flex-direction: row; /* Asegura la alineación horizontal */
-            flex-wrap: wrap; /* Permite que el contenido se envuelva si es demasiado largo */
+            align-items: center; 
+            justify-content: center; 
+            flex-direction: row; 
+            flex-wrap: wrap; 
 
             padding-right: 15px;
             border-top: none; 
@@ -207,26 +214,22 @@
             white-space: normal; 
         }
         
-        /* Aseguramos que el texto y el ícono se traten como bloques flexibles */
         td:first-child > span {
             display: inline-block;
         }
 
-        /* Estilo específico para el texto del producto para que se centre */
         td:first-child .product-text {
             text-align: center;
         }
 
-        /* Ajuste el margin del icono para que esté pegado al texto */
         .status-icon { margin-left: 5px; font-size: 1em; display: inline-block; }
 
 
         th:first-child { 
-            text-align: center; /* Centrar el título "Producto" horizontalmente */
+            text-align: center; 
             padding-right: 15px;
         }
 
-        /* Asegurar que el borde inferior de la fila se muestre y sea sólido */
         tbody tr {
             border-bottom: 1px solid #3B4249; 
         }
@@ -236,7 +239,7 @@
             color: var(--color-secondary);
             padding: 20px;
             font-weight: bold;
-            display: none; /* Oculto por defecto */
+            display: none; 
         }
         
         @media (max-width: 768px) {
@@ -246,7 +249,6 @@
                 max-width: 250px;
             }
             td:first-child { 
-                /* Se revierte a la alineación vertical estándar de la tabla para evitar cortes extraños en móvil */
                 display: block; 
                 text-align: left;
                 padding-right: 10px;
@@ -358,7 +360,8 @@
         let legendData = []; 
         let currentActiveTab = null;
         let CONTACT_PHONE = ''; 
-        let currentData = []; // ALMACENA LOS DATOS CARGADOS DE LA PESTAÑA ACTIVA (SIN FILTRO)
+        let currentData = []; 
+        let activeTabsConfig = []; // Para guardar la lista de tabs activos
 
         // --- Funciones de Formato de Precio ---
 
@@ -396,31 +399,72 @@
             return `USDT ${formattedNumber}`;
         }
         
-        // --- Función de Filtrado ---
-
+        // --- Función de Filtrado y Búsqueda ---
+        
         function filterTable() {
             const query = document.getElementById('search-input').value.toLowerCase().trim();
             const dataContainer = document.getElementById('excel-data');
             const noResultsMsg = document.getElementById('no-results-message');
 
             if (query === "") {
-                // Si el campo está vacío, renderizar todos los datos cargados
                 renderTable(currentData, dataContainer);
                 noResultsMsg.style.display = 'none';
                 return;
             }
 
-            // Filtrar los datos cargados
             const filteredResults = currentData.filter(row => {
                 const producto = String(row['Producto'] || '').toLowerCase();
                 return producto.includes(query);
             });
 
-            // Renderizar los resultados filtrados
             if (filteredResults.length === 0) {
                 dataContainer.innerHTML = '';
                 dataContainer.appendChild(noResultsMsg);
                 noResultsMsg.style.display = 'block';
+            } else {
+                renderTable(filteredResults, dataContainer);
+                noResultsMsg.style.display = 'none';
+            }
+        }
+
+        /**
+         * Maneja el clic en una leyenda. Cambia a la tab TODO y aplica el filtro.
+         * @param {string} statusKey La clave de estado de la leyenda (e.g., 'HOT').
+         */
+        async function filterByLegend(statusKey) {
+            const todoButton = document.querySelector('.tab-button[data-file-name="TODO"]');
+
+            if (!todoButton) {
+                console.warn("No se puede filtrar por leyenda: la pestaña 'TODO' no está disponible.");
+                return;
+            }
+            
+            // 1. Cargar todos los datos si no estamos en la pestaña TODO
+            if (currentActiveTab && currentActiveTab.textContent !== "TODO") {
+                await loadAllExcelData(activeTabsConfig);
+            }
+            
+            // 2. Simular clic en la pestaña TODO (para actualizar el estilo)
+            updateActiveTab("TODO");
+            
+            // 3. Aplicar el filtro: Buscar solo el STATUS.
+            const query = statusKey.toUpperCase();
+            
+            document.getElementById('search-input').value = query; // Mostrar el filtro en el campo
+            
+            const dataContainer = document.getElementById('excel-data');
+            const noResultsMsg = document.getElementById('no-results-message');
+
+            const filteredResults = currentData.filter(row => {
+                const status = String(row['STATUS'] || '').toUpperCase().trim();
+                return status === query;
+            });
+
+            if (filteredResults.length === 0) {
+                dataContainer.innerHTML = '';
+                dataContainer.appendChild(noResultsMsg);
+                noResultsMsg.style.display = 'block';
+                noResultsMsg.textContent = `Sin resultados de ${statusKey.charAt(0) + statusKey.slice(1).toLowerCase()}.`;
             } else {
                 renderTable(filteredResults, dataContainer);
                 noResultsMsg.style.display = 'none';
@@ -451,22 +495,22 @@
                 if (!legendResponse.ok) throw new Error(`Error ${legendResponse.status}: No se pudo cargar el archivo de configuración de leyenda (config/leyenda_config.json).`);
                 legendData = await legendResponse.json();
                 
+                activeTabsConfig = configData.filter(tab => tab.status === 'on'); // Guardar tabs activos
+
                 buildLegend(legendData);
 
-                const activeTabs = configData.filter(tab => tab.status === 'on');
-                if (activeTabs.length === 0) {
+                if (activeTabsConfig.length === 0) {
                     document.getElementById('excel-data').innerHTML = '<p style="color: var(--color-primary); text-align: center;">No hay pestañas activas configuradas.</p>';
                     return;
                 }
 
-                buildTabs(activeTabs);
+                buildTabs(activeTabsConfig);
                 
                 // Cargar datos iniciales
-                const firstTab = activeTabs[0];
-                // Iniciar con la lista TODO si existe, si no, con la primera pestaña activa
+                const firstTab = activeTabsConfig[0];
                 const todoButton = document.querySelector('.tab-button[data-file-name="TODO"]');
                 if (todoButton) {
-                    await loadAllExcelData(activeTabs);
+                    await loadAllExcelData(activeTabsConfig);
                 } else {
                     await loadExcelData(firstTab.file_full_name, firstTab.tab_name); 
                 }
@@ -492,6 +536,12 @@
                     <i class="fa-solid ${item.icon} legend-icon" style="color: var(${item.color_var});"></i>
                     <span>${textLabel}</span>
                 `;
+                
+                // CLAVE: Agregar el event listener
+                itemDiv.addEventListener('click', () => {
+                    filterByLegend(item.status_key);
+                });
+
                 container.appendChild(itemDiv);
             });
         }
@@ -506,7 +556,7 @@
             todoButton.dataset.fileName = "TODO";
 
             todoButton.addEventListener('click', () => {
-                document.getElementById('search-input').value = ''; // Limpiar búsqueda
+                document.getElementById('search-input').value = ''; 
                 loadAllExcelData(tabs);
             });
             container.appendChild(todoButton);
@@ -518,7 +568,7 @@
                 button.dataset.fileName = tab.file_full_name; 
 
                 button.addEventListener('click', () => {
-                    document.getElementById('search-input').value = ''; // Limpiar búsqueda
+                    document.getElementById('search-input').value = ''; 
                     loadExcelData(tab.file_full_name, tab.tab_name); 
                 });
 
@@ -550,7 +600,6 @@
                 'OFFERS': { icon: 'fa-tags', class: 'status-offers' }
             };
 
-            // Asegurar que el mensaje de "sin resultados" no esté en el contenedor principal
             const noResultsMsg = document.getElementById('no-results-message');
             if (noResultsMsg && dataContainer.contains(noResultsMsg)) {
                 dataContainer.removeChild(noResultsMsg);
@@ -646,7 +695,7 @@
                 const results = await Promise.all(fetchPromises);
                 allFilteredData = results.flat();
 
-                currentData = allFilteredData; // ALMACENAR DATOS
+                currentData = allFilteredData; 
 
                 if (allFilteredData.length === 0) {
                     dataContainer.innerHTML = `<p style="color: var(--color-secondary); text-align: center;">No se encontraron productos en ninguna categoría activa.</p>`;
@@ -704,7 +753,7 @@
                     );
                 });
                 
-                currentData = filteredData; // ALMACENAR DATOS
+                currentData = filteredData; 
 
                 if (filteredData.length === 0) {
                     dataContainer.innerHTML = `<p style="color: var(--color-secondary); text-align: center;">El archivo ${fullFileName} está vacío o no tiene datos válidos.</p>`;
