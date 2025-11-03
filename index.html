@@ -86,7 +86,7 @@
         #tabs-container {
             width: 90%;
             max-width: 900px;
-            margin-bottom: 30px; 
+            margin-bottom: 10px; /* Reducido para hacer espacio para la búsqueda */
             padding: 5px; 
             background-color: var(--color-card-background); 
             border-radius: 8px;
@@ -97,6 +97,32 @@
             gap: 10px;
             flex-wrap: wrap; 
         }
+
+        /* Estilos para el campo de búsqueda */
+        #search-container {
+            width: 90%;
+            max-width: 900px;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            text-align: center;
+        }
+        #search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--color-secondary);
+            background-color: #3B4249;
+            color: var(--color-primary);
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        #search-input:focus {
+            border-color: var(--color-secondary);
+            outline: none;
+        }
+        
         .tab-button {
             padding: 12px 25px;
             font-size: 14px;
@@ -205,6 +231,14 @@
             border-bottom: 1px solid #3B4249; 
         }
         
+        #no-results-message {
+            text-align: center;
+            color: var(--color-secondary);
+            padding: 20px;
+            font-weight: bold;
+            display: none; /* Oculto por defecto */
+        }
+        
         @media (max-width: 768px) {
             th:first-child, td:first-child {
                 width: 70%;
@@ -291,11 +325,20 @@
     <div id="tabs-container">
         </div>
     
+    <div id="search-container">
+        <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Buscar por nombre de producto..."
+            onkeyup="filterTable()" 
+        >
+    </div>
     <div id="loading-message">Cargando datos, por favor espere...</div>
     
     <div id="table-wrapper">
         <div id="excel-data">
-            </div>
+             <p id="no-results-message">Sin resultados para la búsqueda actual.</p>
+        </div>
     </div>
 
 
@@ -315,52 +358,77 @@
         let legendData = []; 
         let currentActiveTab = null;
         let CONTACT_PHONE = ''; 
+        let currentData = []; // ALMACENA LOS DATOS CARGADOS DE LA PESTAÑA ACTIVA (SIN FILTRO)
 
-        // Función para formatear el número como moneda ARS, sin símbolo de moneda
+        // --- Funciones de Formato de Precio ---
+
         function formatARS(value) {
-            // Intenta convertir el valor a un número
             const numericValue = parseFloat(String(value).replace(/[^0-9.-]+/g, ""));
             
-            // 1. Validar si el valor es un número válido
             if (isNaN(numericValue) || numericValue === 0) {
                 return 'CONSULTAR';
             }
 
-            // 2. Formatear el número con el punto como separador de miles
             const formatter = new Intl.NumberFormat('es-AR', {
                 style: 'decimal', 
                 minimumFractionDigits: 0, 
                 maximumFractionDigits: 0
             });
             
-            // 3. Obtener el número formateado (ej: "123.456") y prefijar con "ARS "
             const formattedNumber = formatter.format(numericValue);
             return `ARS ${formattedNumber}`;
         }
         
-        // Función para formatear el número como USDT, sin símbolo de moneda
         function formatUSDT(value) {
-            // Intenta convertir el valor a un número
-            // El valor puede venir ya como 'u$s157', por eso se mantiene la lógica de limpieza
             const numericValue = parseFloat(String(value).replace(/[^0-9.-]+/g, ""));
             
-            // 1. Validar si el valor es un número válido
             if (isNaN(numericValue) || numericValue === 0) {
                 return 'CONSULTAR';
             }
 
-            // 2. Formatear el número con el punto como separador de miles
             const formatter = new Intl.NumberFormat('es-AR', {
                 style: 'decimal', 
                 minimumFractionDigits: 0, 
                 maximumFractionDigits: 0
             });
             
-            // 3. Obtener el número formateado (ej: "123.456") y prefijar con "USDT "
             const formattedNumber = formatter.format(numericValue);
             return `USDT ${formattedNumber}`;
         }
+        
+        // --- Función de Filtrado ---
 
+        function filterTable() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const dataContainer = document.getElementById('excel-data');
+            const noResultsMsg = document.getElementById('no-results-message');
+
+            if (query === "") {
+                // Si el campo está vacío, renderizar todos los datos cargados
+                renderTable(currentData, dataContainer);
+                noResultsMsg.style.display = 'none';
+                return;
+            }
+
+            // Filtrar los datos cargados
+            const filteredResults = currentData.filter(row => {
+                const producto = String(row['Producto'] || '').toLowerCase();
+                return producto.includes(query);
+            });
+
+            // Renderizar los resultados filtrados
+            if (filteredResults.length === 0) {
+                dataContainer.innerHTML = '';
+                dataContainer.appendChild(noResultsMsg);
+                noResultsMsg.style.display = 'block';
+            } else {
+                renderTable(filteredResults, dataContainer);
+                noResultsMsg.style.display = 'none';
+            }
+        }
+
+
+        // --- Funciones de Inicialización y Renderizado ---
 
         async function initApp() {
             try {
@@ -370,12 +438,11 @@
                 const contactData = await contactResponse.json();
                 CONTACT_PHONE = contactData.phone;
                 
-                // Actualizar el botón flotante de Contacto
                 const whatsappFloat = document.getElementById('contact-whatsapp-float');
                 whatsappFloat.href = `https://wa.me/${CONTACT_PHONE}?text=Hola,%20vi%20la%20lista%20de%20productos%20y%20quiero%20hacer%20una%20consulta.`;
 
 
-                // 2. Cargar Configuración de Pestañas y Leyenda (Misma lógica)
+                // 2. Cargar Configuración de Pestañas y Leyenda
                 const configResponse = await fetch('config/config.json');
                 if (!configResponse.ok) throw new Error(`Error ${configResponse.status}: No se pudo cargar el archivo de configuración (config/config.json).`);
                 configData = await configResponse.json();
@@ -394,12 +461,13 @@
 
                 buildTabs(activeTabs);
                 
+                // Cargar datos iniciales
+                const firstTab = activeTabs[0];
+                // Iniciar con la lista TODO si existe, si no, con la primera pestaña activa
                 const todoButton = document.querySelector('.tab-button[data-file-name="TODO"]');
-                
                 if (todoButton) {
                     await loadAllExcelData(activeTabs);
                 } else {
-                    const firstTab = activeTabs[0];
                     await loadExcelData(firstTab.file_full_name, firstTab.tab_name); 
                 }
 
@@ -438,6 +506,7 @@
             todoButton.dataset.fileName = "TODO";
 
             todoButton.addEventListener('click', () => {
+                document.getElementById('search-input').value = ''; // Limpiar búsqueda
                 loadAllExcelData(tabs);
             });
             container.appendChild(todoButton);
@@ -449,6 +518,7 @@
                 button.dataset.fileName = tab.file_full_name; 
 
                 button.addEventListener('click', () => {
+                    document.getElementById('search-input').value = ''; // Limpiar búsqueda
                     loadExcelData(tab.file_full_name, tab.tab_name); 
                 });
 
@@ -469,7 +539,7 @@
             });
         }
 
-        function renderTable(filteredData, dataContainer) {
+        function renderTable(dataToRender, dataContainer) {
             let tableHTML = '<table>';
             tableHTML += '<thead><tr><th>Producto</th><th>Precio<br>Transferencia</th><th>Precio<br>USDT</th><th>Comprar</th></tr></thead>';
             tableHTML += '<tbody>';
@@ -480,16 +550,20 @@
                 'OFFERS': { icon: 'fa-tags', class: 'status-offers' }
             };
 
+            // Asegurar que el mensaje de "sin resultados" no esté en el contenedor principal
+            const noResultsMsg = document.getElementById('no-results-message');
+            if (noResultsMsg && dataContainer.contains(noResultsMsg)) {
+                dataContainer.removeChild(noResultsMsg);
+            }
 
-            filteredData.forEach(row => {
+            dataToRender.forEach(row => {
                 const producto = String(row['Producto'] || '—');
                 const rawPriceTransferencia = row['Precio Transferencia'];
                 const rawPriceUSDT = row['Precio USDT'];
                 const status = String(row['STATUS'] || '').toUpperCase().trim();
                 
-                // Aplicar formatos a ambas columnas
                 const formattedPriceTransferencia = formatARS(rawPriceTransferencia);
-                const formattedPriceUSDT = formatUSDT(rawPriceUSDT); // Nueva función aplicada
+                const formattedPriceUSDT = formatUSDT(rawPriceUSDT);
                 
                 let statusIconHtml = '';
                 const statusConfig = STATUS_MAP[status];
@@ -503,7 +577,6 @@
                 }
                 
                 const urlProduct = encodeURIComponent(producto);
-                // Usar el precio original o 'CONSULTAR' para la URL
                 const urlPriceT = encodeURIComponent(rawPriceTransferencia || 'CONSULTAR'); 
                 const urlPriceU = encodeURIComponent(rawPriceUSDT || 'CONSULTAR');
                 
@@ -573,6 +646,8 @@
                 const results = await Promise.all(fetchPromises);
                 allFilteredData = results.flat();
 
+                currentData = allFilteredData; // ALMACENAR DATOS
+
                 if (allFilteredData.length === 0) {
                     dataContainer.innerHTML = `<p style="color: var(--color-secondary); text-align: center;">No se encontraron productos en ninguna categoría activa.</p>`;
                     return;
@@ -628,6 +703,8 @@
                         String(precioUSDT).trim() !== ''
                     );
                 });
+                
+                currentData = filteredData; // ALMACENAR DATOS
 
                 if (filteredData.length === 0) {
                     dataContainer.innerHTML = `<p style="color: var(--color-secondary); text-align: center;">El archivo ${fullFileName} está vacío o no tiene datos válidos.</p>`;
