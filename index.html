@@ -20,6 +20,9 @@
             --color-hot: #FF4500;
             --color-new: #1E90FF;
             --color-offers: #D0AE50;
+            /* Colores para filas alternas */
+            --color-row-even: #2B3035; /* Color para filas pares (más oscuro) */
+            --color-row-odd: #2F353A;  /* Color para filas impares (más claro) */
         }
 
         /* Estilos Generales */
@@ -129,40 +132,77 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
-        th, td { 
-            border: 1px solid #3B4249;
-            padding: 18px 20px;
+        table { 
+            width: 100%; 
+            min-width: 600px; 
+            border-collapse: collapse; 
+            overflow: hidden; 
         }
+
         th { 
-            text-align: center; 
+            text-align: center; /* Centrar encabezados */
             background-color: var(--color-secondary); 
             color: var(--color-primary); 
             font-weight: 700; 
             text-transform: uppercase;
             font-size: 15px;
             white-space: nowrap;
-        }
-        table { 
-            width: 100%; 
-            min-width: 600px; 
-            border-collapse: collapse; 
-            overflow: hidden; 
-            background-color: var(--color-card-background);
+            padding: 18px 20px;
+            border: 1px solid #3B4249;
         }
         
-        th:first-child, td:first-child { 
-            text-align: left;
-            padding-right: 15px;
+        td { 
+            padding: 18px 20px;
             border: 1px solid #3B4249; 
+            text-align: center; /* Centrado horizontal para todas las celdas */
+            vertical-align: middle; /* Centrado vertical para todas las celdas (excepto la primera) */
         }
+
+        /* Estilos para filas alternas */
+        tbody tr:nth-child(even) {
+            background-color: var(--color-row-even); 
+        }
+        tbody tr:nth-child(odd) {
+            background-color: var(--color-row-odd); 
+        }
+
+        /* Corrección para la primera celda */
         td:first-child { 
-            display: flex;
-            align-items: center;
-        }
-        th:first-child, td:first-child { 
-            text-align: left;
+            /* CLAVE: Usamos Flexbox para centrar y mantener elementos en línea (default) */
+            display: flex; 
+            align-items: center; /* Centra verticalmente el contenido */
+            justify-content: center; /* Centra horizontalmente el grupo (producto + ícono) */
+            flex-direction: row; /* Asegura la alineación horizontal */
+            flex-wrap: wrap; /* Permite que el contenido se envuelva si es demasiado largo */
+
             padding-right: 15px;
-            border: 1px solid #3B4249; 
+            border-top: none; 
+            border-bottom: none;
+            white-space: normal; 
+        }
+        
+        /* Aseguramos que el texto y el ícono se traten como bloques flexibles */
+        td:first-child > span {
+            display: inline-block;
+        }
+
+        /* Estilo específico para el texto del producto para que se centre */
+        td:first-child .product-text {
+            text-align: center;
+        }
+
+        /* Ajuste el margin del icono para que esté pegado al texto */
+        .status-icon { margin-left: 5px; font-size: 1em; display: inline-block; }
+
+
+        th:first-child { 
+            text-align: center; /* Centrar el título "Producto" horizontalmente */
+            padding-right: 15px;
+        }
+
+        /* Asegurar que el borde inferior de la fila se muestre y sea sólido */
+        tbody tr {
+            border-bottom: 1px solid #3B4249; 
         }
         
         @media (max-width: 768px) {
@@ -172,6 +212,11 @@
                 max-width: 250px;
             }
             td:first-child { 
+                /* Se revierte a la alineación vertical estándar de la tabla para evitar cortes extraños en móvil */
+                display: block; 
+                text-align: left;
+                padding-right: 10px;
+                
                 display: -webkit-box;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;
@@ -200,13 +245,12 @@
             transform: translateY(-1px);
         }
         
-        /* ESTILOS DEL BOTÓN FLOTANTE: AJUSTADO PARA SER SOLO UN ÍCONO */
+        /* ESTILOS DEL BOTÓN FLOTANTE */
         .whatsapp-float {
             position: fixed;
-            /* Se reducen el ancho y alto a un tamaño de ícono estándar */
             width: 55px; 
             height: 55px;
-            bottom: 25px; /* Ajuste la posición */
+            bottom: 25px; 
             right: 25px; 
             background-color: var(--color-whatsapp); 
             color: var(--color-white);
@@ -214,7 +258,6 @@
             text-align: center;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
             z-index: 1000;
-            /* Flexbox ahora solo centra el ícono, ya no necesita columna */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -222,14 +265,12 @@
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
         .whatsapp-float .fa-whatsapp { 
-            /* Se hace el ícono un poco más grande ya que es el único elemento */
             font-size: 32px; 
             margin: 0;
         }
-        /* ELIMINADA: La regla .whatsapp-float span ya no es necesaria */
         .whatsapp-float:hover { background-color: var(--color-whatsapp-hover); transform: scale(1.08); }
         
-        .status-icon { margin-left: 8px; font-size: 1em; display: inline-block; }
+        .status-icon { margin-left: 5px; font-size: 1em; display: inline-block; }
         .status-hot { color: var(--color-hot); }
         .status-new { color: var(--color-new); transform: rotate(-30deg); }
         .status-offers { color: var(--color-offers); }
@@ -420,7 +461,7 @@
                 tableHTML += `
                     <tr>
                         <td>
-                            ${producto}
+                            <span class="product-text">${producto}</span>
                             ${statusIconHtml} 
                         </td>
                         <td>${precioTransferencia}</td>
