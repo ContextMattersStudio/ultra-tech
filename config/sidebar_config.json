@@ -27,7 +27,7 @@
     {
         "label": "Home",
         "icon": "fa-house",
-        "url": "index.html"
+        "url": "#"
     },
     {
         "label": "Política de privacidad",

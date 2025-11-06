@@ -182,10 +182,10 @@
             transform: translateY(-50%);
             width: 30px; 
             text-align: center;
-            font-size: 18px;
+            font-size: 24px; /* AUMENTADO: Tamaño del ícono colapsado en escritorio (24px) */
             color: var(--sidebar-highlight);
         }
-        
+
         /* Contenedor del texto - Se mueve y se anima */
         .menu-item span {
             margin-left: 60px; /* Deja espacio para el ícono fijo */
@@ -212,6 +212,11 @@
         
         /* Ajustes Responsive (Móvil) */
         @media (max-width: 768px) {
+             /* Reducir el tamaño de ícono en móvil para que no se vea excesivo al abrir */
+            .menu-item i {
+                font-size: 18px; 
+            }
+
             #main-container {
                 margin-left: 0; /* No hay margen fijo en móvil */
                 padding: 70px 15px 80px 15px; /* Dejar espacio para la hamburguesa y título */
