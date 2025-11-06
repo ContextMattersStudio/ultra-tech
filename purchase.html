@@ -37,7 +37,7 @@
         /* Contenedor Principal (Todo el contenido excluyendo el sidebar) */
         #main-container {
             flex-grow: 1; /* Ocupa el espacio restante */
-            margin-left: var(--sidebar-width-collapsed); /* Empieza colapsado */
+            margin-left: var(--sidebar-width-collapsed); /* Empieza colapsado en escritorio */
             padding: 30px 20px 80px 20px;
             transition: margin-left 0.3s ease;
             min-height: 100vh;
@@ -51,19 +51,20 @@
             margin-left: var(--sidebar-width-expanded);
         }
 
-        /* --- Estilos de SIDEBAR (Copiado de index.html) --- */
+        /* --- Estilos de SIDEBAR --- */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
             height: 100%;
             width: var(--sidebar-width-collapsed);
-            background-color: var(--sidebar-bg);
+            background-color: var(--sidebar-bg); /* Fondo sólido */
             box-shadow: 2px 0 10px rgba(0,0,0,0.5);
             transition: width 0.3s ease;
             z-index: 1050; 
             display: flex;
             flex-direction: column;
+            overflow-y: auto; /* Permite scroll si hay muchos items */
         }
 
         .sidebar.expanded {
@@ -73,9 +74,11 @@
         .sidebar-header {
             display: flex;
             align-items: center;
-            justify-content: flex-end; 
+            justify-content: flex-start; /* MODIFICADO: Alinear logo/toggle a la izquierda */
             padding: 10px 10px;
             height: 50px; 
+            min-height: 50px;
+            position: relative;
         }
 
         .sidebar.expanded .sidebar-header {
@@ -90,12 +93,22 @@
             transition: opacity 0.2s ease;
             white-space: nowrap;
             overflow: hidden;
-            display: none; 
+            /* MOVIDO: Ajustar la posición y ancho del logo en estado expandido */
+            margin-left: 50px; /* Separación del botón */
+            max-width: 150px;
+            display: block; 
+        }
+
+        /* Ocultar logo cuando está colapsado en escritorio */
+        .sidebar:not(.expanded) .sidebar-logo {
+            opacity: 0;
+            width: 0;
+            display: none;
         }
 
         .sidebar.expanded .sidebar-logo {
             opacity: 1;
-            display: block;
+            width: auto;
         }
         
         .toggle-btn {
@@ -107,6 +120,9 @@
             padding: 5px;
             border-radius: 4px;
             transition: color 0.2s, transform 0.2s;
+            /* Posiciona el botón para que quede fijo */
+            position: absolute; 
+            left: 10px;
         }
         
         .toggle-btn:hover {
@@ -121,11 +137,12 @@
         }
 
         .menu-item {
-            padding: 12px 0;
+            padding: 0; 
             cursor: pointer;
         }
 
         .menu-item a {
+            position: relative; /* Contenedor para posicionar el ícono */
             display: flex;
             align-items: center;
             text-decoration: none;
@@ -140,22 +157,31 @@
             color: var(--sidebar-highlight);
         }
         
+        /* Contenedor del ícono - Posición Fija */
         .menu-item i {
+            position: absolute; /* HACE QUE EL ICONO NO SE MUEVA HORIZONTALMENTE */
+            left: 20px; /* Posicionamiento fijo dentro del menú colapsado/expandido */
+            top: 50%;
+            transform: translateY(-50%);
             width: 30px; 
             text-align: center;
             font-size: 18px;
             color: var(--sidebar-highlight);
         }
 
+        /* Contenedor del texto - Se mueve y se anima */
         .menu-item span {
-            margin-left: 15px;
+            /* Damos espacio al texto forzando el margen izquierdo para el icono fijo */
+            margin-left: 60px; 
             opacity: 0;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.3s ease 0.1s; /* Agregamos un delay para que desaparezca al final */
             white-space: nowrap;
+            display: none; 
         }
-        
+
         .sidebar.expanded .menu-item span {
             opacity: 1;
+            display: block;
         }
         
         .menu-item.active a {
@@ -167,29 +193,57 @@
             color: var(--color-new-background);
         }
 
+        /* Ajustes Responsive (Móvil) */
         @media (max-width: 768px) {
             #main-container {
                 margin-left: 0; 
+                padding: 70px 15px 80px 15px; 
             }
+            
+            /* Sidebar en Móvil: Oculta por defecto, solo visible al expandirse */
             .sidebar {
                 width: 0;
                 box-shadow: none; 
+                overflow: hidden; 
+                transition: width 0.3s ease, box-shadow 0.3s ease;
             }
+            
             .sidebar.expanded {
                 width: var(--sidebar-width-expanded); 
                 box-shadow: 2px 0 10px rgba(0,0,0,0.5);
             }
             
+            /* En móvil, el logo y el texto de los ítems se muestran al expandir */
             .sidebar-header {
-                justify-content: space-between; 
+                 justify-content: flex-start; 
+                 width: var(--sidebar-width-expanded); 
             }
+            
             .sidebar-logo {
-                opacity: 1;
+                opacity: 1; 
+                width: auto;
+                display: block;
+            }
+            
+            .sidebar .menu-item span {
+                opacity: 1; 
                 display: block;
             }
 
-            .sidebar .menu-item span {
-                opacity: 1;
+            /* Fija el toggle-btn en la esquina superior izquierda en móvil */
+            .toggle-btn {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1060; 
+                padding: 10px;
+                background-color: var(--sidebar-bg);
+                border-radius: 8px;
+            }
+
+            /* Ocultar el logo en el sidebar-header cuando el sidebar está colapsado */
+            .sidebar:not(.expanded) .sidebar-logo {
+                display: none;
             }
         }
         /* --- FIN Estilos de SIDEBAR --- */
@@ -393,7 +447,7 @@
         let PAYMENT_METHODS_DATA = {};
         let productDetails = {};
         let CONTACT_PHONE = ''; 
-        let sidebarConfig = []; // Variable para el sidebar
+        let sidebarConfig = []; 
 
         async function initPurchasePage() {
             // 1. Inicializar Sidebar
@@ -401,7 +455,7 @@
             
             // 2. Cargar el número de teléfono
             try {
-                const contactResponse = await fetch('config/contact_info.json');
+                const contactResponse = await fetch('config/contact_info.json'); // RUTA ORIGINAL
                 if (!contactResponse.ok) throw new Error("No se pudo cargar config/contact_info.json");
                 const contactData = await contactResponse.json();
                 CONTACT_PHONE = contactData.phone;
@@ -423,7 +477,7 @@
 
             // 4. Cargar métodos de pago
             try {
-                const response = await fetch('config/payment_methods.json'); 
+                const response = await fetch('config/payment_methods.json'); // RUTA ORIGINAL
                 if (!response.ok) throw new Error("No se pudo cargar config/payment_methods.json");
                 PAYMENT_METHODS_DATA = await response.json();
                 
@@ -446,11 +500,11 @@
             }
         }
 
-        // --- FUNCIONES DEL SIDEBAR (Copiado de index.html) ---
+        // --- FUNCIONES DEL SIDEBAR ---
         async function initSidebar() {
             try {
-                const response = await fetch('config/sidebar_config.json');
-                if (!response.ok) throw new Error('No se pudo cargar sidebar_config.json');
+                const response = await fetch('config/sidebar_config.json'); // RUTA ORIGINAL
+                if (!response.ok) throw new Error('No se pudo cargar config/sidebar_config.json');
                 sidebarConfig = await response.json();
                 renderSidebar();
                 
@@ -463,13 +517,27 @@
                     mainContainer.classList.toggle('expanded');
                 });
 
-                // Establecer el estado inicial (colapsado) para escritorio, expandido para móvil.
+                // Establecer el estado inicial
                 if (window.innerWidth >= 768) {
+                    // Escritorio: Colapsado por defecto
                     sidebar.classList.remove('expanded');
                     mainContainer.classList.remove('expanded');
                 } else {
-                    // En móvil, empezar colapsado (width: 0), pero al hacer click expandir
+                    // Móvil: Oculto por defecto
+                    sidebar.classList.remove('expanded');
                 }
+                
+                // Evento para cerrar el sidebar al cambiar el tamaño de la ventana
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth >= 768) {
+                        // Si pasamos a escritorio, asegura el estado colapsado
+                        sidebar.classList.remove('expanded');
+                        mainContainer.classList.remove('expanded');
+                    } else {
+                        // Si pasamos a móvil, asegura que el margen se resetee
+                        mainContainer.classList.remove('expanded');
+                    }
+                });
 
             } catch (error) {
                 console.error("Error al inicializar el sidebar:", error);

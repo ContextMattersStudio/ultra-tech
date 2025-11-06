@@ -91,10 +91,11 @@
         .sidebar-header {
             display: flex;
             align-items: center;
-            justify-content: flex-end; /* Alinear el botón a la derecha al colapsar */
+            justify-content: flex-start; 
             padding: 10px 10px;
             height: 50px; 
             min-height: 50px;
+            position: relative; /* Para posicionar el toggle-btn y el logo */
         }
 
         .sidebar.expanded .sidebar-header {
@@ -109,7 +110,9 @@
             transition: opacity 0.2s ease;
             white-space: nowrap;
             overflow: hidden;
-            /* Mostrar el logo solo cuando está expandido en escritorio */
+            /* MOVIDO: Ajustar la posición y ancho del logo en estado expandido */
+            margin-left: 50px; /* Separación del botón */
+            max-width: 150px;
             display: block; 
         }
 
@@ -134,6 +137,9 @@
             padding: 5px;
             border-radius: 4px;
             transition: color 0.2s, transform 0.2s;
+            /* Posiciona el botón en una posición fija, no relativa al flexbox */
+            position: absolute; 
+            left: 10px;
         }
         
         .toggle-btn:hover {
@@ -148,39 +154,45 @@
         }
 
         .menu-item {
-            padding: 0; /* Ajustamos el padding a 0 para que el enlace lo maneje */
+            padding: 0;
             cursor: pointer;
         }
 
         .menu-item a {
+            position: relative; /* Contenedor para posicionar el ícono */
             display: flex;
             align-items: center;
             text-decoration: none;
             color: var(--sidebar-text);
             padding: 10px 15px;
             transition: background-color 0.2s, color 0.2s;
-            overflow: hidden;
+            overflow: hidden; /* Importante para ocultar el texto que se extiende */
         }
         
         .menu-item a:hover {
-            background-color: #3B4249; /* Tono más oscuro */
+            background-color: #3B4249; 
             color: var(--sidebar-highlight);
         }
         
+        /* Contenedor del ícono - Posición Fija */
         .menu-item i {
+            position: absolute; 
+            left: 20px; 
+            top: 50%;
+            transform: translateY(-50%);
             width: 30px; 
             text-align: center;
             font-size: 18px;
             color: var(--sidebar-highlight);
         }
         
-        /* Ocultar texto en estado colapsado (escritorio) */
+        /* Contenedor del texto - Se mueve y se anima */
         .menu-item span {
-            margin-left: 15px;
+            margin-left: 60px; /* Deja espacio para el ícono fijo */
             opacity: 0;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.3s ease 0.1s; /* Delay para que el texto desaparezca limpiamente */
             white-space: nowrap;
-            /* Asegura que el texto desaparezca en colapsado */
+            /* Oculto por defecto en ambos estados (colapsado y móvil inicial) */
             display: none; 
         }
         
@@ -209,7 +221,7 @@
             .sidebar {
                 width: 0;
                 box-shadow: none; 
-                overflow: hidden; /* Oculta completamente */
+                overflow: hidden; 
                 transition: width 0.3s ease, box-shadow 0.3s ease;
             }
             
@@ -220,7 +232,7 @@
             
             /* En móvil, el logo y el texto de los ítems se muestran al expandir */
             .sidebar-header {
-                 justify-content: space-between; 
+                 justify-content: flex-start; /* MODIFICADO: Solo mostrar logo y botón. El logo ya tiene margen. */
                  width: var(--sidebar-width-expanded); /* Fija el header al ancho expandido */
             }
             
