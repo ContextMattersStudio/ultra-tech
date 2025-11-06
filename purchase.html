@@ -393,7 +393,20 @@
     </style>
 </head>
 <body>
-    <div id="sidebar-container"></div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="toggle-btn" id="toggle-btn">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <span class="sidebar-logo">ULTRA TECH</span>
+        </div>
+        <ul class="sidebar-menu" id="sidebar-menu">
+            <!-- Items loaded via JavaScript -->
+        </ul>
+    </div>
+
     <div id="main-container">
 
         <div class="main-title">
@@ -437,15 +450,122 @@
     </div> <!-- End Main Container -->
 
     <script src="utils/priceFormatter.js"></script>
-    <script src="utils/sidebar.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', initPurchasePage);
 
         let PAYMENT_METHODS_DATA = {};
         let productDetails = {};
         let CONTACT_PHONE = ''; 
+        let sidebarItems = [];
+
+        // --- Funciones de Sidebar ---
+        const sidebar = document.getElementById('sidebar');
+        const mainContainer = document.getElementById('main-container');
+
+        // Función para verificar si estamos en móvil
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+
+        function toggleSidebar() {
+            const isExpanded = sidebar.classList.toggle('expanded');
+            if (!isMobile()) {
+                // Solo en escritorio, ajustar el margen del contenido
+                mainContainer.classList.toggle('expanded', isExpanded);
+            }
+        }
+
+        function updateSidebarActiveClass() {
+            const path = window.location.pathname.split('/').pop(); // purchase.html
+            const currentUrl = path || "purchase.html"; 
+
+            document.querySelectorAll('#sidebar-menu .menu-item').forEach(item => {
+                const link = item.querySelector('a');
+                if (link && link.href) {
+                    const targetUrl = link.href.split('/').pop();
+                    
+                    if (targetUrl === currentUrl && targetUrl !== '#') {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        async function initSidebar() {
+            const toggleBtn = document.getElementById('toggle-btn');
+            toggleBtn.addEventListener('click', toggleSidebar);
+
+            // Cargar configuración de la barra lateral
+            try {
+                const response = await fetch('config/sidebar_config.json');
+                if (!response.ok) throw new Error(`Error ${response.status}: No se pudo cargar config/sidebar_config.json.`);
+                sidebarItems = await response.json();
+                buildSidebarMenu(sidebarItems);
+                updateSidebarActiveClass(); 
+
+                // Forzar el estado colapsado inicial en desktop
+                if (!isMobile()) {
+                    sidebar.classList.remove('expanded');
+                    mainContainer.classList.remove('expanded');
+                } else {
+                    // En móvil, el sidebar debe estar colapsado (width: 0) por defecto
+                    sidebar.classList.remove('expanded'); 
+                    mainContainer.classList.remove('expanded');
+                }
+
+                // Asegurar el comportamiento responsive en resize
+                window.addEventListener('resize', () => {
+                    if (!isMobile() && sidebar.classList.contains('expanded')) {
+                        mainContainer.classList.add('expanded');
+                    } else if (!isMobile() && !sidebar.classList.contains('expanded')) {
+                        mainContainer.classList.remove('expanded');
+                    } else if (isMobile() && sidebar.classList.contains('expanded')) {
+                        // En móvil, el margen del main siempre es 0
+                        mainContainer.classList.remove('expanded');
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error al inicializar el sidebar:", error);
+                document.getElementById('sidebar-menu').innerHTML = `<li style="color: red; padding: 10px 20px;">Error al cargar menú.</li>`;
+            }
+        }
+        
+        function buildSidebarMenu(items) {
+            const menu = document.getElementById('sidebar-menu');
+            menu.innerHTML = ''; 
+
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.classList.add('menu-item');
+
+                const a = document.createElement('a');
+                a.href = item.url;
+                
+                // Cerrar el sidebar si es un link interno en móvil
+                if (item.url.startsWith('#') || item.url.includes('.html')) {
+                    a.onclick = (e) => {
+                        if (isMobile()) {
+                            toggleSidebar();
+                        }
+                    };
+                }
+
+                a.innerHTML = `
+                    <i class="fa-solid ${item.icon}"></i>
+                    <span>${item.label}</span>
+                `;
+                li.appendChild(a);
+                menu.appendChild(li);
+            });
+        }
+        // --- Fin Funciones de Sidebar ---
 
         async function initPurchasePage() {
+            await initSidebar(); // Inicializar el sidebar
+
             // 0. Cargar el número de teléfono
             try {
                 const contactResponse = await fetch('config/contact_info.json');
