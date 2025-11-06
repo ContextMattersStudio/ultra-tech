@@ -220,12 +220,25 @@
     </style>
 </head>
 <body>
-    <div id="sidebar-container"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="toggle-btn" id="toggle-btn">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <span class="sidebar-logo">ULTRA TECH</span>
+        </div>
+        <ul class="sidebar-menu" id="sidebar-menu">
+        </ul>
+    </div>
     <div id="main-container">
         <div class="construction-message">
             Pantalla en construcción
         </div>
     </div>
-    <script src="utils/sidebar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initSidebar('/Users/exmi/Documents/WebProjects/ultra-tech/config/sidebar_config.json');
+        });
+    </script>
 </body>
 </html>
