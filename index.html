@@ -550,18 +550,7 @@
 </head>
 <body>
     
-    <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <button class="toggle-btn" id="toggle-btn">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <span class="sidebar-logo">ULTRA TECH</span>
-        </div>
-        <ul class="sidebar-menu" id="sidebar-menu">
-            <!-- Items loaded via JavaScript -->
-        </ul>
-    </div>
+    <div id="sidebar-container"></div>
     
     <!-- MAIN CONTENT CONTAINER -->
     <div id="main-container">
@@ -620,115 +609,7 @@
 
         // --- Funciones de Formato de Precio (Movidas a utils/priceFormatter.js) ---
 
-        // --- Funciones de Sidebar ---
-        const sidebar = document.getElementById('sidebar');
-        const mainContainer = document.getElementById('main-container');
-
-        // Función para verificar si estamos en móvil
-        function isMobile() {
-            return window.innerWidth <= 768;
-        }
-
-        function toggleSidebar() {
-            const isExpanded = sidebar.classList.toggle('expanded');
-            if (!isMobile()) {
-                // Solo en escritorio, ajustar el margen del contenido
-                mainContainer.classList.toggle('expanded', isExpanded);
-            }
-        }
-
-        function updateSidebarActiveClass() {
-            const path = window.location.pathname.split('/').pop(); // index.html
-            const currentUrl = path || "index.html"; // Asegura que "index.html" sea el valor por defecto
-
-            document.querySelectorAll('#sidebar-menu .menu-item').forEach(item => {
-                const link = item.querySelector('a');
-                if (link && link.href) {
-                    const targetUrl = link.href.split('/').pop();
-                    
-                    if (targetUrl === currentUrl && targetUrl !== '#') {
-                        item.classList.add('active');
-                    } else if (targetUrl === '#' && currentUrl === 'index.html' && link.textContent.trim() === 'Home') {
-                         // Permitir que Home se active si la URL es # y estamos en index.html
-                         // NOTA: Con la nueva configuración, solo 'Lista de precios' es index.html
-                         // Dejo este condicional por si se necesitara en el futuro.
-                        // item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
-                }
-            });
-        }
-        
-        async function initSidebar() {
-            const toggleBtn = document.getElementById('toggle-btn');
-            toggleBtn.addEventListener('click', toggleSidebar);
-
-            // Cargar configuración de la barra lateral
-            try {
-                const response = await fetch('config/sidebar_config.json');
-                if (!response.ok) throw new Error(`Error ${response.status}: No se pudo cargar config/sidebar_config.json.`);
-                sidebarItems = await response.json();
-                buildSidebarMenu(sidebarItems);
-                updateSidebarActiveClass(); 
-
-                // Forzar el estado colapsado inicial en desktop
-                if (!isMobile()) {
-                    sidebar.classList.remove('expanded');
-                    mainContainer.classList.remove('expanded');
-                } else {
-                    // En móvil, el sidebar debe estar colapsado (width: 0) por defecto
-                    sidebar.classList.remove('expanded'); 
-                    mainContainer.classList.remove('expanded');
-                }
-
-                // Asegurar el comportamiento responsive en resize
-                window.addEventListener('resize', () => {
-                    if (!isMobile() && sidebar.classList.contains('expanded')) {
-                        mainContainer.classList.add('expanded');
-                    } else if (!isMobile() && !sidebar.classList.contains('expanded')) {
-                        mainContainer.classList.remove('expanded');
-                    } else if (isMobile() && sidebar.classList.contains('expanded')) {
-                        // En móvil, el margen del main siempre es 0
-                        mainContainer.classList.remove('expanded');
-                    }
-                });
-
-
-            } catch (error) {
-                console.error("Error al inicializar el sidebar:", error);
-                document.getElementById('sidebar-menu').innerHTML = `<li style="color: red; padding: 10px 20px;">Error al cargar menú.</li>`;
-            }
-        }
-
-        function buildSidebarMenu(items) {
-            const menu = document.getElementById('sidebar-menu');
-            menu.innerHTML = ''; 
-
-            items.forEach(item => {
-                const li = document.createElement('li');
-                li.classList.add('menu-item');
-
-                const a = document.createElement('a');
-                a.href = item.url;
-                
-                // Cerrar el sidebar si es un link interno en móvil
-                if (item.url.startsWith('#') || item.url.includes('.html')) {
-                    a.onclick = (e) => {
-                        if (isMobile()) {
-                            toggleSidebar();
-                        }
-                    };
-                }
-
-                a.innerHTML = `
-                    <i class="fa-solid ${item.icon}"></i>
-                    <span>${item.label}</span>
-                `;
-                li.appendChild(a);
-                menu.appendChild(li);
-            });
-        }
+        <script src="utils/sidebar.js"></script>
 
         // --- Función de Filtrado y Búsqueda ---
         
