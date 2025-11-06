@@ -1,0 +1,42 @@
+[
+    {
+        "label": "Lista de precios",
+        "icon": "fa-list-check",
+        "url": "index.html"
+    },
+    {
+        "label": "Guía de compra",
+        "icon": "fa-book-open-reader",
+        "url": "#"
+    },
+    {
+        "label": "Nosotros",
+        "icon": "fa-users",
+        "url": "#"
+    },
+    {
+        "label": "Contacto",
+        "icon": "fa-envelope",
+        "url": "#"
+    },
+    {
+        "label": "Preguntas Frecuentes",
+        "icon": "fa-circle-question",
+        "url": "#"
+    },
+    {
+        "label": "Home",
+        "icon": "fa-house",
+        "url": "index.html"
+    },
+    {
+        "label": "Política de privacidad",
+        "icon": "fa-user-lock",
+        "url": "#"
+    },
+    {
+        "label": "Reseñas de influencers",
+        "icon": "fa-star",
+        "url": "#"
+    }
+]

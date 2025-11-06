@@ -16,25 +16,190 @@
             --color-white: #FFFFFF; 
             --color-whatsapp: #25d366; 
             --color-whatsapp-hover: #128c7e; 
+
+            /* Variables de Sidebar */
+            --sidebar-width-expanded: 240px;
+            --sidebar-width-collapsed: 70px;
+            --sidebar-bg: var(--color-card-background);
+            --sidebar-text: var(--color-primary);
+            --sidebar-highlight: var(--color-secondary);
         }
 
         /* Estilos Generales */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
-            padding: 30px 0 80px 0;
             background-color: var(--color-new-background); 
             color: var(--color-primary);
+            display: flex; /* Usamos flex para el layout general */
+        }
+        
+        /* Contenedor Principal (Todo el contenido excluyendo el sidebar) */
+        #main-container {
+            flex-grow: 1; /* Ocupa el espacio restante */
+            margin-left: var(--sidebar-width-collapsed); /* Empieza colapsado */
+            padding: 30px 20px 80px 20px;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
+        #main-container.expanded {
+            margin-left: var(--sidebar-width-expanded);
+        }
+
+        /* --- Estilos de SIDEBAR (Copiado de index.html) --- */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: var(--sidebar-width-collapsed);
+            background-color: var(--sidebar-bg);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+            transition: width 0.3s ease;
+            z-index: 1050; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.expanded {
+            width: var(--sidebar-width-expanded);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; 
+            padding: 10px 10px;
+            height: 50px; 
+        }
+
+        .sidebar.expanded .sidebar-header {
+            justify-content: space-between;
+        }
+
+        .sidebar-logo {
+            color: var(--sidebar-highlight);
+            font-size: 20px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            display: none; 
+        }
+
+        .sidebar.expanded .sidebar-logo {
+            opacity: 1;
+            display: block;
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--sidebar-text);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: color 0.2s, transform 0.2s;
+        }
+        
+        .toggle-btn:hover {
+            color: var(--sidebar-highlight);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .menu-item {
+            padding: 12px 0;
+            cursor: pointer;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--sidebar-text);
+            padding: 10px 15px;
+            transition: background-color 0.2s, color 0.2s;
+            overflow: hidden;
+        }
+        
+        .menu-item a:hover {
+            background-color: #3B4249; 
+            color: var(--sidebar-highlight);
+        }
+        
+        .menu-item i {
+            width: 30px; 
+            text-align: center;
+            font-size: 18px;
+            color: var(--sidebar-highlight);
+        }
+
+        .menu-item span {
+            margin-left: 15px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .sidebar.expanded .menu-item span {
+            opacity: 1;
+        }
+        
+        .menu-item.active a {
+            background-color: var(--sidebar-highlight);
+            color: var(--color-new-background);
+            font-weight: bold;
+        }
+        .menu-item.active i {
+            color: var(--color-new-background);
+        }
+
+        @media (max-width: 768px) {
+            #main-container {
+                margin-left: 0; 
+            }
+            .sidebar {
+                width: 0;
+                box-shadow: none; 
+            }
+            .sidebar.expanded {
+                width: var(--sidebar-width-expanded); 
+                box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+            }
+            
+            .sidebar-header {
+                justify-content: space-between; 
+            }
+            .sidebar-logo {
+                opacity: 1;
+                display: block;
+            }
+
+            .sidebar .menu-item span {
+                opacity: 1;
+            }
+        }
+        /* --- FIN Estilos de SIDEBAR --- */
+
+
         /* Título Principal */
         .main-title {
             text-align: center;
             margin-bottom: 30px;
-            padding: 0 20px;
+            padding: 0 0px;
             width: 100%;
         }
         .main-title h1 {
@@ -72,13 +237,13 @@
 
         /* Contenedor de Pasos */
         .purchase-steps-container {
-            width: 90%;
+            width: 100%;
             max-width: 600px;
             background-color: var(--color-card-background);
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            text-align: center; /* Centrar el botón de volver */
+            text-align: center; 
         }
 
         /* Estilos de Pasos */
@@ -86,13 +251,13 @@
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 1px solid #404B55;
-            text-align: left; /* Volver a alinear el contenido del paso a la izquierda */
+            text-align: left; 
         }
         .step:last-child {
             border-bottom: none;
             margin-bottom: 0;
             padding-bottom: 0;
-            text-align: center; /* Centrar el botón final de WhatsApp */
+            text-align: center; 
         }
         .step h2 {
             font-size: 20px;
@@ -103,8 +268,7 @@
 
         /* Estilo del Dropdown (CORREGIDO) */
         #payment-method-select {
-            /* CLAVE: Aumentar el padding-right para evitar solapamiento con el icono de flecha */
-            padding: 10px 40px 10px 15px; /* Top, Right(40px), Bottom, Left */
+            padding: 10px 40px 10px 15px; 
             border-radius: 5px;
             border: 1px solid var(--color-secondary);
             background-color: #3B4249;
@@ -164,44 +328,63 @@
 </head>
 <body>
 
-    <div class="main-title">
-        <h1>PASOS A SEGUIR PARA CONCRETAR LA COMPRA</h1>
-        <span class="underline"></span>
-    </div>
+    <!-- Menú Lateral -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-logo">ULTRA TECH</span>
+            <button class="toggle-btn" id="sidebar-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu" id="sidebar-menu">
+            <!-- Los elementos del menú se cargarán aquí con JS -->
+        </ul>
+    </nav>
 
-    <div class="purchase-steps-container">
+    <!-- Contenedor Principal de la Página -->
+    <div id="main-container">
 
-        <a href="index.html" class="back-button">
-            <i class="fa-solid fa-arrow-left"></i> Volver a la Lista de Productos
-        </a>
-        
-        <div class="product-details" id="product-display"></div>
-        
-        <div class="step">
-            <h2>1. Seleccionar Método de Pago</h2>
-            <select id="payment-method-select"></select>
+        <div class="main-title">
+            <h1>PASOS A SEGUIR PARA CONCRETAR LA COMPRA</h1>
+            <span class="underline"></span>
         </div>
 
-        <div class="step">
-            <h2>2. Realizar el Pago</h2>
-            <p id="payment-description">...</p>
-            
-            <div id="account-info-container">
-                </div>
-        </div>
+        <div class="purchase-steps-container">
 
-        <div class="step">
-            <h2>3. Informar y Confirmar</h2>
-            <a 
-                href="#" 
-                class="whatsapp-transfer-btn"
-                id="whatsapp-btn"
-                target="_blank"
-            >
-                <i class="fa-brands fa-whatsapp"></i> Informar Transferencia
+            <a href="index.html" class="back-button">
+                <i class="fa-solid fa-arrow-left"></i> Volver a la Lista de Productos
             </a>
+            
+            <div class="product-details" id="product-display"></div>
+            
+            <div class="step">
+                <h2>1. Seleccionar Método de Pago</h2>
+                <select id="payment-method-select"></select>
+            </div>
+
+            <div class="step">
+                <h2>2. Realizar el Pago</h2>
+                <p id="payment-description">...</p>
+                
+                <div id="account-info-container">
+                    </div>
+            </div>
+
+            <div class="step">
+                <h2>3. Informar y Confirmar</h2>
+                <a 
+                    href="#" 
+                    class="whatsapp-transfer-btn"
+                    id="whatsapp-btn"
+                    target="_blank"
+                >
+                    <i class="fa-brands fa-whatsapp"></i> Informar Transferencia
+                </a>
+            </div>
         </div>
+        
     </div>
+    <!-- Fin Contenedor Principal -->
 
     <script src="utils/priceFormatter.js"></script>
     <script>
@@ -210,9 +393,13 @@
         let PAYMENT_METHODS_DATA = {};
         let productDetails = {};
         let CONTACT_PHONE = ''; 
+        let sidebarConfig = []; // Variable para el sidebar
 
         async function initPurchasePage() {
-            // 0. Cargar el número de teléfono
+            // 1. Inicializar Sidebar
+            await initSidebar();
+            
+            // 2. Cargar el número de teléfono
             try {
                 const contactResponse = await fetch('config/contact_info.json');
                 if (!contactResponse.ok) throw new Error("No se pudo cargar config/contact_info.json");
@@ -223,7 +410,7 @@
             }
 
 
-            // 1. Obtener detalles del producto de la URL
+            // 3. Obtener detalles del producto de la URL
             const params = new URLSearchParams(window.location.search);
             productDetails = {
                 product: params.get('product') || 'Producto Desconocido',
@@ -234,18 +421,18 @@
             document.getElementById('product-display').textContent = 
                 `Artículo seleccionado: ${productDetails.product}`;
 
-            // 2. Cargar métodos de pago
+            // 4. Cargar métodos de pago
             try {
                 const response = await fetch('config/payment_methods.json'); 
                 if (!response.ok) throw new Error("No se pudo cargar config/payment_methods.json");
                 PAYMENT_METHODS_DATA = await response.json();
                 
                 populatePaymentDropdown();
-                // 3. Cargar la información inicial (Transferencia por defecto o la primera opción disponible)
+                // 5. Cargar la información inicial (Transferencia por defecto o la primera opción disponible)
                 const firstMethod = Object.keys(PAYMENT_METHODS_DATA)[0];
                 handlePaymentMethodChange(firstMethod); 
 
-                // 4. Configurar listener para el dropdown
+                // 6. Configurar listener para el dropdown
                 document.getElementById('payment-method-select').addEventListener('change', (e) => {
                     handlePaymentMethodChange(e.target.value);
                 });
@@ -258,6 +445,61 @@
                 }
             }
         }
+
+        // --- FUNCIONES DEL SIDEBAR (Copiado de index.html) ---
+        async function initSidebar() {
+            try {
+                const response = await fetch('config/sidebar_config.json');
+                if (!response.ok) throw new Error('No se pudo cargar sidebar_config.json');
+                sidebarConfig = await response.json();
+                renderSidebar();
+                
+                const sidebar = document.getElementById('sidebar');
+                const mainContainer = document.getElementById('main-container');
+                const toggleBtn = document.getElementById('sidebar-toggle');
+                
+                toggleBtn.addEventListener('click', () => {
+                    sidebar.classList.toggle('expanded');
+                    mainContainer.classList.toggle('expanded');
+                });
+
+                // Establecer el estado inicial (colapsado) para escritorio, expandido para móvil.
+                if (window.innerWidth >= 768) {
+                    sidebar.classList.remove('expanded');
+                    mainContainer.classList.remove('expanded');
+                } else {
+                    // En móvil, empezar colapsado (width: 0), pero al hacer click expandir
+                }
+
+            } catch (error) {
+                console.error("Error al inicializar el sidebar:", error);
+            }
+        }
+        
+        function renderSidebar() {
+            const menuContainer = document.getElementById('sidebar-menu');
+            menuContainer.innerHTML = '';
+            const currentPage = window.location.pathname.split('/').pop();
+            
+            sidebarConfig.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('menu-item');
+                
+                if (item.url === currentPage) {
+                    listItem.classList.add('active');
+                }
+                
+                listItem.innerHTML = `
+                    <a href="${item.url}">
+                        <i class="fa-solid ${item.icon}"></i>
+                        <span>${item.label}</span>
+                    </a>
+                `;
+                menuContainer.appendChild(listItem);
+            });
+        }
+        // --- FIN FUNCIONES DEL SIDEBAR ---
+
 
         /**
          * Rellena el dropdown con las opciones de pago.
