@@ -46,7 +46,7 @@
         /* Contenedor Principal (Todo el contenido excluyendo el sidebar) */
         #main-container {
             flex-grow: 1; /* Ocupa el espacio restante */
-            margin-left: var(--sidebar-width-collapsed); /* Empieza colapsado */
+            margin-left: var(--sidebar-width-collapsed); /* Empieza colapsado en escritorio */
             padding: 30px 20px 80px 20px;
             transition: margin-left 0.3s ease;
             min-height: 100vh;
@@ -75,12 +75,13 @@
             left: 0;
             height: 100%;
             width: var(--sidebar-width-collapsed);
-            background-color: var(--sidebar-bg);
+            background-color: var(--sidebar-bg); /* Fondo sólido */
             box-shadow: 2px 0 10px rgba(0,0,0,0.5);
             transition: width 0.3s ease;
             z-index: 1050; 
             display: flex;
             flex-direction: column;
+            overflow-y: auto; /* Permite scroll si hay muchos items */
         }
 
         .sidebar.expanded {
@@ -92,7 +93,8 @@
             align-items: center;
             justify-content: flex-end; /* Alinear el botón a la derecha al colapsar */
             padding: 10px 10px;
-            height: 50px; /* Altura fija para el logo/título */
+            height: 50px; 
+            min-height: 50px;
         }
 
         .sidebar.expanded .sidebar-header {
@@ -107,12 +109,20 @@
             transition: opacity 0.2s ease;
             white-space: nowrap;
             overflow: hidden;
-            display: none; /* Ocultar inicialmente para mantener el espacio */
+            /* Mostrar el logo solo cuando está expandido en escritorio */
+            display: block; 
+        }
+
+        /* Ocultar logo cuando está colapsado en escritorio */
+        .sidebar:not(.expanded) .sidebar-logo {
+            opacity: 0;
+            width: 0;
+            display: none;
         }
 
         .sidebar.expanded .sidebar-logo {
             opacity: 1;
-            display: block;
+            width: auto;
         }
         
         .toggle-btn {
@@ -138,7 +148,7 @@
         }
 
         .menu-item {
-            padding: 12px 0;
+            padding: 0; /* Ajustamos el padding a 0 para que el enlace lo maneje */
             cursor: pointer;
         }
 
@@ -163,16 +173,20 @@
             font-size: 18px;
             color: var(--sidebar-highlight);
         }
-
+        
+        /* Ocultar texto en estado colapsado (escritorio) */
         .menu-item span {
             margin-left: 15px;
             opacity: 0;
             transition: opacity 0.2s ease;
             white-space: nowrap;
+            /* Asegura que el texto desaparezca en colapsado */
+            display: none; 
         }
         
         .sidebar.expanded .menu-item span {
             opacity: 1;
+            display: block;
         }
         
         .menu-item.active a {
@@ -188,27 +202,58 @@
         @media (max-width: 768px) {
             #main-container {
                 margin-left: 0; /* No hay margen fijo en móvil */
-                padding: 10px 15px 80px 15px;
+                padding: 70px 15px 80px 15px; /* Dejar espacio para la hamburguesa y título */
             }
+            
+            /* Sidebar en Móvil: Oculta por defecto, solo visible al expandirse */
             .sidebar {
                 width: 0;
-                box-shadow: none; /* No mostrar sombra al estar oculto */
+                box-shadow: none; 
+                overflow: hidden; /* Oculta completamente */
+                transition: width 0.3s ease, box-shadow 0.3s ease;
             }
+            
             .sidebar.expanded {
                 width: var(--sidebar-width-expanded); /* Se abre superpuesto */
                 box-shadow: 2px 0 10px rgba(0,0,0,0.5);
             }
             
+            /* En móvil, el logo y el texto de los ítems se muestran al expandir */
             .sidebar-header {
-                justify-content: space-between; /* El header siempre se expande */
+                 justify-content: space-between; 
+                 width: var(--sidebar-width-expanded); /* Fija el header al ancho expandido */
             }
+            
             .sidebar-logo {
-                opacity: 1;
+                opacity: 1; /* Mostrar logo al abrir en móvil */
+                width: auto;
+                display: block;
+            }
+            
+            .sidebar .menu-item span {
+                opacity: 1; /* Mostrar texto al abrir en móvil */
                 display: block;
             }
 
-            .sidebar .menu-item span {
-                opacity: 1;
+            /* Fija el toggle-btn en la esquina superior izquierda en móvil */
+            .toggle-btn {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1060; 
+                padding: 10px;
+                background-color: var(--sidebar-bg);
+                border-radius: 8px;
+            }
+
+            /* Ocultar el logo en el sidebar-header cuando el sidebar está colapsado */
+            .sidebar:not(.expanded) .sidebar-logo {
+                display: none;
+            }
+            
+            /* El main-title se ajusta al margen superior */
+            .main-title {
+                margin-top: 0; 
             }
         }
 
@@ -542,7 +587,7 @@
 
         let configData = []; 
         let legendData = []; 
-        let sidebarConfig = []; // Nueva variable para la config del sidebar
+        let sidebarConfig = []; 
         let currentActiveTab = null;
         let CONTACT_PHONE = ''; 
         let currentData = []; 
@@ -629,7 +674,7 @@
                 initSidebar(); 
 
                 // 2. Cargar Configuración de Contacto
-                const contactResponse = await fetch('config/contact_info.json');
+                const contactResponse = await fetch('config/contact_info.json'); // RUTA ORIGINAL
                 if (!contactResponse.ok) throw new Error(`Error ${contactResponse.status}: No se pudo cargar el archivo de contacto (config/contact_info.json).`);
                 const contactData = await contactResponse.json();
                 CONTACT_PHONE = contactData.phone;
@@ -676,7 +721,7 @@
         // --- FUNCIONES DEL SIDEBAR ---
         async function initSidebar() {
             try {
-                const response = await fetch('config/sidebar_config.json');
+                const response = await fetch('config/sidebar_config.json'); // RUTA ORIGINAL
                 if (!response.ok) throw new Error('No se pudo cargar sidebar_config.json');
                 sidebarConfig = await response.json();
                 renderSidebar();
@@ -690,14 +735,27 @@
                     mainContainer.classList.toggle('expanded');
                 });
 
-                // Establecer el estado inicial (colapsado) para escritorio, expandido para móvil.
+                // Establecer el estado inicial
                 if (window.innerWidth >= 768) {
+                    // Escritorio: Colapsado por defecto
                     sidebar.classList.remove('expanded');
                     mainContainer.classList.remove('expanded');
                 } else {
-                    // En móvil, empezar colapsado (width: 0), pero al hacer click expandir
-                    // El CSS en @media (max-width: 768px) maneja el margin-left: 0.
+                    // Móvil: Oculto por defecto
+                    sidebar.classList.remove('expanded');
                 }
+                
+                // Evento para cerrar el sidebar al cambiar el tamaño de la ventana
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth >= 768) {
+                        // Si pasamos a escritorio, asegura el estado colapsado
+                        sidebar.classList.remove('expanded');
+                        mainContainer.classList.remove('expanded');
+                    } else {
+                        // Si pasamos a móvil, asegura que el margen se resetee
+                        mainContainer.classList.remove('expanded');
+                    }
+                });
 
             } catch (error) {
                 console.error("Error al inicializar el sidebar:", error);
