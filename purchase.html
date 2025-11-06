@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pasos de Compra | ULTRA TECH</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="sidebar.css">
     
     <style>
         /* Paleta de Colores ULTRA TECH - MISMA QUE INDEX.HTML */
@@ -16,25 +17,47 @@
             --color-white: #FFFFFF; 
             --color-whatsapp: #25d366; 
             --color-whatsapp-hover: #128c7e; 
+
+            /* Variables de Sidebar */
+            --sidebar-width-expanded: 240px;
+            --sidebar-width-collapsed: 70px;
+            --sidebar-bg: var(--color-card-background);
+            --sidebar-text: var(--color-primary);
+            --sidebar-highlight: var(--color-secondary);
         }
 
         /* Estilos Generales */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
-            padding: 30px 0 80px 0;
             background-color: var(--color-new-background); 
             color: var(--color-primary);
             display: flex;
+            overflow-x: hidden; 
+        }
+
+        /* Contenedor Principal (Todo el contenido excluyendo el sidebar) */
+        #main-container {
+            flex-grow: 1; /* Ocupa el espacio restante */
+            margin-left: var(--sidebar-width-collapsed); /* Empieza colapsado en escritorio */
+            padding: 30px 20px 80px 20px;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+            box-sizing: border-box;
+            display: flex;
             flex-direction: column;
             align-items: center;
+        }
+
+        #main-container.expanded {
+            margin-left: var(--sidebar-width-expanded);
         }
 
         /* Título Principal */
         .main-title {
             text-align: center;
             margin-bottom: 30px;
-            padding: 0 20px;
+            padding: 0 0px;
             width: 100%;
         }
         .main-title h1 {
@@ -72,13 +95,13 @@
 
         /* Contenedor de Pasos */
         .purchase-steps-container {
-            width: 90%;
+            width: 100%;
             max-width: 600px;
             background-color: var(--color-card-background);
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            text-align: center; /* Centrar el botón de volver */
+            text-align: center; 
         }
 
         /* Estilos de Pasos */
@@ -86,13 +109,13 @@
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 1px solid #404B55;
-            text-align: left; /* Volver a alinear el contenido del paso a la izquierda */
+            text-align: left; 
         }
         .step:last-child {
             border-bottom: none;
             margin-bottom: 0;
             padding-bottom: 0;
-            text-align: center; /* Centrar el botón final de WhatsApp */
+            text-align: center; 
         }
         .step h2 {
             font-size: 20px;
@@ -101,10 +124,9 @@
             margin-bottom: 15px;
         }
 
-        /* Estilo del Dropdown (CORREGIDO) */
+        /* Estilo del Dropdown */
         #payment-method-select {
-            /* CLAVE: Aumentar el padding-right para evitar solapamiento con el icono de flecha */
-            padding: 10px 40px 10px 15px; /* Top, Right(40px), Bottom, Left */
+            padding: 10px 40px 10px 15px; 
             border-radius: 5px;
             border: 1px solid var(--color-secondary);
             background-color: #3B4249;
@@ -115,7 +137,7 @@
             max-width: 100%; 
             cursor: pointer;
             appearance: none;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23E9ECEF%22%20d%3D%22M287%2069.4l-14.9-14.9c-2.3-2.3-4.9-3.4-7.6-3.4-2.7%200-5.3%201.1-7.7%203.4L146.2%20170.8%2029.8%2054.4c-4.7-4.7-12.2-4.7-16.9%200l-14.9%2014.9c-4.7%204.7-4.7%2012.2%200%2016.9l133.5%20133.5c2.3%202.3%204.9%203.4%207.6%203.4s5.3-1.1%207.7-3.4l133.5-133.5c4.7-4.6%204.7-12.2%200-16.9z%22%2F%3E%3C%2Fsvg%3E'); 
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%2D%22292.4%22%3E%3Cpath%20fill%3D%22%23E9ECEF%22%20d%3D%22M287%2069.4l-14.9-14.9c-2.3-2.3-4.9-3.4-7.6-3.4-2.7%200-5.3%201.1-7.7%203.4L146.2%20170.8%2029.8%2054.4c-4.7-4.7-12.2-4.7-16.9%200l-14.9%2014.9c-4.7%204.7-4.7%2012.2%200%2016.9l133.5%20133.5c2.3%202.3%204.9%203.4%207.6%203.4s5.3-1.1%207.7-3.4l133.5-133.5c4.7-4.6%204.7-12.2%200-16.9z%22%2F%3E%3C%2Fsvg%3E'); 
             background-repeat: no-repeat;
             background-position: right 10px top 50%;
             background-size: 12px;
@@ -164,166 +186,51 @@
 </head>
 <body>
 
-    <div class="main-title">
-        <h1>PASOS A SEGUIR PARA CONCRETAR LA COMPRA</h1>
-        <span class="underline"></span>
-    </div>
+    <div id="sidebar-container"></div>
 
-    <div class="purchase-steps-container">
+    <div id="main-container">
 
-        <a href="index.html" class="back-button">
-            <i class="fa-solid fa-arrow-left"></i> Volver a la Lista de Productos
-        </a>
-        
-        <div class="product-details" id="product-display"></div>
-        
-        <div class="step">
-            <h2>1. Seleccionar Método de Pago</h2>
-            <select id="payment-method-select"></select>
+        <div class="main-title">
+            <h1>PASOS A SEGUIR PARA CONCRETAR LA COMPRA</h1>
+            <span class="underline"></span>
         </div>
 
-        <div class="step">
-            <h2>2. Realizar el Pago</h2>
-            <p id="payment-description">...</p>
-            
-            <div id="account-info-container">
-                </div>
-        </div>
+        <div class="purchase-steps-container">
 
-        <div class="step">
-            <h2>3. Informar y Confirmar</h2>
-            <a 
-                href="#" 
-                class="whatsapp-transfer-btn"
-                id="whatsapp-btn"
-                target="_blank"
-            >
-                <i class="fa-brands fa-whatsapp"></i> Informar Transferencia
+            <a href="index.html" class="back-button">
+                <i class="fa-solid fa-arrow-left"></i> Volver a la Lista de Productos
             </a>
+            
+            <div class="product-details" id="product-display"></div>
+            
+            <div class="step">
+                <h2>1. Seleccionar Método de Pago</h2>
+                <select id="payment-method-select"></select>
+            </div>
+
+            <div class="step">
+                <h2>2. Realizar el Pago</h2>
+                <p id="payment-description">...</p>
+                
+                <div id="account-info-container">
+                    </div>
+            </div>
+
+            <div class="step">
+                <h2>3. Informar y Confirmar</h2>
+                <a 
+                    href="#" 
+                    class="whatsapp-transfer-btn"
+                    id="whatsapp-btn"
+                    target="_blank"
+                >
+                    <i class="fa-brands fa-whatsapp"></i> Informar Transferencia
+                </a>
+            </div>
         </div>
-    </div>
+    </div> <!-- End Main Container -->
 
     <script src="utils/priceFormatter.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', initPurchasePage);
-
-        let PAYMENT_METHODS_DATA = {};
-        let productDetails = {};
-        let CONTACT_PHONE = ''; 
-
-        async function initPurchasePage() {
-            // 0. Cargar el número de teléfono
-            try {
-                const contactResponse = await fetch('config/contact_info.json');
-                if (!contactResponse.ok) throw new Error("No se pudo cargar config/contact_info.json");
-                const contactData = await contactResponse.json();
-                CONTACT_PHONE = contactData.phone;
-            } catch (error) {
-                console.error("Error al cargar el número de contacto:", error);
-            }
-
-
-            // 1. Obtener detalles del producto de la URL
-            const params = new URLSearchParams(window.location.search);
-            productDetails = {
-                product: params.get('product') || 'Producto Desconocido',
-                priceTransferencia: params.get('priceT') || 'N/A',
-                priceUSDT: params.get('priceU') || 'N/A'
-            };
-
-            document.getElementById('product-display').textContent = 
-                `Artículo seleccionado: ${productDetails.product}`;
-
-            // 2. Cargar métodos de pago
-            try {
-                const response = await fetch('config/payment_methods.json'); 
-                if (!response.ok) throw new Error("No se pudo cargar config/payment_methods.json");
-                PAYMENT_METHODS_DATA = await response.json();
-                
-                populatePaymentDropdown();
-                // 3. Cargar la información inicial (Transferencia por defecto o la primera opción disponible)
-                const firstMethod = Object.keys(PAYMENT_METHODS_DATA)[0];
-                handlePaymentMethodChange(firstMethod); 
-
-                // 4. Configurar listener para el dropdown
-                document.getElementById('payment-method-select').addEventListener('change', (e) => {
-                    handlePaymentMethodChange(e.target.value);
-                });
-
-            } catch (error) {
-                console.error("Error al cargar la configuración de pagos:", error);
-                const container = document.querySelector('.purchase-steps-container');
-                if (container) {
-                     container.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-                }
-            }
-        }
-
-        /**
-         * Rellena el dropdown con las opciones de pago.
-         */
-        function populatePaymentDropdown() {
-            const select = document.getElementById('payment-method-select');
-            select.innerHTML = '';
-            for (const key in PAYMENT_METHODS_DATA) {
-                const option = document.createElement('option');
-                option.value = key; 
-                option.textContent = PAYMENT_METHODS_DATA[key].title;
-                select.appendChild(option);
-            }
-        }
-
-        /**
-         * Actualiza la información de la cuenta y el botón de WhatsApp.
-         */
-        function handlePaymentMethodChange(methodKey) {
-            const data = PAYMENT_METHODS_DATA[methodKey];
-            const infoContainer = document.getElementById('account-info-container');
-            const descriptionElement = document.getElementById('payment-description');
-            const whatsappBtn = document.getElementById('whatsapp-btn');
-            
-            descriptionElement.textContent = data.description;
-            
-            let htmlContent = '';
-            let price = '';
-            let whatsappText = '';
-            
-            if (methodKey === 'TRANSFERENCIA') {
-                price = productDetails.priceTransferencia;
-                const formattedPrice = formatARS(price); 
-                const acc = data.account;
-                htmlContent = `
-                    <p><strong>Total a pagar: ${formattedPrice}</strong></p>
-                    <p><strong>CBU:</strong> ${acc.cbu}</p>
-                    <p><strong>Alias:</strong> ${acc.alias}</p>
-                    <p><strong>Banco:</strong> ${acc.banco}</p>
-                    <p><strong>Titular:</strong> ${acc.nombre}</p>
-                `;
-                whatsappText = `Hola! Acabo de hacer una transferencia por ${formattedPrice} para la compra de ${productDetails.product}. Adjunto comprobante.`;
-
-            } else if (methodKey === 'USDT') {
-                price = productDetails.priceUSDT;
-                const formattedPrice = formatUSDT(price);
-                const acc = data.account;
-                htmlContent = `
-                    <p><strong>Total a pagar: ${formattedPrice}</strong></p>
-                    <p><strong>Wallet (Address):</strong> ${acc.address}</p>
-                    <p><strong>Red/Network:</strong> ${acc.network}</p>
-                `;
-                whatsappText = `Hola! Acabo de enviar ${formattedPrice} para la compra de ${productDetails.product}. Adjunto comprobante.`;
-            }
-
-            infoContainer.innerHTML = htmlContent;
-
-            // Actualizar el botón de WhatsApp con el número de contacto cargado
-            const encodedText = encodeURIComponent(whatsappText);
-            
-            if (CONTACT_PHONE) {
-                whatsappBtn.href = `https://wa.me/${CONTACT_PHONE}?text=${encodedText}`;
-            } else {
-                whatsappBtn.href = "#"; // Enlace inactivo si el teléfono no se cargó
-            }
-        }
-    </script>
+    <script src="utils/sidebar.js"></script>
 </body>
 </html>

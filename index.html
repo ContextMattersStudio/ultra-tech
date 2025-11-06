@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Productos Ultra Tech</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="sidebar.css">
     <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="utils/priceFormatter.js"></script>
     
@@ -24,27 +25,55 @@
             /* Colores para filas alternas */
             --color-row-even: #2B3035; /* Color para filas pares (más oscuro) */
             --color-row-odd: #2F353A;  /* Color para filas impares (más claro) */
+            
+            /* Variables de Sidebar */
+            --sidebar-width-expanded: 240px;
+            --sidebar-width-collapsed: 70px;
+            --sidebar-bg: var(--color-card-background);
+            --sidebar-text: var(--color-primary);
+            --sidebar-highlight: var(--color-secondary);
         }
 
         /* Estilos Generales */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
-            padding: 30px 0 80px 0;
             background-color: var(--color-new-background);
             color: var(--color-primary);
+            overflow-x: hidden; 
+            display: flex; /* Usamos flex para el layout general */
+        }
+        
+        /* Contenedor Principal (Todo el contenido excluyendo el sidebar) */
+        #main-container {
+            flex-grow: 1; /* Ocupa el espacio restante */
+            margin-left: var(--sidebar-width-collapsed); /* Empieza colapsado en escritorio */
+            padding: 30px 20px 80px 20px;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden; 
         }
 
-        /* Título Principal */
+        #main-container.expanded {
+            margin-left: var(--sidebar-width-expanded);
+        }
+
+        /* Contenido del Centro */
+        .main-title, #legend-bar, #tabs-container, #search-container, #table-wrapper {
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* --- ESTILOS ORIGINALES DE INDEX.HTML (AJUSTADOS) --- */
         .main-title {
             text-align: center;
             margin-bottom: 30px;
-            padding: 0 20px;
-            width: 100%;
+            padding: 0 0px;
         }
         .main-title h1 {
             color: var(--color-primary); 
@@ -63,8 +92,6 @@
         }
 
         #legend-bar {
-            width: 90%;
-            max-width: 900px;
             margin-bottom: 20px; 
             padding: 15px; 
             background-color: var(--color-card-background); 
@@ -81,20 +108,18 @@
             align-items: center;
             gap: 8px;
             color: var(--color-primary);
-            cursor: pointer; /* Hacer que parezca clickeable */
-            padding: 5px 10px; /* Añadir padding para hacer la zona de click más grande */
+            cursor: pointer; 
+            padding: 5px 10px; 
             border-radius: 4px;
             transition: background-color 0.2s;
         }
         .legend-item:hover {
-            background-color: #3B4249; /* Pequeño efecto hover */
+            background-color: #3B4249; 
         }
 
         .legend-icon { font-size: 1.1em; }
         
         #tabs-container {
-            width: 90%;
-            max-width: 900px;
             margin-bottom: 10px; 
             padding: 5px; 
             background-color: var(--color-card-background); 
@@ -109,8 +134,6 @@
 
         /* Estilos para el campo de búsqueda */
         #search-container {
-            width: 90%;
-            max-width: 900px;
             margin-bottom: 20px;
             padding: 10px 0;
             text-align: center;
@@ -159,9 +182,7 @@
         }
         
         #table-wrapper {
-            width: 90%;
-            max-width: 900px;
-            margin: 20px auto;
+            margin: 20px 0;
             overflow-x: auto; 
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -314,45 +335,63 @@
     </style>
 </head>
 <body>
-
-    <div class="main-title">
-        <h1>ULTRA TECH</h1>
-        <span class="underline"></span>
+    
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="toggle-btn" id="toggle-btn">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <span class="sidebar-logo">ULTRA TECH</span>
+        </div>
+        <ul class="sidebar-menu" id="sidebar-menu">
+            <!-- Items loaded via JavaScript -->
+        </ul>
     </div>
-
     
-    <div id="legend-bar">
+    <!-- MAIN CONTENT CONTAINER -->
+    <div id="main-container">
+
+        <div class="main-title">
+            <h1>ULTRA TECH</h1>
+            <span class="underline"></span>
         </div>
 
-    
-    <div id="tabs-container">
+        
+        <div id="legend-bar">
+            </div>
+
+        
+        <div id="tabs-container">
+            </div>
+        
+        <div id="search-container">
+            <input 
+                type="text" 
+                id="search-input" 
+                placeholder="Buscar por nombre de producto..."
+                onkeyup="filterTable()" 
+            >
         </div>
-    
-    <div id="search-container">
-        <input 
-            type="text" 
-            id="search-input" 
-            placeholder="Buscar por nombre de producto..."
-            onkeyup="filterTable()" 
+        <div id="loading-message">Cargando datos, por favor espere...</div>
+        
+        <div id="table-wrapper">
+            <div id="excel-data">
+                 <p id="no-results-message">Sin resultados para la búsqueda actual.</p>
+            </div>
+        </div>
+
+
+        <a 
+            href="#" 
+            class="whatsapp-float" 
+            id="contact-whatsapp-float"
+            target="_blank"
         >
-    </div>
-    <div id="loading-message">Cargando datos, por favor espere...</div>
-    
-    <div id="table-wrapper">
-        <div id="excel-data">
-             <p id="no-results-message">Sin resultados para la búsqueda actual.</p>
-        </div>
-    </div>
+            <i class="fa-brands fa-whatsapp"></i>
+            </a>
 
-
-    <a 
-        href="#" 
-        class="whatsapp-float" 
-        id="contact-whatsapp-float"
-        target="_blank"
-    >
-        <i class="fa-brands fa-whatsapp"></i>
-        </a>
+    </div> <!-- End Main Content Container -->
 
     <script>
         document.addEventListener('DOMContentLoaded', initApp);
@@ -363,8 +402,119 @@
         let CONTACT_PHONE = ''; 
         let currentData = []; 
         let activeTabsConfig = []; // Para guardar la lista de tabs activos
+        let sidebarItems = []; // Para guardar la configuración del menú lateral
 
         // --- Funciones de Formato de Precio (Movidas a utils/priceFormatter.js) ---
+
+        // --- Funciones de Sidebar ---
+        const sidebar = document.getElementById('sidebar');
+        const mainContainer = document.getElementById('main-container');
+
+        // Función para verificar si estamos en móvil
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+
+        function toggleSidebar() {
+            const isExpanded = sidebar.classList.toggle('expanded');
+            if (!isMobile()) {
+                // Solo en escritorio, ajustar el margen del contenido
+                mainContainer.classList.toggle('expanded', isExpanded);
+            }
+        }
+
+        function updateSidebarActiveClass() {
+            const path = window.location.pathname.split('/').pop(); // index.html
+            const currentUrl = path || "index.html"; // Asegura que "index.html" sea el valor por defecto
+
+            document.querySelectorAll('#sidebar-menu .menu-item').forEach(item => {
+                const link = item.querySelector('a');
+                if (link && link.href) {
+                    const targetUrl = link.href.split('/').pop();
+                    
+                    if (targetUrl === currentUrl && targetUrl !== '#') {
+                        item.classList.add('active');
+                    } else if (targetUrl === '#' && currentUrl === 'index.html' && link.textContent.trim() === 'Home') {
+                         // Permitir que Home se active si la URL es # y estamos en index.html
+                         // NOTA: Con la nueva configuración, solo 'Lista de precios' es index.html
+                         // Dejo este condicional por si se necesitara en el futuro.
+                        // item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                }
+            });
+        }
+        
+        async function initSidebar() {
+            const toggleBtn = document.getElementById('toggle-btn');
+            toggleBtn.addEventListener('click', toggleSidebar);
+
+            // Cargar configuración de la barra lateral
+            try {
+                const response = await fetch('config/sidebar_config.json');
+                if (!response.ok) throw new Error(`Error ${response.status}: No se pudo cargar config/sidebar_config.json.`);
+                sidebarItems = await response.json();
+                buildSidebarMenu(sidebarItems);
+                updateSidebarActiveClass(); 
+
+                // Forzar el estado colapsado inicial en desktop
+                if (!isMobile()) {
+                    sidebar.classList.remove('expanded');
+                    mainContainer.classList.remove('expanded');
+                } else {
+                    // En móvil, el sidebar debe estar colapsado (width: 0) por defecto
+                    sidebar.classList.remove('expanded'); 
+                    mainContainer.classList.remove('expanded');
+                }
+
+                // Asegurar el comportamiento responsive en resize
+                window.addEventListener('resize', () => {
+                    if (!isMobile() && sidebar.classList.contains('expanded')) {
+                        mainContainer.classList.add('expanded');
+                    } else if (!isMobile() && !sidebar.classList.contains('expanded')) {
+                        mainContainer.classList.remove('expanded');
+                    } else if (isMobile() && sidebar.classList.contains('expanded')) {
+                        // En móvil, el margen del main siempre es 0
+                        mainContainer.classList.remove('expanded');
+                    }
+                });
+
+
+            } catch (error) {
+                console.error("Error al inicializar el sidebar:", error);
+                document.getElementById('sidebar-menu').innerHTML = `<li style="color: red; padding: 10px 20px;">Error al cargar menú.</li>`;
+            }
+        }
+
+        function buildSidebarMenu(items) {
+            const menu = document.getElementById('sidebar-menu');
+            menu.innerHTML = ''; 
+
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.classList.add('menu-item');
+
+                const a = document.createElement('a');
+                a.href = item.url;
+                
+                // Cerrar el sidebar si es un link interno en móvil
+                if (item.url.startsWith('#') || item.url.includes('.html')) {
+                    a.onclick = (e) => {
+                        if (isMobile()) {
+                            toggleSidebar();
+                        }
+                    };
+                }
+
+                a.innerHTML = `
+                    <i class="fa-solid ${item.icon}"></i>
+                    <span>${item.label}</span>
+                `;
+                li.appendChild(a);
+                menu.appendChild(li);
+            });
+        }
 
         // --- Función de Filtrado y Búsqueda ---
         
@@ -442,6 +592,8 @@
         // --- Funciones de Inicialización y Renderizado ---
 
         async function initApp() {
+            await initSidebar(); // Inicializar el sidebar primero
+            
             try {
                 // 1. Cargar Configuración de Contacto
                 const contactResponse = await fetch('config/contact_info.json');
