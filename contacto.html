@@ -5,239 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contacto - Ultra Tech</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="utils/sidebar.js"></script>
-    <style>
-        :root {
-            --color-primary: #E9ECEF;
-            --color-secondary: #D0AE50;
-            --color-new-background: #212529;
-            --color-card-background: #2B3035;
-            --sidebar-width-expanded: 240px;
-            --sidebar-width-collapsed: 70px;
-            --sidebar-bg: var(--color-card-background);
-            --sidebar-text: var(--color-primary);
-            --sidebar-highlight: var(--color-secondary);
-        }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            background-color: var(--color-new-background);
-            color: var(--color-primary);
-            overflow-x: hidden; 
-            display: flex;
-        }
-        #main-container {
-            flex-grow: 1;
-            margin-left: var(--sidebar-width-collapsed);
-            padding: 30px 20px 80px 20px;
-            transition: margin-left 0.3s ease;
-            min-height: 100vh;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; 
-        }
-        #main-container.expanded {
-            margin-left: var(--sidebar-width-expanded);
-        }
-        .construction-message {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--color-secondary);
-        }
-        /* --- Estilos de SIDEBAR --- */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: var(--sidebar-width-collapsed);
-            background-color: var(--sidebar-bg);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
-            transition: width 0.3s ease;
-            z-index: 1050; 
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-        .sidebar.expanded {
-            width: var(--sidebar-width-expanded);
-        }
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start; 
-            padding: 10px 10px;
-            height: 50px; 
-            min-height: 50px;
-            position: relative;
-        }
-        .sidebar.expanded .sidebar-header {
-            justify-content: flex-start;
-        }
-        .sidebar-logo {
-            color: var(--sidebar-highlight);
-            font-size: 20px;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            white-space: nowrap;
-            overflow: hidden;
-            margin-left: 50px;
-            max-width: 150px;
-            display: block; 
-        }
-        .sidebar:not(.expanded) .sidebar-logo {
-            opacity: 0;
-            width: 0;
-            display: none;
-        }
-        .sidebar.expanded .sidebar-logo {
-            opacity: 1;
-            width: auto;
-        }
-        .toggle-btn {
-            background: none;
-            border: none;
-            color: var(--sidebar-text);
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 4px;
-            transition: color 0.2s, transform 0.2s;
-            position: absolute; 
-            left: 10px;
-        }
-        .toggle-btn:hover {
-            color: var(--sidebar-highlight);
-        }
-        .sidebar-menu {
-            list-style: none;
-            padding: 10px 0;
-            margin: 0;
-            flex-grow: 1;
-        }
-        .menu-item {
-            padding: 0;
-            cursor: pointer;
-        }
-        .menu-item a {
-            position: relative;
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--sidebar-text);
-            padding: 10px 15px;
-            transition: background-color 0.2s, color 0.2s;
-            overflow: hidden; 
-            min-height: 50px;
-        }
-        .menu-item a:hover {
-            background-color: #3B4249; 
-            color: var(--sidebar-highlight);
-        }
-        .menu-item i {
-            position: absolute; 
-            left: 20px; 
-            top: 50%;
-            transform: translateY(-50%);
-            width: 30px; 
-            text-align: center;
-            font-size: 24px;
-            color: var(--sidebar-highlight);
-        }
-        .menu-item span {
-            margin-left: 60px;
-            opacity: 0;
-            transition: opacity 0.3s ease 0.1s; 
-            white-space: nowrap;
-            display: block; 
-        }
-        .sidebar:not(.expanded) .menu-item span {
-            opacity: 0;
-            display: block;
-        }
-        .sidebar.expanded .menu-item span {
-            opacity: 1;
-        }
-        .menu-item.active a {
-            background-color: var(--sidebar-highlight);
-            color: var(--color-new-background);
-            font-weight: bold;
-        }
-        .menu-item.active i {
-            color: var(--color-new-background);
-        }
-        @media (max-width: 768px) {
-            .menu-item i {
-                font-size: 18px; 
-            }
-            .menu-item a {
-                min-height: 45px;
-            }
-            #main-container {
-                margin-left: 0; 
-                padding: 70px 15px 80px 15px; 
-            }
-            .sidebar {
-                width: 0;
-                box-shadow: none; 
-                overflow: hidden; 
-                transition: width 0.3s ease, box-shadow 0.3s ease;
-            }
-            .sidebar.expanded {
-                width: var(--sidebar-width-expanded); 
-                box-shadow: 2px 0 10px rgba(0,0,0,0.5);
-            }
-            .toggle-btn {
-                position: fixed;
-                top: 10px;
-                left: 10px;
-                z-index: 1060; 
-                padding: 10px;
-                background-color: var(--sidebar-bg);
-                border-radius: 8px;
-            }
-            .sidebar-header {
-                 justify-content: flex-start;
-                 width: var(--sidebar-width-expanded); 
-            }
-            .sidebar-logo {
-                opacity: 1; 
-                width: auto;
-                display: block;
-            }
-            .sidebar .menu-item span {
-                opacity: 1; 
-                display: block;
-            }
-            .sidebar:not(.expanded) .sidebar-logo {
-                display: none;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="ui_components/sidebar/sidebar.css">
 </head>
 <body>
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <button class="toggle-btn" id="toggle-btn">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <span class="sidebar-logo">ULTRA TECH</span>
-        </div>
-        <ul class="sidebar-menu" id="sidebar-menu">
-        </ul>
-    </div>
+    <!-- Contenedor para la barra lateral -->
+    <div id="sidebar-container"></div>
+
+    <!-- Contenedor Principal -->
     <div id="main-container">
         <div class="construction-message">
             Pantalla en construcción
         </div>
     </div>
+
+    <script src="ui_components/sidebar/sidebar.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            initSidebar('/Users/exmi/Documents/WebProjects/ultra-tech/config/sidebar_config.json');
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadSidebar();
+            await initSidebar();
         });
     </script>
 </body>
