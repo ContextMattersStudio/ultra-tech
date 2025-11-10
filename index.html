@@ -39,7 +39,7 @@
         }
         
         /* Contenido del Centro */
-        .main-title, #legend-bar, #tabs-container, #search-container, #table-wrapper {
+        .main-title, #legend-bar, #tabs-container {
             width: 100%;
             max-width: 900px;
             margin-left: auto;
@@ -85,6 +85,24 @@
             align-items: center;
             gap: 10px;
             flex-wrap: wrap; 
+        }
+
+        #product-section {
+            background-color: var(--color-card-background);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            max-width: 900px;
+            margin: 20px auto 0 auto;
+        }
+
+        #product-section #search-container {
+            margin-bottom: 20px;
+            padding: 0;
+        }
+
+        #product-section #table-wrapper {
+            margin: 0;
         }
 
         /* Estilos para el campo de búsqueda */
@@ -310,19 +328,21 @@
         <div id="tabs-container">
             </div>
         
-        <div id="search-container">
-            <input 
-                type="text" 
-                id="search-input" 
-                placeholder="Buscar por nombre de producto..."
-                onkeyup="filterTable()" 
-            >
-        </div>
-        <div id="loading-message">Cargando datos, por favor espere...</div>
-        
-        <div id="table-wrapper">
-            <div id="excel-data">
-                 <p id="no-results-message">Sin resultados para la búsqueda actual.</p>
+        <div id="product-section">
+            <div id="search-container">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Buscar por nombre de producto..."
+                    onkeyup="filterTable()" 
+                >
+            </div>
+            <div id="loading-message">Cargando datos, por favor espere...</div>
+            
+            <div id="table-wrapper">
+                <div id="excel-data">
+                     <p id="no-results-message">Sin resultados para la búsqueda actual.</p>
+                </div>
             </div>
         </div>
 
