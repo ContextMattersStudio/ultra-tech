@@ -1,0 +1,50 @@
+/* Paleta de Colores ULTRA TECH (Tema Oscuro) */
+:root {
+    --color-primary: #E9ECEF;
+    --color-secondary: #D0AE50;
+    --color-new-background: #212529;
+    --color-card-background: #2B3035;
+    --color-white: #FFFFFF;
+    --color-whatsapp: #25d366;
+    --color-whatsapp-hover: #128c7e;
+    --color-hot: #FF4500;
+    --color-new: #1E90FF;
+    --color-offers: #D0AE50;
+    --color-row-even: #2B3035;
+    --color-row-odd: #2F353A;
+}
+
+/* Estilos Generales */
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    margin: 0; 
+    background-color: var(--color-new-background);
+    color: var(--color-primary);
+    overflow-x: hidden; 
+    display: flex;
+}
+
+/* Estilos para el contenido principal en páginas simples */
+#main-container {
+    padding: 30px 20px 80px 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
+}
+
+.construction-message {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--color-secondary);
+}
+
+/* Ajustes para móvil */
+@media (max-width: 768px) {
+    #main-container {
+        padding: 70px 15px 80px 15px; 
+    }
+}
