@@ -8,6 +8,8 @@
     <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="utils/priceFormatter.js"></script>
     
+    <link rel="stylesheet" href="ui_components/sidebar/sidebar.css">
+    
     <style>
         /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
         :root {
@@ -30,41 +32,21 @@
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
-            padding: 30px 0 80px 0;
             background-color: var(--color-new-background);
             color: var(--color-primary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             overflow-x: hidden; 
+            display: flex; /* Usamos flex para el layout general */
         }
-
-        /* Título Principal */
-        .main-title {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 0 20px;
+        
+        /* Contenido del Centro */
+        .main-title, #legend-bar, #tabs-container {
             width: 100%;
-        }
-        .main-title h1 {
-            color: var(--color-primary); 
-            font-size: 36px;
-            margin: 0;
-            padding: 0;
-            border-bottom: none;
-        }
-        .main-title .underline {
-            display: block;
-            width: 120px;
-            height: 3px;
-            background-color: var(--color-secondary);
-            margin: 5px auto 0 auto;
-            border-radius: 2px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         #legend-bar {
-            width: 90%;
-            max-width: 900px;
             margin-bottom: 20px; 
             padding: 15px; 
             background-color: var(--color-card-background); 
@@ -81,20 +63,18 @@
             align-items: center;
             gap: 8px;
             color: var(--color-primary);
-            cursor: pointer; /* Hacer que parezca clickeable */
-            padding: 5px 10px; /* Añadir padding para hacer la zona de click más grande */
+            cursor: pointer; 
+            padding: 5px 10px; 
             border-radius: 4px;
             transition: background-color 0.2s;
         }
         .legend-item:hover {
-            background-color: #3B4249; /* Pequeño efecto hover */
+            background-color: #3B4249; 
         }
 
         .legend-icon { font-size: 1.1em; }
         
         #tabs-container {
-            width: 90%;
-            max-width: 900px;
             margin-bottom: 10px; 
             padding: 5px; 
             background-color: var(--color-card-background); 
@@ -107,17 +87,32 @@
             flex-wrap: wrap; 
         }
 
+        #product-section {
+            background-color: var(--color-card-background);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            max-width: 900px;
+            margin: 20px auto 0 auto;
+        }
+
+        #product-section #search-container {
+            margin-bottom: 20px;
+            padding: 0;
+        }
+
+        #product-section #table-wrapper {
+            margin: 0;
+        }
+
         /* Estilos para el campo de búsqueda */
         #search-container {
-            width: 90%;
-            max-width: 900px;
             margin-bottom: 20px;
             padding: 10px 0;
             text-align: center;
         }
         #search-input {
             width: 100%;
-            max-width: 400px;
             padding: 12px 15px;
             border-radius: 8px;
             border: 1px solid var(--color-secondary);
@@ -159,9 +154,7 @@
         }
         
         #table-wrapper {
-            width: 90%;
-            max-width: 900px;
-            margin: 20px auto;
+            margin: 20px 0;
             overflow-x: auto; 
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -314,46 +307,57 @@
     </style>
 </head>
 <body>
-
-    <div class="main-title">
-        <h1>ULTRA TECH</h1>
-        <span class="underline"></span>
-    </div>
-
     
-    <div id="legend-bar">
+    <!-- Contenedor para la barra lateral -->
+    <div id="sidebar-container"></div>
+    
+    <!-- MAIN CONTENT CONTAINER -->
+    <div id="main-container">
+
+        <div class="main-title">
+            <h1>ULTRA TECH</h1>
+            <span class="underline"></span>
         </div>
 
-    
-    <div id="tabs-container">
+        
+        <div id="legend-bar">
+            </div>
+
+        
+        <div id="tabs-container">
+            </div>
+        
+        <div id="product-section">
+            <div id="search-container">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Buscar por nombre de producto..."
+                    onkeyup="filterTable()" 
+                >
+            </div>
+            <div id="loading-message">Cargando datos, por favor espere...</div>
+            
+            <div id="table-wrapper">
+                <div id="excel-data">
+                     <p id="no-results-message">Sin resultados para la búsqueda actual.</p>
+                </div>
+            </div>
         </div>
-    
-    <div id="search-container">
-        <input 
-            type="text" 
-            id="search-input" 
-            placeholder="Buscar por nombre de producto..."
-            onkeyup="filterTable()" 
+
+
+        <a 
+            href="#" 
+            class="whatsapp-float" 
+            id="contact-whatsapp-float"
+            target="_blank"
         >
-    </div>
-    <div id="loading-message">Cargando datos, por favor espere...</div>
-    
-    <div id="table-wrapper">
-        <div id="excel-data">
-             <p id="no-results-message">Sin resultados para la búsqueda actual.</p>
-        </div>
-    </div>
+            <i class="fa-brands fa-whatsapp"></i>
+            </a>
 
+    </div> <!-- End Main Content Container -->
 
-    <a 
-        href="#" 
-        class="whatsapp-float" 
-        id="contact-whatsapp-float"
-        target="_blank"
-    >
-        <i class="fa-brands fa-whatsapp"></i>
-        </a>
-
+    <script src="ui_components/sidebar/sidebar.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', initApp);
 
@@ -363,8 +367,7 @@
         let CONTACT_PHONE = ''; 
         let currentData = []; 
         let activeTabsConfig = []; // Para guardar la lista de tabs activos
-
-        // --- Funciones de Formato de Precio (Movidas a utils/priceFormatter.js) ---
+        let sidebarItems = []; // Para guardar la configuración del menú lateral
 
         // --- Función de Filtrado y Búsqueda ---
         
@@ -442,6 +445,9 @@
         // --- Funciones de Inicialización y Renderizado ---
 
         async function initApp() {
+            await loadSidebar(); // Cargar el HTML del sidebar
+            await initSidebar(); // Inicializar la lógica del sidebar
+            
             try {
                 // 1. Cargar Configuración de Contacto
                 const contactResponse = await fetch('config/contact_info.json');
