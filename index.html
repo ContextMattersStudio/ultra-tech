@@ -8,6 +8,8 @@
     <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="utils/priceFormatter.js"></script>
     
+    <link rel="stylesheet" href="ui_components/sidebar/sidebar.css">
+    
     <style>
         /* Paleta de Colores ULTRA TECH (Tema Oscuro) */
         :root {
@@ -24,13 +26,6 @@
             /* Colores para filas alternas */
             --color-row-even: #2B3035; /* Color para filas pares (más oscuro) */
             --color-row-odd: #2F353A;  /* Color para filas impares (más claro) */
-            
-            /* Variables de Sidebar */
-            --sidebar-width-expanded: 240px;
-            --sidebar-width-collapsed: 70px;
-            --sidebar-bg: var(--color-card-background);
-            --sidebar-text: var(--color-primary);
-            --sidebar-highlight: var(--color-secondary);
         }
 
         /* Estilos Generales */
@@ -43,266 +38,12 @@
             display: flex; /* Usamos flex para el layout general */
         }
         
-        /* Contenedor Principal (Todo el contenido excluyendo el sidebar) */
-        #main-container {
-            flex-grow: 1; /* Ocupa el espacio restante */
-            margin-left: var(--sidebar-width-collapsed); /* Empieza colapsado en escritorio */
-            padding: 30px 20px 80px 20px;
-            transition: margin-left 0.3s ease;
-            min-height: 100vh;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #main-container.expanded {
-            margin-left: var(--sidebar-width-expanded);
-        }
-
         /* Contenido del Centro */
         .main-title, #legend-bar, #tabs-container, #search-container, #table-wrapper {
             width: 100%;
             max-width: 900px;
             margin-left: auto;
             margin-right: auto;
-        }
-
-        /* --- Estilos de SIDEBAR --- */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: var(--sidebar-width-collapsed);
-            background-color: var(--sidebar-bg); /* Fondo sólido */
-            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
-            transition: width 0.3s ease;
-            z-index: 1050; 
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto; /* Permite scroll si hay muchos items */
-        }
-
-        .sidebar.expanded {
-            width: var(--sidebar-width-expanded);
-        }
-        
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start; 
-            padding: 10px 10px;
-            height: 50px; 
-            min-height: 50px;
-            position: relative; /* Para posicionar el toggle-btn y el logo */
-        }
-
-        .sidebar.expanded .sidebar-header {
-            justify-content: flex-start; /* Mantener justificación a la izquierda en expandido */
-        }
-
-        .sidebar-logo {
-            color: var(--sidebar-highlight);
-            font-size: 20px;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            white-space: nowrap;
-            overflow: hidden;
-            /* MOVIDO: Ajustar la posición y ancho del logo en estado expandido */
-            margin-left: 50px; /* Separación del botón (40px de ícono + 10px padding) */
-            max-width: 150px;
-            display: block; 
-        }
-
-        /* Ocultar logo cuando está colapsado en escritorio */
-        .sidebar:not(.expanded) .sidebar-logo {
-            opacity: 0;
-            width: 0;
-            display: none;
-        }
-
-        .sidebar.expanded .sidebar-logo {
-            opacity: 1;
-            width: auto;
-        }
-        
-        .toggle-btn {
-            background: none;
-            border: none;
-            color: var(--sidebar-text);
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 4px;
-            transition: color 0.2s, transform 0.2s;
-            /* Posiciona el botón en una posición fija, no relativa al flexbox */
-            position: absolute; 
-            left: 10px;
-        }
-        
-        .toggle-btn:hover {
-            color: var(--sidebar-highlight);
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 10px 0;
-            margin: 0;
-            flex-grow: 1;
-        }
-
-        .menu-item {
-            padding: 0;
-            cursor: pointer;
-        }
-
-        .menu-item a {
-            position: relative; /* Contenedor para posicionar el ícono */
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--sidebar-text);
-            padding: 10px 15px;
-            transition: background-color 0.2s, color 0.2s;
-            overflow: hidden; 
-            /* ALTURA CONSISTENTE PARA ESCRITORIO */
-            min-height: 50px; /* Forzar altura para que el espaciado sea consistente */
-        }
-        
-        .menu-item a:hover {
-            background-color: #3B4249; 
-            color: var(--sidebar-highlight);
-        }
-        
-        /* Contenedor del ícono - Posición Fija (Escritorio y Expandido) */
-        .menu-item i {
-            position: absolute; 
-            left: 20px; 
-            top: 50%;
-            transform: translateY(-50%);
-            width: 30px; 
-            text-align: center;
-            font-size: 24px; /* TAMAÑO GRANDE: Mismo tamaño que en expandido */
-            color: var(--sidebar-highlight);
-        }
-
-        /* Contenedor del texto - Se mueve y se anima */
-        .menu-item span {
-            margin-left: 60px; /* Deja espacio para el ícono fijo */
-            opacity: 0;
-            transition: opacity 0.3s ease 0.1s; 
-            white-space: nowrap;
-            display: block; 
-        }
-        
-        /* Ocultar el texto en modo colapsado (Escritorio) */
-        .sidebar:not(.expanded) .menu-item span {
-            opacity: 0;
-            display: block; /* Mantenemos display: block para la transición de opacidad */
-        }
-        
-        .sidebar.expanded .menu-item span {
-            opacity: 1;
-        }
-        
-        .menu-item.active a {
-            background-color: var(--sidebar-highlight);
-            color: var(--color-new-background);
-            font-weight: bold;
-        }
-        .menu-item.active i {
-            color: var(--color-new-background);
-        }
-        
-        /* Ajustes Responsive (Móvil) */
-        @media (max-width: 768px) {
-             /* Estilos de Ícono Vuelven a Móvil (Más pequeño) */
-            .menu-item i {
-                font-size: 18px; 
-            }
-            .menu-item a {
-                min-height: 45px; /* Altura un poco menor para móvil */
-            }
-
-            #main-container {
-                margin-left: 0; 
-                padding: 70px 15px 80px 15px; 
-            }
-            
-            /* Sidebar en Móvil: Oculta por defecto, solo visible al expandirse */
-            .sidebar {
-                width: 0;
-                box-shadow: none; 
-                overflow: hidden; 
-                transition: width 0.3s ease, box-shadow 0.3s ease;
-            }
-            
-            .sidebar.expanded {
-                width: var(--sidebar-width-expanded); 
-                box-shadow: 2px 0 10px rgba(0,0,0,0.5);
-            }
-            
-            /* Fija el toggle-btn en la esquina superior izquierda en móvil */
-            .toggle-btn {
-                position: fixed;
-                top: 10px;
-                left: 10px;
-                z-index: 1060; 
-                padding: 10px;
-                background-color: var(--sidebar-bg);
-                border-radius: 8px;
-            }
-
-            /* Mostrar Logo y Texto al expandir en Móvil */
-            .sidebar-header {
-                 justify-content: flex-start;
-                 width: var(--sidebar-width-expanded); 
-            }
-            
-            .sidebar-logo {
-                opacity: 1; 
-                width: auto;
-                display: block;
-            }
-            
-            .sidebar .menu-item span {
-                opacity: 1; 
-                display: block;
-            }
-
-            /* Ocultar el logo en el sidebar-header cuando el sidebar está colapsado */
-            .sidebar:not(.expanded) .sidebar-logo {
-                display: none;
-            }
-            
-            .main-title {
-                margin-top: 0; 
-            }
-        }
-
-
-        /* --- ESTILOS ORIGINALES DE INDEX.HTML (AJUSTADOS) --- */
-        .main-title {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 0 0px;
-        }
-        .main-title h1 {
-            color: var(--color-primary); 
-            font-size: 36px;
-            margin: 0;
-            padding: 0;
-            border-bottom: none;
-        }
-        .main-title .underline {
-            display: block;
-            width: 120px;
-            height: 3px;
-            background-color: var(--color-secondary);
-            margin: 5px auto 0 auto;
-            border-radius: 2px;
         }
 
         #legend-bar {
@@ -550,18 +291,8 @@
 </head>
 <body>
     
-    <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <button class="toggle-btn" id="toggle-btn">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <span class="sidebar-logo">ULTRA TECH</span>
-        </div>
-        <ul class="sidebar-menu" id="sidebar-menu">
-            <!-- Items loaded via JavaScript -->
-        </ul>
-    </div>
+    <!-- Contenedor para la barra lateral -->
+    <div id="sidebar-container"></div>
     
     <!-- MAIN CONTENT CONTAINER -->
     <div id="main-container">
@@ -607,6 +338,7 @@
 
     </div> <!-- End Main Content Container -->
 
+    <script src="ui_components/sidebar/sidebar.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', initApp);
 
@@ -617,118 +349,6 @@
         let currentData = []; 
         let activeTabsConfig = []; // Para guardar la lista de tabs activos
         let sidebarItems = []; // Para guardar la configuración del menú lateral
-
-        // --- Funciones de Formato de Precio (Movidas a utils/priceFormatter.js) ---
-
-        // --- Funciones de Sidebar ---
-        const sidebar = document.getElementById('sidebar');
-        const mainContainer = document.getElementById('main-container');
-
-        // Función para verificar si estamos en móvil
-        function isMobile() {
-            return window.innerWidth <= 768;
-        }
-
-        function toggleSidebar() {
-            const isExpanded = sidebar.classList.toggle('expanded');
-            if (!isMobile()) {
-                // Solo en escritorio, ajustar el margen del contenido
-                mainContainer.classList.toggle('expanded', isExpanded);
-            }
-        }
-
-        function updateSidebarActiveClass() {
-            const path = window.location.pathname.split('/').pop(); // index.html
-            const currentUrl = path || "index.html"; // Asegura que "index.html" sea el valor por defecto
-
-            document.querySelectorAll('#sidebar-menu .menu-item').forEach(item => {
-                const link = item.querySelector('a');
-                if (link && link.href) {
-                    const targetUrl = link.href.split('/').pop();
-                    
-                    if (targetUrl === currentUrl && targetUrl !== '#') {
-                        item.classList.add('active');
-                    } else if (targetUrl === '#' && currentUrl === 'index.html' && link.textContent.trim() === 'Home') {
-                         // Permitir que Home se active si la URL es # y estamos en index.html
-                         // NOTA: Con la nueva configuración, solo 'Lista de precios' es index.html
-                         // Dejo este condicional por si se necesitara en el futuro.
-                        // item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
-                }
-            });
-        }
-        
-        async function initSidebar() {
-            const toggleBtn = document.getElementById('toggle-btn');
-            toggleBtn.addEventListener('click', toggleSidebar);
-
-            // Cargar configuración de la barra lateral
-            try {
-                const response = await fetch('config/sidebar_config.json');
-                if (!response.ok) throw new Error(`Error ${response.status}: No se pudo cargar config/sidebar_config.json.`);
-                sidebarItems = await response.json();
-                buildSidebarMenu(sidebarItems);
-                updateSidebarActiveClass(); 
-
-                // Forzar el estado colapsado inicial en desktop
-                if (!isMobile()) {
-                    sidebar.classList.remove('expanded');
-                    mainContainer.classList.remove('expanded');
-                } else {
-                    // En móvil, el sidebar debe estar colapsado (width: 0) por defecto
-                    sidebar.classList.remove('expanded'); 
-                    mainContainer.classList.remove('expanded');
-                }
-
-                // Asegurar el comportamiento responsive en resize
-                window.addEventListener('resize', () => {
-                    if (!isMobile() && sidebar.classList.contains('expanded')) {
-                        mainContainer.classList.add('expanded');
-                    } else if (!isMobile() && !sidebar.classList.contains('expanded')) {
-                        mainContainer.classList.remove('expanded');
-                    } else if (isMobile() && sidebar.classList.contains('expanded')) {
-                        // En móvil, el margen del main siempre es 0
-                        mainContainer.classList.remove('expanded');
-                    }
-                });
-
-
-            } catch (error) {
-                console.error("Error al inicializar el sidebar:", error);
-                document.getElementById('sidebar-menu').innerHTML = `<li style="color: red; padding: 10px 20px;">Error al cargar menú.</li>`;
-            }
-        }
-
-        function buildSidebarMenu(items) {
-            const menu = document.getElementById('sidebar-menu');
-            menu.innerHTML = ''; 
-
-            items.forEach(item => {
-                const li = document.createElement('li');
-                li.classList.add('menu-item');
-
-                const a = document.createElement('a');
-                a.href = item.url;
-                
-                // Cerrar el sidebar si es un link interno en móvil
-                if (item.url.startsWith('#') || item.url.includes('.html')) {
-                    a.onclick = (e) => {
-                        if (isMobile()) {
-                            toggleSidebar();
-                        }
-                    };
-                }
-
-                a.innerHTML = `
-                    <i class="fa-solid ${item.icon}"></i>
-                    <span>${item.label}</span>
-                `;
-                li.appendChild(a);
-                menu.appendChild(li);
-            });
-        }
 
         // --- Función de Filtrado y Búsqueda ---
         
@@ -806,7 +426,8 @@
         // --- Funciones de Inicialización y Renderizado ---
 
         async function initApp() {
-            await initSidebar(); // Inicializar el sidebar primero
+            await loadSidebar(); // Cargar el HTML del sidebar
+            await initSidebar(); // Inicializar la lógica del sidebar
             
             try {
                 // 1. Cargar Configuración de Contacto
